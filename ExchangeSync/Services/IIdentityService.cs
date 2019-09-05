@@ -11,11 +11,11 @@ namespace ExchangeSync.Services
         /// <summary>
         /// 获取客户端AccessToken
         /// </summary>
+        /// <param name="scope"></param>
         /// <param name="clientId"></param>
         /// <param name="clientSecret"></param>
-        /// <param name="scope"></param>
         /// <returns></returns>
-        Task<string> GetClientCredentialAccessTokenAsync(string clientId, string clientSecret, string scope);
+        Task<string> GetClientCredentialAccessTokenAsync(string scope, string clientId, string clientSecret);
 
         Task<string> GetUserAccessTokenAsync(string userName, string userPassword, string scope);
 
