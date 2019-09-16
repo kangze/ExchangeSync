@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ExchangeSync\ExchangeSync.csproj" />
+    <ProjectReference Include="..\..\src\ExchangeSync.Skype\ExchangeSync.Skype.csproj" />
   </ItemGroup>
 
 </Project>
