@@ -12,12 +12,16 @@ namespace ExchangeSyncTest.SkypeTest
     [TestClass]
     public class MeetingTest
     {
+
         [TestMethod]
-        public async Task GetAuthenticateAddressAsync_Test()
+        public async Task GetSkypeResourceUrlAsync_Tetst()
         {
-            var service = new MeetingService(new HttpClient(), new SkypeOption());
-            var s = await service.GetAuthenticateAddressAsync(
-                @"https://sfbpool.scrbg.com/Autodiscover/AutodiscoverService.svc/root/oauth/user?originalDomain=scrbg.com");
+            var service0 = new SkypeBootstraper(new HttpClient(), new SkypeOption()
+            {
+                DiscoverServer = "http://lyncdiscoverinternal.scrbg.com/"
+            });
+            var service = new MeetingService(service0, new HttpClient());
+            await service.CreateOnlineMeetingAsync("测试", "描述");
         }
     }
 }

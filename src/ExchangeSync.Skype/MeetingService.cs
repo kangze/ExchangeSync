@@ -1,55 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using ExchangeSync.Skype.Internal;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace ExchangeSync.Skype
 {
     public class MeetingService : IMeetingService
     {
+        private readonly SkypeBootstraper _bootstraper;
         private readonly HttpClient _httpClient;
-        private readonly SkypeOption _option;
 
-        public MeetingService(HttpClient httpClient, SkypeOption option)
+        public MeetingService(SkypeBootstraper bootstraper, HttpClient httpClient)
         {
+            _bootstraper = bootstraper;
             _httpClient = httpClient;
-            _option = option;
         }
 
-        public async Task<SkypeDiscoverLink> CreateMeetingAsync(string skypeAccessToken)
+        public async Task CreateOnlineMeetingAsync(string subject, string description)
         {
-            var response = await this._httpClient.GetAsync(_option.DiscoverServer);
-            if (!response.IsSuccessStatusCode)
-                throw new SkypeDiscoverException(response.ReasonPhrase);
-            var content = await response.Content.ReadAsStringAsync();
+            await this._bootstraper.StartAsync("v-ms-kz@scrbg.com", "tfs4418000");
 
-            var jObject = JObject.Parse(content);
-            var discover = new SkypeDiscoverLink()
+            var content = new StringContent(JsonConvert.SerializeObject(new
             {
-                User = jObject["_links"]["user"]["href"].ToString(),
-                Self = jObject["_links"]["self"]["href"].ToString(),
-                XFrame = jObject["_links"]["xframe"]["href"].ToString(),
-            };
-            return discover;
-        }
-
-        public async Task<string> GetAuthenticateAddressAsync(string userAddress)
-        {
-            if (string.IsNullOrEmpty(userAddress))
-                throw new ArgumentNullException(nameof(userAddress));
-            var response = await this._httpClient.GetAsync(userAddress);
-            if (response.StatusCode != HttpStatusCode.Unauthorized) return default;
-            var headerValue = response.Headers.WwwAuthenticate.FirstOrDefault(u => u.Scheme == "MsRtcOAuth");
-            if (headerValue == null) return default;
-
-            var match = RegexHelper.UrlRegex.Match(headerValue.Parameter);
-            if (!match.Success) return default;
-            return match.Value;
+                subject = subject,
+                description = description,
+            }), Encoding.UTF8, "application/json");
+            this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this._bootstraper.OAuthToken.AccessToken);
+            var uri = new Uri(this._bootstraper.Host + this._bootstraper.SkypeResourceLink.MyOnlineMeetings);
+            var reponse = await this._httpClient.PostAsync(uri, content);
+            var result = await reponse.Content.ReadAsStringAsync();
         }
     }
 }

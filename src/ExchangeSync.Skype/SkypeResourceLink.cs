@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace ExchangeSync.Skype
 {
-    public interface IMeetingService
+    public class SkypeResourceLink
     {
-        Task CreateOnlineMeetingAsync(string subject, string description);
+        /// <summary>
+        /// 在线会议
+        /// </summary>
+        public string MyOnlineMeetings { get; set; }
     }
 }
