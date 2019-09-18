@@ -9,12 +9,14 @@ import MailDetail from "./components/MailDetail";
 
 
 export default class App extends React.Component {
+
     public render() {
+        var s=m+10;
         return (
             <div>
                 <Header />
-                {/* <Item /> */}
-                <MailDetail />
+                <Item />
+                {/* <MailDetail /> */}
             </div>
         );
     }

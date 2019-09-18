@@ -12,6 +12,11 @@ namespace ExchangeSync.Model
 
         public string UserName { get; set; }
 
+        /// <summary>
+        /// 用户邮箱账号
+        /// </summary>
+        public string UserAccount { get; set; }
+
         public string Number { get; set; }
 
         public string IdCardNo { get; set; }

@@ -16,11 +16,24 @@ namespace ExchangeSync.Exchange.Internal
 
         private readonly ExchangeService _exchangeService;
 
-        public MailManager(string userName, string password)
+        private MailManager(string userName, string password)
         {
             this._userName = userName;
             this._password = password;
             this._exchangeService = this.Init();
+        }
+
+        private static Dictionary<string, MailManager> Managers { get; set; } = new Dictionary<string, MailManager>();
+
+        public static MailManager Create(string userName, string password)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                throw new ArgumentNullException(nameof(userName) + nameof(password));
+            if (Managers.ContainsKey(userName))
+                return Managers[userName];
+            var manager = new MailManager(userName, password);
+            Managers.Add(userName, manager);
+            return manager;
         }
 
         private ExchangeService Init()

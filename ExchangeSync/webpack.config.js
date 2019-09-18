@@ -7,7 +7,7 @@ module.exports = {
     output: {
 
         filename: "bundle.js",
-        publicPath: "http://192.168.18.171:18080/dist/",
+        publicPath: "http://localhost:18080/dist/",
         path: path.resolve(__dirname, './wwwroot/js/')
     },
     devtool: "inline-source-map",
@@ -33,7 +33,7 @@ module.exports = {
             'Access-Control-Allow-Origin': '*' //配合服务端开发,需要跨域
         },
         port: 18080,
-        host: "192.168.18.171",
+        host: "localhost",
         hot: true
     },
 }
