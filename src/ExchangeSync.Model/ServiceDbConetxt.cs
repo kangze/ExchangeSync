@@ -15,8 +15,6 @@ namespace ExchangeSync.Model
                 optionsBuilder.UseSqlServer(@"Data Source=(local)\SQLEXPRESS;Initial Catalog=ExchangeSync_Connect;Integrated Security=True;MultipleActiveResultSets=true");
         }
 
-        public virtual DbSet<UserConnect> UserConnects { get; set; }
-
-        public virtual DbSet<UserWeChat> UserWeChats { get; set; }
+        public virtual DbSet<UserSecret> UserSecrets { get; set; }
     }
 }
