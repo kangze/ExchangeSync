@@ -27,7 +27,7 @@ namespace ExchangeSync.Controllers
         /// <returns></returns>
         public async Task<IActionResult> GetAsync()
         {
-            var service = new MailManager("v-ms-kz@scrbg.com", "tfs4418000");
+            var service = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
             var dtos = await service.GetMailMessageAsync();
             var message = this._mapper.Map<IList<MailMessageViewModel>>(dtos);
             return Json(message);
@@ -39,7 +39,7 @@ namespace ExchangeSync.Controllers
         /// <returns></returns>
         public async Task<IActionResult> PostAsync(NewMailInput input)
         {
-            var service = new MailManager("", "");
+            var service = MailManager.Create("", "");
             await service.SendMail(new CreateMailModel()
             {
                 Subject = input.Subject,

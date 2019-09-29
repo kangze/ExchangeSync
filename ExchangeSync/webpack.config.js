@@ -3,10 +3,11 @@ const webpack = require('webpack');//引入webpack
 
 module.exports = {
     mode: "development",
-    entry: "./app/src/index.tsx",
+    entry: {
+        client: "./app/src/index.tsx",
+    },
     output: {
-
-        filename: "bundle.js",
+        filename: "[name].js",
         publicPath: "http://localhost:18080/dist/",
         path: path.resolve(__dirname, './wwwroot/js/')
     },
