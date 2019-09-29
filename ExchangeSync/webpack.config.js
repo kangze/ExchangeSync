@@ -1,5 +1,6 @@
 ﻿const path = require('path');
 const webpack = require('webpack');//引入webpack
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     mode: "development",
@@ -18,6 +19,14 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
+            },
+            {
+
+                test: /\.css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: "css-loader"
+                })
             }
         ]
     },
@@ -25,7 +34,8 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js']
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new ExtractTextPlugin("styles.css")
     ],
 
     devServer: {

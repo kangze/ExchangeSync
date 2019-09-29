@@ -1,4 +1,5 @@
 ﻿const path = require('path');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     mode: "development",
@@ -11,17 +12,28 @@ module.exports = {
         path: path.resolve(__dirname, './wwwroot/js/')
     },
     devtool: "inline-source-map",
-    target:"node",
+    target: "node",
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
+            },
+            {
+
+                test: /\.css$/,
+                use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: "css-loader"
+                })
             }
         ]
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js']
-    }
+    },
+    plugins: [
+        new ExtractTextPlugin("styles.css")
+    ]
 };

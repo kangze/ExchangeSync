@@ -14,6 +14,7 @@
     "@storybook/react": "^5.1.11",
     "@types/node": "^12.6.8",
     "@types/webpack-env": "^1.14.0",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",
     "webpack": "^4.38.0",
@@ -21,6 +22,7 @@
     "webpack-dev-server": "^3.7.2"
   },
   "dependencies": {
+    "@microsoft/load-themed-styles": "^1.10.9",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
     "@types/react-router-dom": "^4.3.5",

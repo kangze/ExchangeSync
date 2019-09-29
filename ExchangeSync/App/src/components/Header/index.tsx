@@ -3,6 +3,7 @@ import * as React from 'react';
 import { IconButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 
+require("./index.css");
 
 const styles = {
     root: {
