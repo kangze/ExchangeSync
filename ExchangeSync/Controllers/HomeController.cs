@@ -6,15 +6,24 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ExchangeSync.Models;
+using ExchangeSync.Services;
+using Microsoft.AspNetCore.NodeServices;
 
 namespace ExchangeSync.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IServerRenderService _serverRenderService;
+
+        public HomeController(IServerRenderService serverRenderService)
+        {
+            _serverRenderService = serverRenderService;
+        }
 
         public IActionResult Index()
         {
-            return View();
+            var html = this._serverRenderService.Render();
+            return Content(html, "text/html; charset=utf-8");
         }
 
         public async Task<IActionResult> Privacy(string code)

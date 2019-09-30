@@ -9,7 +9,7 @@ module.exports = {
     output: {
         libraryTarget: 'commonjs',
         filename: "[name].js",
-        path: path.resolve(__dirname, './wwwroot/js/')
+        path: path.resolve(__dirname, './')
     },
     devtool: "inline-source-map",
     target: "node",

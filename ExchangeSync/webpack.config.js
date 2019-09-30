@@ -5,7 +5,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
     mode: "development",
     entry: {
-        client: "./app/src/index.tsx",
+        client: "./app/src/client_boot.tsx",
     },
     output: {
         filename: "[name].js",
