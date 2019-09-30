@@ -22,7 +22,7 @@ namespace ExchangeSync.Controllers
 
         public IActionResult Index()
         {
-            var html = this._serverRenderService.Render();
+            var html = this._serverRenderService.Render(Request.Path);
             return Content(html, "text/html; charset=utf-8");
         }
 

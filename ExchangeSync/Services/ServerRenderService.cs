@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace ExchangeSync.Services
 {
@@ -16,10 +17,10 @@ namespace ExchangeSync.Services
             _serverFileName = serverFileName;
         }
 
-        public string Render()
+        public string Render(string path)
         {
             var sb = new StringBuilder();
-            var psi = new ProcessStartInfo("node", this._serverFileName)
+            var psi = new ProcessStartInfo("node", this._serverFileName + " " + path)
             {
                 RedirectStandardOutput = true
             };

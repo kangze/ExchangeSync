@@ -36,7 +36,7 @@ namespace ExchangeSync
             services.AddHttpContextAccessor();
             services.AddDbContext<ServiceDbContext>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddNodeServices();
+            services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,6 +59,10 @@ namespace ExchangeSync
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(
+                    name: "catch-all",
+                    template: "{*url}",
+                    defaults: new { controller = "Home", action = "Index" });
             });
         }
     }
