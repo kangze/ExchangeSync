@@ -56,17 +56,20 @@ const menus = [
     {
         name: "收件箱",
         icon: "MailSolid",
-        key: "inBox"
+        key: "inBox",
+        path: "/"
     },
     {
         name: "已经发送",
         icon: "MailForward",
-        key: "Forwart"
+        key: "Forwart",
+        path: "/sended"
     }, {
         name: "草稿",
         icon: "EditMail",
-        key: "editMail"
-    }
+        key: "editMail",
+        path: "/draft"
+    },
 
 ]
 
@@ -75,6 +78,11 @@ export default class Header extends React.Component<any, any> {
     public state = {
         showPanel: false
     };
+
+    public handleMenuClick(path: string) {
+        (this.props as any).history.push(path);
+        this.setState({ showPanel: false });
+    }
 
     public render() {
         return (
@@ -113,12 +121,13 @@ export default class Header extends React.Component<any, any> {
                                     root: {
                                         border: "none",
                                         width: "100%",
-                                        marginTop:20
+                                        marginTop: 20
                                     }
                                 }}
                                 iconProps={{
                                     iconName: item.icon
                                 }}
+                                onClick={this.handleMenuClick.bind(this, item.path)}
                             />
                         );
                     })}

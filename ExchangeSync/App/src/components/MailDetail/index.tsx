@@ -8,39 +8,37 @@ import { IOverflowSetItemProps, OverflowSet } from 'office-ui-fabric-react/lib/O
 import { DefaultButton } from 'office-ui-fabric-react';
 
 //import { ActionMenus } from "./action";
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
+
+const noOp = function () { };
 
 const ActionMenus = [
     {
         key: 'markReaded',
-        iconProps: {
-            iconName: "Mail"
-        },
+        icon: "Mail",
         name: '标记为未读',
+        onClick: noOp
     },
     {
         key: 'mark',
-        iconProps: {
-            iconName: "Calendar"
-        },
+        icon: "Mail",
         name: '标记',
+        onClick: noOp
     }, {
         key: "answer",
-        iconProps: {
-            iconName: "Calendar"
-        },
+        icon: "Mail",
         name: "答复",
+        onClick: noOp
     }, {
         key: "answer_all",
-        iconProps: {
-            iconName: "Calendar"
-        },
+        icon: "Mail",
         name: "全部答复",
+        onClick: noOp
     }, {
         key: "to",
-        iconProps: {
-            iconName: "Calendar"
-        },
+        icon: "Mail",
         name: "转发",
+        onClick: noOp
     }
 ];
 
@@ -96,11 +94,15 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
 
     }
 
+    public handleReply(mailId: string) {
+        (this.props as any).history.push("/reply/" + mailId);
+    }
+
     public render(): JSX.Element {
         //let id=(this.props as any).match.params.mailId; 获取到的I
         if (this.state.loading)
             return (
-                <div>正在加载</div>
+                <Icon iconName="CompassNW" className="ms-IconExample" />
             );
         return (
             <Stack tokens={stackTokens}>
@@ -111,13 +113,13 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                     <Persona secondaryText={'kangze25@126.com'} text={this.state.sender} size={PersonaSize.size48} styles={styles.persona} />
                     <div style={styles.time}>
                         <Text variant="medium" >{this.state.date}</Text>
-                        <OverflowSet
+                        {/* <OverflowSet
                             vertical
                             overflowItems={ActionMenus}
                             onRenderOverflowButton={this._onRenderOverflowButton}
                             onRenderItem={this._onRenderItem}
                             styles={styles.overflowItem}
-                        />
+                        />这里有问题稍后解决 */}
                     </div>
                     <div style={{ clear: "both" }}></div>
                     <div style={{ padding: 20 }}>
@@ -129,6 +131,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                         text="回复"
                         allowDisabledFocus
                         styles={{ root: { width: "100%" } }}
+                        onClick={this.handleReply.bind(this, this.state.sender)}
                     />
                 </div>
             </Stack>
@@ -138,7 +141,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
     private _onRenderOverflowButton = (overflowItems: any[] | undefined): JSX.Element => {
         return (
             <CommandBarButton
-                styles={{ root: { padding: "12px" }, menuIcon: { fontSize: '16px' } }}
+                styles={{ root: { padding: "10px" }, menuIcon: { fontSize: '16px' } }}
                 menuIconProps={{ iconName: 'More' }}
                 menuProps={{ items: overflowItems! }}
             />

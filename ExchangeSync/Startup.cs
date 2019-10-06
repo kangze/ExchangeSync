@@ -60,6 +60,11 @@ namespace ExchangeSync
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
                 routes.MapRoute(
+                    name: "user",
+                    template: "user/{keyword?}",
+                    defaults: new { controller = "User", action = "GetUser" }
+                    );
+                routes.MapRoute(
                     name: "catch-all",
                     template: "{*url}",
                     defaults: new { controller = "Home", action = "Index" });
