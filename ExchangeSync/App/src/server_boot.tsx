@@ -9,11 +9,16 @@ import { initializeIcons } from '@uifabric/icons';
 
 initializeIcons("/fonts/");
 
-var location = process.argv.splice(2)[0];
 
+var location = process.argv[2];
+var detailBase64 = process.argv[3];
+
+var detail = new Buffer(detailBase64, 'base64').toString();
+
+const context = { data: JSON.parse(detail) } as any;
 let { html, css } = renderStatic(() => {
   return renderToString(
-    <StaticRouter location={location}>
+    <StaticRouter location={location} context={context}>
       <Fabric>
         <App />
       </Fabric>
@@ -24,11 +29,14 @@ var doc = `
     <!DOCTYPE html>
     <html lang="en">
     <head>
+    <title>我的Exchage邮箱-四川路桥</title>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="/css/fabric.min.css" rel="stylesheet" />
-    <title>我的Exchage邮箱-四川路桥</title>
+    <script>
+      window.detail=${detail}
+    </script>
     <style>
         * {
             margin: 0;
@@ -36,14 +44,15 @@ var doc = `
         }
 
         body {
-            background-color: "#fff"
+            background-color: "#fff";
         }
+        
     </style>
     <style>${css}</style>
     </head>
     <body>
           <div id="app">${html}</div>
-          <script src="/js/client.js"></script>
+          <script src="http://localhost:18080/dist/client.js"></script>
     </body>
     </html>
 `;

@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import { IconButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
+import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react';
+import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 
 require("./index.css");
 
@@ -50,6 +52,24 @@ export interface IPanelSmallLeftExampleState {
     showPanel: boolean;
 }
 
+const menus = [
+    {
+        name: "收件箱",
+        icon: "MailSolid",
+        key: "inBox"
+    },
+    {
+        name: "已经发送",
+        icon: "MailForward",
+        key: "Forwart"
+    }, {
+        name: "草稿",
+        icon: "EditMail",
+        key: "editMail"
+    }
+
+]
+
 export default class Header extends React.Component<any, any> {
 
     public state = {
@@ -82,9 +102,26 @@ export default class Header extends React.Component<any, any> {
                     type={PanelType.smallFixedNear}
                     onDismiss={this._hidePanel}
                     isLightDismiss={true}
-                    headerText="Panel - Small, left-aligned, fixed"
-                >
-                    <span>Content goes here.</span>
+                    headerText="kangze25@126.com">
+
+                    {menus.map(item => {
+                        return (
+                            <DefaultButton
+                                text={item.name}
+                                allowDisabledFocus
+                                styles={{
+                                    root: {
+                                        border: "none",
+                                        width: "100%",
+                                        marginTop:20
+                                    }
+                                }}
+                                iconProps={{
+                                    iconName: item.icon
+                                }}
+                            />
+                        );
+                    })}
                 </Panel>
             </div>
         );

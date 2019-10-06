@@ -17,13 +17,17 @@ namespace ExchangeSync.Services
             _serverFileName = serverFileName;
         }
 
-        public string Render(string path)
+        public string Render(string path, object data)
         {
             var sb = new StringBuilder();
-            var psi = new ProcessStartInfo("node", this._serverFileName + " " + path)
+            var dataStr = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+            var base64Str = Convert.ToBase64String(Encoding.UTF8.GetBytes(dataStr));
+            var psi = new ProcessStartInfo("node", this._serverFileName + " " + path + " " + base64Str)
             {
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
             };
+            //psi.StandardInputEncoding = Encoding.UTF8;
+            psi.StandardOutputEncoding = Encoding.UTF8;
             //启动
             var proc = Process.Start(psi);
             if (proc == null)

@@ -8,6 +8,6 @@ namespace ExchangeSync.Services
 {
     public interface IServerRenderService
     {
-        string Render(string path);
+        string Render(string path, object data);
     }
 }

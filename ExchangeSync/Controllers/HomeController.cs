@@ -22,7 +22,17 @@ namespace ExchangeSync.Controllers
 
         public IActionResult Index()
         {
-            var html = this._serverRenderService.Render(Request.Path);
+            //这里统一分析所有的url
+            //1./detail/2222
+
+
+            var html = this._serverRenderService.Render(Request.Path, new
+            {
+                title = "服务器标题",
+                sender = "server",
+                date = "2017-8-8",
+                content = "服务器内容",
+            });
             return Content(html, "text/html; charset=utf-8");
         }
 
