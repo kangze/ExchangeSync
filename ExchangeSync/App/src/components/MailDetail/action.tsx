@@ -2,30 +2,48 @@ const noOp = function () { };
 export const ActionMenus = [
     {
         key: 'markReaded',
-        icon: "Mail",
+        iconProps: {
+            iconName: "Mail"
+        },
         name: '标记为未读',
-        onClick: noOp
+        onClick: (mailId: string) => {
+            alert("已经标记为未读!");
+        }
     },
     {
         key: 'mark',
-        icon: "Mail",
+        iconProps: {
+            iconName: "Mail"
+        },
         name: '标记',
-        onClick: noOp
+        onClick: (mailId: string) => {
+            alert("已经标记!");
+        }
     }, {
         key: "answer",
-        icon: "Mail",
+        iconProps: {
+            iconName: "Mail"
+        },
         name: "答复",
-        onClick: noOp
+        onClick: (mailId: string) => {
+            alert("已经答复!");
+        }
     }, {
         key: "answer_all",
-        icon: "Mail",
+        iconProps: {
+            iconName: "Mail"
+        },
         name: "全部答复",
         onClick: noOp
     }, {
         key: "to",
-        icon: "Mail",
+        iconProps: {
+            iconName: "Mail"
+        },
         name: "转发",
-        onClick: noOp
+        onClick: (mailId: string) => {
+            alert("已经转发!");
+        }
     }
 ];
 

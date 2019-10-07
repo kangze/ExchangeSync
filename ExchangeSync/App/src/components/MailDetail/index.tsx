@@ -93,13 +93,13 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                     <Persona secondaryText={'kangze25@126.com'} text={this.state.sender} size={PersonaSize.size48} styles={Styles.persona} />
                     <div style={Styles.time}>
                         <Text variant="medium" >{this.state.date}</Text>
-                        {/* <OverflowSet
+                        <OverflowSet
                             vertical
                             overflowItems={ActionMenus}
                             onRenderOverflowButton={this._onRenderOverflowButton}
                             onRenderItem={this._onRenderItem}
-                            styles={styles.overflowItem}
-                        />这里有问题稍后解决 */}
+                            styles={Styles.overflowItem}
+                        />
                     </div>
                     <div style={{ clear: "both" }}></div>
                     <div style={{ padding: 20 }}>
@@ -119,19 +119,21 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
     }
 
     private _onRenderOverflowButton = (overflowItems: any[] | undefined): JSX.Element => {
+
         return (
             <CommandBarButton
-                styles={{ root: { padding: "10px" }, menuIcon: { fontSize: '16px' } }}
+                styles={{ root: { padding: "10px" }, menuIcon: { fontSize: '16px' }, label: { textAlign: "center" } }}
                 menuIconProps={{ iconName: 'More' }}
-                menuProps={{ items: overflowItems! }}
+                menuProps={{ items: overflowItems }}
             />
         );
     };
 
     private _onRenderItem = (item: IOverflowSetItemProps): JSX.Element => {
+
         return (
             <TooltipHost content={item.name} calloutProps={{ directionalHint: DirectionalHint.rightCenter, beakWidth: 12 }}>
-                <CommandBarButton styles={{ root: { padding: '10px' } }} iconProps={{ iconName: item.icon }} onClick={item.onClick} />
+                <CommandBarButton styles={{ root: { padding: '100px', backgroundColor: "red" } }} iconProps={{ iconName: "Mail" }} onClick={item.onClick} />
             </TooltipHost>
         );
     };
