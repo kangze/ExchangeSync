@@ -32,11 +32,11 @@ namespace ExchangeSync.Services
         {
             if (input == null) throw new ArgumentException(nameof(input));
 
-            var user = await this._db.UserSecrets.FirstOrDefaultAsync(u => u.UserAccount == input.Sender);
-            if (user == null) throw new AccountNotFoundException(input.Sender);
+            //var user = await this._db.UserSecrets.FirstOrDefaultAsync(u => u.UserAccount == input.Sender);
+            //if (user == null) throw new AccountNotFoundException(input.Sender);
 
-            var mailManager = MailManager.Create(user.UserAccount, user.Password);
-            await mailManager.SendMail(this._mapper.Map<CreateMailModel>(input));
+            //var mailManager = MailManager.Create(user.UserAccount, user.Password);
+            //await mailManager.SendMail(this._mapper.Map<CreateMailModel>(input));
         }
     }
 }
