@@ -3,6 +3,7 @@ import { IPersonaSharedProps, Persona, PersonaInitialsColor, PersonaSize } from 
 import { Stack } from 'office-ui-fabric-react/lib/Stack';
 import { Text } from 'office-ui-fabric-react/lib/Text';
 import { IconButton } from 'office-ui-fabric-react/lib/Button';
+import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import axios from "axios";
 
 
@@ -156,7 +157,7 @@ export default class MailItem extends React.PureComponent<any, any> {
 
     public render(): JSX.Element {
         if (this.state.loading) {
-            return <div>正在加载...</div>
+            return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
         }
         return (
             <Stack tokens={{ childrenGap: 10 }}>

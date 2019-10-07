@@ -3,6 +3,7 @@ import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Stack, IStackProps } from 'office-ui-fabric-react/lib/Stack';
 import { PrimaryButton, Label } from 'office-ui-fabric-react';
 import axios from "axios";
+import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 
 import { TagPicker, IBasePicker, ITag } from 'office-ui-fabric-react/lib/Pickers';
 
@@ -40,13 +41,11 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                 reciverName: data.senderName,
                 copyto: "",
             }
-        } else {                                    //客户端无状态渲染
+        } else {                                    //客户端无状态渲染,表示从别的路由过来的
             this.state = {
                 mailId: (this.props as any).match.params.mailId,
                 reply: (this.props as any).match.params.mailId ? true : false,
                 replyloading: (this.props as any).match.params.mailId ? true : false,
-                title: "",
-                content: "",
             };
         }
     }
@@ -123,11 +122,10 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
 
 
     public render() {
+        console.log(this);
         if (this.state.reply && this.state.replyloading) {
             return (
-                <div>
-                    正在加载...
-                </div>
+                <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
             );
         }
         return (
@@ -141,7 +139,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                         suggestionsHeaderText: '请输入姓名/邮件地址',
                         noResultsFoundText: '没有找到该用户'
                     }}
-                    selectedItems={[this.state.reciver ? { key: this.state.reciver, name: this.state.reciverName } : undefined]}
+                    selectedItems={this.state.reciver ? [{ key: this.state.reciver, name: this.state.reciverName }] : undefined}
                     itemLimit={1}
                     onChange={this._handleChange.bind(this, "reciver")}
                 />

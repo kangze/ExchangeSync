@@ -6,6 +6,7 @@ import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip
 import { CommandBarButton } from 'office-ui-fabric-react/lib/Button';
 import { IOverflowSetItemProps, OverflowSet } from 'office-ui-fabric-react/lib/OverflowSet';
 import { DefaultButton } from 'office-ui-fabric-react';
+import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import axios from "axios";
 
 import { ActionMenus, Styles } from "./action";
@@ -81,9 +82,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
     public render(): JSX.Element {
         //let id=(this.props as any).match.params.mailId; 获取到的I
         if (this.state.loading)
-            return (
-                <Icon iconName="CompassNW" className="ms-IconExample" />
-            );
+            return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
         return (
             <Stack tokens={stackTokens}>
                 <div style={{ padding: 10, backgroundColor: "#eaeaea" }}>

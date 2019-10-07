@@ -32,6 +32,7 @@ namespace ExchangeSync.Controllers
         /// <returns></returns>
         public async Task<IActionResult> GetAsync(string type)
         {
+            await Task.Delay(TimeSpan.FromSeconds(0.5));
             if (string.IsNullOrEmpty(type))
                 return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
             if (type == "index")
@@ -61,6 +62,7 @@ namespace ExchangeSync.Controllers
 
         public async Task<IActionResult> GetMail(string mailId)
         {
+            await Task.Delay(TimeSpan.FromSeconds(0.5));
             var item = await this._mailService.GetMailAsync(mailId);
             return Json(item);
         }

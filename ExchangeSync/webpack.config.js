@@ -3,7 +3,7 @@ const webpack = require('webpack');//引入webpack
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-    mode: "development",
+    mode: "devlopment",
     entry: {
         client: "./app/src/client_boot.tsx",
     },

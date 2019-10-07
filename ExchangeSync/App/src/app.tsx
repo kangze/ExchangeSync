@@ -28,8 +28,8 @@ export default class App extends React.Component<any, any> {
                 <Route exact path="/sended" render={(param: any) => <Item changeTitle={this.changeTitle.bind(this)} type="sended" {...param} />} />
                 <Route exact path="/draft" render={(param: any) => <Item changeTitle={this.changeTitle.bind(this)} type="draft" {...param} />} />
                 <Route path="/detail/:mailId" render={(param: any) => <MailDetail changeTitle={this.changeTitle.bind(this)} {...param} />} />
-                <Route path="/create" component={MailCreate} />
-                <Route path="/reply/:mailId" component={MailCreate} />
+                <Route path="/create" render={(param: any) => <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />} />
+                <Route path="/reply/:mailId" render={(param: any) => <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />} />
             </Layout>
         );
     }
