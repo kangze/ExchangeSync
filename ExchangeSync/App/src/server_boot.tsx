@@ -13,9 +13,9 @@ initializeIcons("/fonts/");
 var location = process.argv[2];
 var detailBase64 = process.argv[3];
 
-var detail = new Buffer(detailBase64, 'base64').toString();
+var data = new Buffer(detailBase64, 'base64').toString();
 
-const context = { data: JSON.parse(detail) } as any;
+const context = { data: JSON.parse(data) } as any;
 let { html, css } = renderStatic(() => {
   return renderToString(
     <StaticRouter location={location} context={context}>
@@ -35,7 +35,7 @@ var doc = `
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="/css/fabric.min.css" rel="stylesheet" />
     <script>
-      window.detail=${detail}
+      window.data=${data}
     </script>
     <style>
         * {

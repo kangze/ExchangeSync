@@ -22,23 +22,27 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
             this.state = {
                 reply: true,
                 replyloading: false,
-                title: data.title,
-                content: data.content,
-                reciver: data.reciver,
-                copyto: data.copyto,
+                title: "[回复]" + data.title,
+                content: "\r\r\r\r" + (data.content ? data.content : data.description),
+                reciver: data.sender,
+                reciverName: data.senderName,
+                copyto: "",
             }
-        } else if ((window as any).reply) {         //客户端二次渲染(用于回复其他人的邮件)
-            let data = (window as any).reply;
+        } else if ((window as any).data) {         //客户端二次渲染(用于回复其他人的邮件)
+            let data = (window as any).data;
+            delete (window as any).data;
             this.state = {
                 reply: true,
                 replyloading: false,
-                title: data.title,
-                content: data.content,
-                reciver: data.reciver,
-                copyto: data.copyto,
+                title: "[回复]" + data.title,
+                content: "\r\r\r\r" + (data.content ? data.content : data.description),
+                reciver: data.sender,
+                reciverName: data.senderName,
+                copyto: "",
             }
         } else {                                    //客户端无状态渲染
             this.state = {
+                mailId: (this.props as any).match.params.mailId,
                 reply: (this.props as any).match.params.mailId ? true : false,
                 replyloading: (this.props as any).match.params.mailId ? true : false,
                 title: "",
@@ -101,20 +105,19 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
 
     componentDidMount() {
         if (this.state.reply) {
-            var data = {
-                title: "这是客户端的标题",
-                reciver: [{ key: "v-ms-kz@scrbg.com", name: "康泽(252525)" }],
-                copyto: "",
-                content: "这是客户端的内容"
-            }
-            this.setState({
-                reply: true,
-                replyloading: false,
-                title: "[回复]" + data.title,
-                content: "\r\r\r\r" + data.content,
-                reciver: data.reciver,
-                copyto: data.copyto,
-            })
+            let self = this;
+            axios.get("/mail/GetMail?mailId=" + this.state.mailId).then(response => {
+                let data = response.data;
+                self.setState({
+                    reply: true,
+                    replyloading: false,
+                    title: "[回复]" + data.title,
+                    content: "\r\r\r\r" + (data.content ? data.content : data.description),
+                    reciver: data.sender,
+                    reciverName: data.senderName,
+                    copyto: "",
+                });
+            });
         }
     }
 
@@ -138,7 +141,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                         suggestionsHeaderText: '请输入姓名/邮件地址',
                         noResultsFoundText: '没有找到该用户'
                     }}
-                    selectedItems={this.state.reciver}
+                    selectedItems={[this.state.reciver ? { key: this.state.reciver, name: this.state.reciverName } : undefined]}
                     itemLimit={1}
                     onChange={this._handleChange.bind(this, "reciver")}
                 />
@@ -154,9 +157,9 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                     }}
                     itemLimit={100}
                     onChange={this._handleChange.bind(this, "copyto")}
-                />      
+                />
                 <TextField label="主题:" underlined value={this.state.title} onChange={this._handleInputChange.bind(this, "title")} />
-                <TextField label="邮件内容:" multiline rows={8} value={this.state.content   } onChange={this._handleInputChange.bind(this, "content")} />
+                <TextField label="邮件内容:" multiline rows={8} value={this.state.content} onChange={this._handleInputChange.bind(this, "content")} />
                 <PrimaryButton text="发送" allowDisabledFocus onClick={this._handleSend.bind(this)} />
             </Stack>
         );

@@ -6,60 +6,17 @@ import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip
 import { CommandBarButton } from 'office-ui-fabric-react/lib/Button';
 import { IOverflowSetItemProps, OverflowSet } from 'office-ui-fabric-react/lib/OverflowSet';
 import { DefaultButton } from 'office-ui-fabric-react';
+import axios from "axios";
 
-//import { ActionMenus } from "./action";
+import { ActionMenus, Styles } from "./action";
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
-const noOp = function () { };
 
-const ActionMenus = [
-    {
-        key: 'markReaded',
-        icon: "Mail",
-        name: '标记为未读',
-        onClick: noOp
-    },
-    {
-        key: 'mark',
-        icon: "Mail",
-        name: '标记',
-        onClick: noOp
-    }, {
-        key: "answer",
-        icon: "Mail",
-        name: "答复",
-        onClick: noOp
-    }, {
-        key: "answer_all",
-        icon: "Mail",
-        name: "全部答复",
-        onClick: noOp
-    }, {
-        key: "to",
-        icon: "Mail",
-        name: "转发",
-        onClick: noOp
-    }
-];
 
-const styles = {
-    persona: {
-        root: {
-            float: "left",
-            marginLeft: 10
-        }
-    },
-    time: {
-        display: "inline-block",
-        float: "right",
-        marginRight: 10
-    } as React.CSSProperties,
-    overflowItem: {
-        root: {
-            padding: 0
-        }
-    }
-};
+
+
+
+
 
 const stackTokens: IStackTokens = { childrenGap: 12 };
 
@@ -72,16 +29,19 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
             let data = props.staticContext.data;
             this.state = {
                 loading: false,
+                mailId: data.mailId,
                 title: data.title,
                 sender: data.sender,
                 senderLink: null,
                 date: data.date,
                 content: data.content,
             }
-        } else if ((window as any).detail) {
-            let data1 = (window as any).detail;
+        } else if ((window as any).data) {
+            let data1 = (window as any).data;
+            delete (window as any).data;
             this.state = {
                 loading: false,
+                mailId: data1.mailId,
                 title: data1.title,
                 sender: data1.sender,
                 senderLink: null,
@@ -98,6 +58,26 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
         (this.props as any).history.push("/reply/" + mailId);
     }
 
+    componentDidMount() {
+        if (!this.state.loading)
+            return;
+        //这里开始加载具体的邮件内容
+        let self = this;
+        let mailId = this.props.match.params.mailId;
+        axios.get("/mail/GetMail?mailId=" + mailId).then(response => {
+            let data = response.data;
+            self.setState({
+                loading: false,
+                mailId: data.mailId,
+                title: data.title,
+                sender: data.senderName,
+                senderLink: data.sender,
+                date: data.date,
+                content: data.content ? data.content : data.description,
+            })
+        })
+    }
+
     public render(): JSX.Element {
         //let id=(this.props as any).match.params.mailId; 获取到的I
         if (this.state.loading)
@@ -110,8 +90,8 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                     <Text variant="large" >{this.state.title}</Text>
                 </div>
                 <div>
-                    <Persona secondaryText={'kangze25@126.com'} text={this.state.sender} size={PersonaSize.size48} styles={styles.persona} />
-                    <div style={styles.time}>
+                    <Persona secondaryText={'kangze25@126.com'} text={this.state.sender} size={PersonaSize.size48} styles={Styles.persona} />
+                    <div style={Styles.time}>
                         <Text variant="medium" >{this.state.date}</Text>
                         {/* <OverflowSet
                             vertical
@@ -131,7 +111,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                         text="回复"
                         allowDisabledFocus
                         styles={{ root: { width: "100%" } }}
-                        onClick={this.handleReply.bind(this, this.state.sender)}
+                        onClick={this.handleReply.bind(this, this.state.mailId)}
                     />
                 </div>
             </Stack>

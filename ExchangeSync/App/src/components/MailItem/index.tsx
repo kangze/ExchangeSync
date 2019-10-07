@@ -3,6 +3,7 @@ import { IPersonaSharedProps, Persona, PersonaInitialsColor, PersonaSize } from 
 import { Stack } from 'office-ui-fabric-react/lib/Stack';
 import { Text } from 'office-ui-fabric-react/lib/Text';
 import { IconButton } from 'office-ui-fabric-react/lib/Button';
+import axios from "axios";
 
 
 const examplePersona: IPersonaSharedProps = {
@@ -63,10 +64,53 @@ export interface IMailItemProps {
     date: string,
 }
 
-export default class MailItem extends React.PureComponent {
+export default class MailItem extends React.PureComponent<any, any> {
+
+    constructor(props: any) {
+        super(props);
+        if (props.staticContext && props.staticContext.data) {
+            let data = props.staticContext.data;
+            this.state = {
+                groups: data as IMailItemGroupProps[]
+            }
+        } else if ((window as any).data) {
+            let data = (window as any).data;
+            delete (window as any).data;
+            this.state = {
+                groups: data as IMailItemGroupProps[]
+            }
+        } else {
+            this.state = {
+                loading: true
+            }
+        }
+    }
+
+    componentDidMount() {
+        let self = this;
+        if (this.props.type === "sended" && this.state.loading) {
+            self.props.changeTitle("已发送邮件");
+            axios.get("/mail/getasync?type=sended").then(response => {
+                var data = response.data;
+                self.setState({ groups: data, loading: false });
+            })
+        } else if (this.props.type === "index" && this.state.loading) {
+            self.props.changeTitle("收件箱");
+            axios.get("/mail/getasync?type=index").then(response => {
+                var data = response.data;
+                self.setState({ groups: data, loading: false });
+            })
+        } else if (this.props.type === "draft" && this.state.loading) {
+            self.props.changeTitle("草稿箱");
+            axios.get("/mail/getasync?type=draft").then(response => {
+                var data = response.data;
+                self.setState({ groups: data, loading: false });
+            })
+        }
+    }
+
 
     public handleClick(item: IMailItemProps) {
-        //console.log(this.props);
         (this.props as any).history.push("/detail/" + item.mailId);
     }
 
@@ -111,41 +155,18 @@ export default class MailItem extends React.PureComponent {
     }
 
     public render(): JSX.Element {
-        var items = [{
-            sender: "kangze",
-            title: "I Want You",
-            mailId: "id1",
-            description: "Someone want to look for you to join some party!!",
-            date: "周三"
-        },
-        {
-            sender: "Xiangmingliang",
-            title: "I Want You",
-            mailId: "id2",
-            description: "Someone want to look for you to join some party!!",
-            readed: true,
-            date: "周三"
+        if (this.state.loading) {
+            return <div>正在加载...</div>
         }
-        ];
-        var groups = [
-            {
-                groupTitle: "本周",
-                items
-            },
-            {
-                groupTitle: "上周",
-                items
-            }
-        ]
         return (
             <Stack tokens={{ childrenGap: 10 }}>
-                {groups.map(group => {
+                {(this.state as any).groups.map((group: any) => {
                     return (
                         <div>
                             <div style={{ marginLeft: 15, marginTop: 10 }}>
                                 <Text key={"group1"} variant="medium" nowrap block>上周</Text>
                             </div>
-                            {this.renderItem(items as any)}
+                            {this.renderItem(group.items as any)}
                         </div>
                     );
                 })}

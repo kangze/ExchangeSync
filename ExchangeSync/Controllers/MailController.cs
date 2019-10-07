@@ -8,29 +8,39 @@ using ExchangeSync.Exchange;
 using ExchangeSync.Exchange.Internal;
 using ExchangeSync.Models;
 using ExchangeSync.Models.Inputs;
+using ExchangeSync.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeSync.Controllers
 {
     public class MailController : Controller
     {
-        private readonly IMapper _mapper;
+        //private readonly IMapper _mapper;
+        private readonly IMailService _mailService;
 
-        public MailController(IMapper mapper)
+        public MailController(/*IMapper mapper*/ IMailService mailService)
         {
-            _mapper = mapper;
+            //_mapper = mapper;
+            this._mailService = mailService;
         }
+
+
 
         /// <summary>
         /// 获取本用户的邮件
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync(string type)
         {
-            var service = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
-            var dtos = await service.GetMailMessageAsync();
-            var message = this._mapper.Map<IList<MailMessageViewModel>>(dtos);
-            return Json(message);
+            if (string.IsNullOrEmpty(type))
+                return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
+            if (type == "index")
+                return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
+            if (type == "draft")
+                return await Task.FromResult(Json(await this._mailService.GetDraftMailAsync("")));
+            if (type == "sended")
+                return await Task.FromResult(Json(await this._mailService.GetSendedMailAsync("")));
+            return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
         }
 
         /// <summary>
@@ -49,9 +59,10 @@ namespace ExchangeSync.Controllers
             return Ok("Ok");
         }
 
-        public async Task<IActionResult> GetMail(string maileId)
+        public async Task<IActionResult> GetMail(string mailId)
         {
-            return await Task.FromResult(Json("t"));
+            var item = await this._mailService.GetMailAsync(mailId);
+            return Json(item);
         }
     }
 }

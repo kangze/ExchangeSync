@@ -101,7 +101,7 @@ export default class Header extends React.Component<any, any> {
                 </div>
                 <div style={styles.text}>
                     <p style={styles.textp}>
-                        <span>列表结合测试</span>
+                        <span>{this.props.title}</span>
                     </p>
                 </div>
                 <div style={{ clear: "both" }}></div>

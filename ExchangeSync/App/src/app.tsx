@@ -5,16 +5,29 @@ import Layout from "./Layout";
 import Item from "./components/MailItem";
 import MailDetail from "./components/MailDetail";
 import MailCreate from "./components/MailCreate";
+import Header from "./components/Header";
 
-export default class App extends React.Component {
+export default class App extends React.Component<any, any> {
+
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            title: ""
+        }
+    }
+
+    public changeTitle(title: string) {
+        this.setState({ title });
+    }
 
     public render() {
         return (
             <Layout>
-                <Route exact path="/" component={Item} />
-                <Route exact path="/sended" component={Item} />
-                <Route exact path="/draft" component={Item} />
-                <Route path="/detail/:mailId" component={MailDetail} />
+                <Route path="/" render={(param: any) => <Header title={this.state.title} {...param} />} />
+                <Route exact path="/" render={(param: any) => <Item changeTitle={this.changeTitle.bind(this)} type="index" {...param} />} />
+                <Route exact path="/sended" render={(param: any) => <Item changeTitle={this.changeTitle.bind(this)} type="sended" {...param} />} />
+                <Route exact path="/draft" render={(param: any) => <Item changeTitle={this.changeTitle.bind(this)} type="draft" {...param} />} />
+                <Route path="/detail/:mailId" render={(param: any) => <MailDetail changeTitle={this.changeTitle.bind(this)} {...param} />} />
                 <Route path="/create" component={MailCreate} />
                 <Route path="/reply/:mailId" component={MailCreate} />
             </Layout>

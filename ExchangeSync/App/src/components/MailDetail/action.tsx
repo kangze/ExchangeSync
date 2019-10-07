@@ -1,35 +1,31 @@
+const noOp = function () { };
 export const ActionMenus = [
     {
         key: 'markReaded',
-        iconProps:{
-            iconName:"Mail"
-        },
+        icon: "Mail",
         name: '标记为未读',
+        onClick: noOp
     },
     {
         key: 'mark',
-        iconProps:{
-            iconName:"Calendar"
-        },
+        icon: "Mail",
         name: '标记',
-    },{
-        key:"answer",
-        iconProps:{
-            iconName:"Calendar"
-        },
-        name:"答复",
-    },{
-        key:"answer_all",
-        iconProps:{
-            iconName:"Calendar"
-        },
-        name:"全部答复",
-    },{
-        key:"to",
-        iconProps:{
-            iconName:"Calendar"
-        },
-        name:"转发",
+        onClick: noOp
+    }, {
+        key: "answer",
+        icon: "Mail",
+        name: "答复",
+        onClick: noOp
+    }, {
+        key: "answer_all",
+        icon: "Mail",
+        name: "全部答复",
+        onClick: noOp
+    }, {
+        key: "to",
+        icon: "Mail",
+        name: "转发",
+        onClick: noOp
     }
 ];
 
@@ -47,7 +43,8 @@ export const Styles = {
     } as React.CSSProperties,
     overflowItem: {
         root: {
-            padding:0
+            padding: 0
         }
     }
 };
+

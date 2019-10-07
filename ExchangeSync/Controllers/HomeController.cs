@@ -14,25 +14,53 @@ namespace ExchangeSync.Controllers
     public class HomeController : Controller
     {
         private readonly IServerRenderService _serverRenderService;
+        private readonly IMailService _mailService;
 
-        public HomeController(IServerRenderService serverRenderService)
+        public HomeController(IServerRenderService serverRenderService, IMailService mailService)
         {
-            _serverRenderService = serverRenderService;
+            this._serverRenderService = serverRenderService;
+            this._mailService = mailService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             //这里统一分析所有的url
             //1./detail/2222
+            //2./index  服务器端渲染
 
-
-            var html = this._serverRenderService.Render(Request.Path, new
+            //new
+            //{
+            //    title = "服务器标题",
+            //    sender = "server",
+            //    date = "2017-8-8",
+            //    content = "服务器内容",
+            //}
+            var path = Request.Path.ToString();
+            object data = null;
+            if (path == "" || path == "/")
+                data = await this._mailService.GetIndexMailAsync("");
+            else if (path.Contains("sended"))
+                data = await this._mailService.GetSendedMailAsync("");
+            else if (path.Contains("draft"))
+                data = await this._mailService.GetDraftMailAsync("");
+            else if (path.Contains("detail"))
             {
-                title = "服务器标题",
-                sender = "server",
-                date = "2017-8-8",
-                content = "服务器内容",
-            });
+                var split = path.Split('/');
+                if (split.Length != 3)
+                    return Redirect("/");
+                var mailId = split[2];
+                data = await this._mailService.GetMailAsync(mailId);
+            }
+            else if (path.Contains("reply"))
+            {
+                var split = path.Split('/');
+                if (split.Length != 3)
+                    return Redirect("/");
+                var mailId = split[2];
+                data = await this._mailService.GetMailAsync(mailId);
+            }
+
+            var html = this._serverRenderService.Render(Request.Path, data);
             return Content(html, "text/html; charset=utf-8");
         }
 
