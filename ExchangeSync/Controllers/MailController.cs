@@ -48,5 +48,10 @@ namespace ExchangeSync.Controllers
             });
             return Ok("Ok");
         }
+
+        public async Task<IActionResult> GetMail(string maileId)
+        {
+            return await Task.FromResult(Json("t"));
+        }
     }
 }
