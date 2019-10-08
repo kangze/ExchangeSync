@@ -4,7 +4,9 @@ import { Stack } from 'office-ui-fabric-react/lib/Stack';
 import { Text } from 'office-ui-fabric-react/lib/Text';
 import { IconButton } from 'office-ui-fabric-react/lib/Button';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
+import { Shimmer, ShimmerElementsGroup, ShimmerElementType } from 'office-ui-fabric-react/lib/Shimmer';
 import axios from "axios";
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 
 const examplePersona: IPersonaSharedProps = {
@@ -63,6 +65,11 @@ export interface IMailItemProps {
      * 邮件时间,是已经被服务器分号组的
      */
     date: string,
+
+    /**
+     * 附件信息
+     */
+    attachments: string[]
 }
 
 export default class MailItem extends React.PureComponent<any, any> {
@@ -112,7 +119,7 @@ export default class MailItem extends React.PureComponent<any, any> {
 
 
     public handleClick(item: IMailItemProps) {
-        (this.props as any).history.push("/detail/" + item.mailId);
+        (this.props as any).history.push("/detail/" + encodeURIComponent(item.mailId));
     }
 
     handleCreate() {
@@ -138,13 +145,20 @@ export default class MailItem extends React.PureComponent<any, any> {
                             </div>
 
                             <div>
-                                <Text key={item.title} style={style} variant="medium" nowrap block>{item.title}</Text>
+                                <Text key={item.title} style={style} variant="medium" nowrap block>
+                                    {
+                                        (item.attachments && item.attachments.length > 0) ?
+                                            (<div><Icon iconName="Attach" className="ms-IconExample" />{item.title}</div>)
+                                            :
+                                            item.title
+                                    }
+                                </Text>
                             </div>
                             <div>
                                 <Text key={item.description} style={style} variant="medium" nowrap block>{item.description}</Text>
                             </div>
 
-                            <div style={{ position: "absolute", right: 25, top: 0 }}>
+                            <div style={{ position: "absolute", right: 25, top: -5 }}>
                                 <Text key={item.date} variant="medium" style={{ color: "#3f8d57" }} nowrap block>{item.date}</Text>
                             </div>
                         </div>
@@ -157,7 +171,15 @@ export default class MailItem extends React.PureComponent<any, any> {
 
     public render(): JSX.Element {
         if (this.state.loading) {
-            return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
+            return (
+                <div style={{ marginLeft: 15, marginTop: 10 }}>
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
+                </div>
+            );
         }
         return (
             <Stack tokens={{ childrenGap: 10 }}>
@@ -192,4 +214,25 @@ export default class MailItem extends React.PureComponent<any, any> {
             </Stack>
         );
     }
+
+    private _getCustomElementsExampleTwo = (): JSX.Element => {
+        return (
+            <div
+                // tslint:disable-next-line:jsx-ban-props
+                style={{ display: 'flex' }}
+            >
+                <ShimmerElementsGroup
+                    shimmerElements={[{ type: ShimmerElementType.circle, height: 40 }, { type: ShimmerElementType.gap, width: 10, height: 40 }]}
+                />
+                <ShimmerElementsGroup
+                    flexWrap={true}
+                    shimmerElements={[
+                        { type: ShimmerElementType.line, width: 400, height: 10 },
+                        { type: ShimmerElementType.gap, width: 100, height: 20 },
+                        { type: ShimmerElementType.line, width: 500, height: 10 }
+                    ]}
+                />
+            </div>
+        );
+    };
 }

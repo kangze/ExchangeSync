@@ -10,10 +10,10 @@ namespace ExchangeSync.Services
     {
         Task<List<MailIndexViewModel>> GetIndexMailAsync(string identity);
 
+        Task<MailIndexItemViewModel> GetMailAsync(string mailId);
+
         Task<List<MailIndexViewModel>> GetSendedMailAsync(string identity);
 
         Task<List<MailIndexViewModel>> GetDraftMailAsync(string identity);
-
-        Task<MailIndexItemViewModel> GetMailAsync(string mailId);
     }
 }

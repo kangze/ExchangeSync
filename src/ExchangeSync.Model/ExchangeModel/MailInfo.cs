@@ -8,6 +8,7 @@ namespace ExchangeSync.Model.ExchangeModel
 {
     public class MailInfo
     {
+        public string Id { get; set; }
         public string Subject { get; set; }
 
         public string Content { get; set; }

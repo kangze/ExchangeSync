@@ -44,6 +44,9 @@ namespace ExchangeSync.Models
         [JsonProperty("description")]
         public string Description { get; set; }
 
+        [JsonProperty("attachments")]
+        public List<string> Attachments { get; set; }
+
         [JsonProperty("date")]
         public string Date { get; set; }
     }

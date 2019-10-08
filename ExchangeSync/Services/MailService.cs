@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ExchangeSync.Exchange.Internal;
+using ExchangeSync.Helper;
 using ExchangeSync.Models;
 using Newtonsoft.Json;
 
@@ -87,19 +88,73 @@ namespace ExchangeSync.Services
         {
             var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
             var result = await mailManager.GetMailMessageAsync();
-            List < MailIndexViewModel >
-            foreach (var mailInfo in result)
+            List<MailIndexViewModel> ls = new List<MailIndexViewModel>();
+            var startWeek = DateTimeHelper.GetStartWeek(DateTime.Now);
+            var endWeek = DateTimeHelper.GetEndWeek(DateTime.Now);
+            var lastStartWeek = DateTimeHelper.GetLastStartWeek(DateTime.Now);
+            var lastEndWeek = DateTimeHelper.GetLastEndWeek(DateTime.Now);
+            var thisWeekData = result.Where(u => u.RecivedTime >= startWeek && u.RecivedTime <= endWeek).ToList();
+            var lastWeekData = result.Where(u => u.RecivedTime >= lastStartWeek && u.RecivedTime <= lastEndWeek).ToList();
+            ls.Add(new MailIndexViewModel()
             {
-                
-            }
+                GroupTitle = "本周",
+                Items = thisWeekData.Select(u => new MailIndexItemViewModel()
+                {
+                    MailId = u.Id,
+                    Title = u.Subject,
+                    Description = u.Content,
+                    Date = "本周",
+                    Sender = u.Sender,
+                    SenderName = u.SenderName,
+                    Readed = u.Readed,
+                    Attachments = u.Attachments,
+                }).ToList()
+            });
+            ls.Add(new MailIndexViewModel()
+            {
+                GroupTitle = "上周",
+                Items = thisWeekData.Select(u => new MailIndexItemViewModel()
+                {
+                    Title = u.Subject,
+                    Description = u.Content,
+                    Date = "上周",
+                    Sender = u.Sender,
+                    SenderName = u.SenderName,
+                    Readed = u.Readed,
+                    Attachments = u.Attachments
+                }).ToList()
+            });
+            return ls;
         }
 
+        /// <summary>
+        /// 获取一个具体的邮件相关的信息
+        /// </summary>
+        /// <param name="mailId"></param>
+        /// <returns></returns>
         public async Task<MailIndexItemViewModel> GetMailAsync(string mailId)
         {
-            var mails = MailIndexs.SelectMany(u => u.Items);
-            var item = mails.FirstOrDefault(u => u.MailId.Equals(mailId, StringComparison.CurrentCultureIgnoreCase));
-            return await Task.FromResult(item);
+            var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
+            var result = await mailManager.GetMailAsync(mailId);
+            return new MailIndexItemViewModel()
+            {
+                MailId = result.Id,
+                Title = result.Subject,
+                Description = result.Content,
+                Date = "上周",
+                Sender = result.Sender,
+                SenderName = result.SenderName,
+                Readed = result.Readed,
+                Attachments = result.Attachments
+            };
         }
+
+        //public async Task<MailIndexItemViewModel> GetMailAsync(string mailId)
+        //{
+        //    var mails = MailIndexs.SelectMany(u => u.Items);
+        //    var item = mails.FirstOrDefault(u => u.MailId.Equals(mailId, StringComparison.CurrentCultureIgnoreCase));
+        //    return await Task.FromResult(item);
+        //}
 
         public async Task<List<MailIndexViewModel>> GetSendedMailAsync(string identity)
         {

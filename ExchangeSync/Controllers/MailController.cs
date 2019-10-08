@@ -38,10 +38,7 @@ namespace ExchangeSync.Controllers
             if (string.IsNullOrEmpty(type))
                 return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
             if (type == "index")
-            {
-                
-                return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
-            }
+                return Json(await this._mailService.GetIndexMailAsync(""));
 
             if (type == "draft")
                 return await Task.FromResult(Json(await this._mailService.GetDraftMailAsync("")));

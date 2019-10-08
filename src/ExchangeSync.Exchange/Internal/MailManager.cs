@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ExchangeSync.Model.ExchangeModel;
 using Microsoft.Exchange.WebServices.Data;
 using Task = System.Threading.Tasks.Task;
+using System.Web;
 
 namespace ExchangeSync.Exchange.Internal
 {
@@ -67,6 +69,7 @@ namespace ExchangeSync.Exchange.Internal
             Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, propSet);
             var ss = await rootFolder.FindItems(new ItemView(10));
             var list = new List<MailInfo>();
+            var regex = new Regex(@"<[^>]*>");
             foreach (var item in ss)
             {
                 var mail = item as EmailMessage;
@@ -74,16 +77,41 @@ namespace ExchangeSync.Exchange.Internal
                 await item.Load();
                 var info = new MailInfo()
                 {
+                    Id = mail.Id.UniqueId,
                     Subject = mail.Subject,
-                    Content = mail.Body.ToString(),
+                    Content = Regex.Replace(mail.Body.ToString(), @"<[^>]*>", ""),
                     RecivedTime = mail.DateTimeReceived,
                     Sender = mail.Sender.Address,
                     SenderName = mail.Sender.Name,
-                    Attachments = mail.Attachments.Select(u=>u.Name).ToList()
+                    Attachments = mail.Attachments.Select(u => u.Name).ToList(),
+                    Readed = mail.IsRead,
                 };
                 list.Add(info);
             }
             return list;
+        }
+
+        public async Task<MailInfo> GetMailAsync(string mailId)
+        {
+            mailId = HttpUtility.UrlDecode(mailId);
+            PropertySet propSet = new PropertySet(BasePropertySet.IdOnly);
+            Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, propSet);
+            var searchFilter = new SearchFilter.IsEqualTo(EmailMessageSchema.Id, mailId);
+            var ss = await rootFolder.FindItems(searchFilter, new ItemView(1));
+            var mail = ss.First() as EmailMessage;
+            await mail.Load();
+            var info = new MailInfo()
+            {
+                Id = mail.Id.UniqueId,
+                Subject = mail.Subject,
+                Content = mail.Body.ToString(),
+                RecivedTime = mail.DateTimeReceived,
+                Sender = mail.Sender.Address,
+                SenderName = mail.Sender.Name,
+                Attachments = mail.Attachments.Select(u => u.Name).ToList(),
+                Readed = mail.IsRead,
+            };
+            return info;
         }
 
 

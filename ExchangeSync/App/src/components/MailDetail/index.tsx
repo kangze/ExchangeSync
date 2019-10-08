@@ -56,7 +56,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
     }
 
     public handleReply(mailId: string) {
-        (this.props as any).history.push("/reply/" + mailId);
+        (this.props as any).history.push("/reply/" + encodeURIComponent(mailId));
     }
 
     componentDidMount() {
@@ -101,8 +101,8 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                         />
                     </div>
                     <div style={{ clear: "both" }}></div>
-                    <div style={{ padding: 20 }}>
-                        <div dangerouslySetInnerHTML={{ __html: this.state.content }}></div>
+                    <div>
+                        <iframe srcDoc={this.state.content} width={"100%"} height={800} style={{ border: "none" }}></iframe>
                     </div>
                 </div>
                 <div style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>
