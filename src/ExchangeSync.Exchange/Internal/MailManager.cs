@@ -64,21 +64,25 @@ namespace ExchangeSync.Exchange.Internal
         public async Task<List<MailInfo>> GetMailMessageAsync()
         {
             PropertySet propSet = new PropertySet(BasePropertySet.IdOnly);
-            Folder rootfolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, propSet);
-            var ss = await rootfolder.FindItems(new ItemView(10));
+            Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, propSet);
+            var ss = await rootFolder.FindItems(new ItemView(10));
             var list = new List<MailInfo>();
             foreach (var item in ss)
             {
+                var mail = item as EmailMessage;
+                if (mail == null) continue;
                 await item.Load();
                 var info = new MailInfo()
                 {
-                    Subject = item.Subject,
-                    Content = item.Body.ToString(),
-                    SendedTime = DateTimeOffset.MaxValue
+                    Subject = mail.Subject,
+                    Content = mail.Body.ToString(),
+                    RecivedTime = mail.DateTimeReceived,
+                    Sender = mail.Sender.Address,
+                    SenderName = mail.Sender.Name,
+                    Attachments = mail.Attachments.Select(u=>u.Name).ToList()
                 };
                 list.Add(info);
             }
-
             return list;
         }
 
@@ -86,12 +90,8 @@ namespace ExchangeSync.Exchange.Internal
 
         private static bool RedirectionUrlValidationCallback(string redirectionUrl)
         {
-            // The default for the validation callback is to reject the URL.
             bool result = false;
             Uri redirectionUri = new Uri(redirectionUrl);
-            // Validate the contents of the redirection URL. In this simple validation
-            // callback, the redirection URL is considered valid if it is using HTTPS
-            // to encrypt the authentication credentials. 
             if (redirectionUri.Scheme == "https")
             {
                 result = true;

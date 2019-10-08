@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ExchangeSync.Exchange.Internal;
 using ExchangeSync.Models;
 using Newtonsoft.Json;
 
@@ -84,7 +85,13 @@ namespace ExchangeSync.Services
 
         public async Task<List<MailIndexViewModel>> GetIndexMailAsync(string identity)
         {
-            return await Task.FromResult(MailIndexs);
+            var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
+            var result = await mailManager.GetMailMessageAsync();
+            List < MailIndexViewModel >
+            foreach (var mailInfo in result)
+            {
+                
+            }
         }
 
         public async Task<MailIndexItemViewModel> GetMailAsync(string mailId)

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ExchangeSync.Exchange;
 using ExchangeSync.Exchange.Internal;
+using ExchangeSync.Helper;
+using ExchangeSync.Model.ExchangeModel;
 using ExchangeSync.Models;
 using ExchangeSync.Models.Inputs;
 using ExchangeSync.Services;
@@ -36,13 +38,29 @@ namespace ExchangeSync.Controllers
             if (string.IsNullOrEmpty(type))
                 return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
             if (type == "index")
+            {
+                
                 return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
+            }
+
             if (type == "draft")
                 return await Task.FromResult(Json(await this._mailService.GetDraftMailAsync("")));
             if (type == "sended")
                 return await Task.FromResult(Json(await this._mailService.GetSendedMailAsync("")));
             return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
         }
+
+        /// <summary>
+        /// 获取邮件
+        /// </summary>
+        /// <returns></returns>
+        private async Task<List<MailInfo>> GetInbox()
+        {
+            var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
+            var result = await mailManager.GetMailMessageAsync();
+            return result;
+        }
+
 
         /// <summary>
         /// 客户端发送邮件
