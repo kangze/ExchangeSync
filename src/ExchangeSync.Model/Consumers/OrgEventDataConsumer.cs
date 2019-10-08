@@ -16,13 +16,11 @@ namespace ExchangeSync.Model.Consumers
     {
         protected readonly IMapper _mapper;
         protected readonly DbContextOptions<ServiceDbContext> _dbOptions;
-        private readonly IBusControl _busMs;
 
-        public OrgEventDataConsumer(IMapper mapper, DbContextOptions<ServiceDbContext> dbOptions, IBusControl busMs)
+        public OrgEventDataConsumer(DbContextOptions<ServiceDbContext> dbOptions, IMapper mapper)
         {
             _mapper = mapper;
             _dbOptions = dbOptions;
-            _busMs = busMs;
         }
 
         public async Task Consume(ConsumeContext<OrgDataEvent> context)

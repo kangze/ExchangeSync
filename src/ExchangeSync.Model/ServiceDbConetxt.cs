@@ -10,9 +10,15 @@ namespace ExchangeSync.Model
 {
     public class ServiceDbContext : DbContext
     {
+        public ServiceDbContext()
+        {
+
+        }
+
         public ServiceDbContext(DbContextOptions<ServiceDbContext> options) : base(options)
         {
         }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -28,6 +34,8 @@ namespace ExchangeSync.Model
 
         public DbSet<EmployeePosition> EmployeePositions { get; set; }
 
+        public DbSet<EmployeeEmail> EmployeeEmails { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Department>()
@@ -37,15 +45,18 @@ namespace ExchangeSync.Model
                .HasIndex(o => o.Number);
             modelBuilder.Entity<Employee>()
               .HasIndex(o => o.UserId);
-            //modelBuilder.Entity<Employee>()
-            //  .HasIndex(o => o.UserName);
-            //modelBuilder.Entity<Employee>()
-            //  .HasIndex(o => o.IdCardNo);
-            //modelBuilder.Entity<Employee>()
-            // .HasIndex(o => o.PrimaryDepartmentId);
+            modelBuilder.Entity<Employee>()
+              .HasIndex(o => o.UserName);
+            modelBuilder.Entity<Employee>()
+              .HasIndex(o => o.IdCardNo);
+            modelBuilder.Entity<Employee>()
+             .HasIndex(o => o.PrimaryDepartmentId);
 
             modelBuilder.Entity<EmployeePosition>()
                 .HasKey(o => new { o.EmployeeId, o.PositionId });
+
+            modelBuilder.Entity<EmployeeEmail>()
+                .HasKey(o => o.EmployeeId);
         }
     }
 }

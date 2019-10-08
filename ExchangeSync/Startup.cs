@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using ExchangeSync.Model;
+using ExchangeSync.Model.Consumers;
 using ExchangeSync.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -38,6 +41,25 @@ namespace ExchangeSync
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server"));
             services.AddScoped<IMailService, MailService>();
+
+            var builder = new DbContextOptionsBuilder<ServiceDbContext>()
+                //.UseLazyLoadingProxies()
+                .UseSqlServer("");
+            var dbOptions = builder.Options;
+            //IMapper mapper = null;
+            //Bus.Factory.CreateUsingRabbitMq(cfg =>
+            //{
+            //    var host = cfg.Host(new Uri(""), h =>
+            //    {
+            //        h.Username("");
+            //        h.Password("");
+            //    });
+            //    cfg.ReceiveEndpoint(host, "ExchangeSync", c =>
+            //    {
+            //        c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
+            //        c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
+            //    });
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
