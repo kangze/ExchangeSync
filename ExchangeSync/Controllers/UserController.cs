@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ExchangeSync.Services;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,14 +11,21 @@ namespace ExchangeSync.Controllers
 {
     public class UserController : Controller
     {
-        public IActionResult GetUser(string keyword)
+        private readonly IEnterpriseContactService _enterpriseContactService;
+
+        public UserController(IEnterpriseContactService enterpriseContactService)
         {
-            var list = new List<object>()
-            {
-                new {key="v-ms-kz@scrbg.com",name="康泽(015152)"},
-                new {key="v-ms-kkkk@scrbg.com",name="康泽(0432432)"},
-            };
-            return Json(list);
+            _enterpriseContactService = enterpriseContactService;
+        }
+
+        public async Task<IActionResult> GetUser(string keyword)
+        {
+
+            var employees = await this._enterpriseContactService.SearchEmployeeBaseInfoByKeyword(keyword);
+            var ls = new List<object>();
+            foreach (var infoDto in employees)
+                ls.Add(new { key = infoDto.EmailAddress, name = infoDto.Name });
+            return Json(ls);
         }
     }
 }

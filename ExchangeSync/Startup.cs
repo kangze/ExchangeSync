@@ -37,29 +37,39 @@ namespace ExchangeSync
             });
             services.AddHttpClient<IIdentityService, IdentityService>();
             services.AddHttpContextAccessor();
-            services.AddDbContext<ServiceDbContext>();
+            var databseSection = Configuration.GetSection("Database");
+            var mdmBusSection = Configuration.GetSection("MdmBus");
+            services.AddDbContext<ServiceDbContext>(option =>
+            {
+                option.UseSqlServer(databseSection.GetValue<string>("ConnectString"));
+            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server"));
             services.AddScoped<IMailService, MailService>();
-
+            services.AddScoped<IEnterpriseContactService, EnterpriseContactService>();
             var builder = new DbContextOptionsBuilder<ServiceDbContext>()
                 //.UseLazyLoadingProxies()
-                .UseSqlServer("");
+                .UseSqlServer(databseSection.GetValue<string>("ConnectString"));
             var dbOptions = builder.Options;
-            //IMapper mapper = null;
-            //Bus.Factory.CreateUsingRabbitMq(cfg =>
-            //{
-            //    var host = cfg.Host(new Uri(""), h =>
-            //    {
-            //        h.Username("");
-            //        h.Password("");
-            //    });
-            //    cfg.ReceiveEndpoint(host, "ExchangeSync", c =>
-            //    {
-            //        c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
-            //        c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
-            //    });
-            //});
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<MappingProfile>();
+            });
+            var mapper = config.CreateMapper();
+            var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
+             {
+                 var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>
+                 {
+                     h.Username(mdmBusSection.GetValue<string>("UserName"));
+                     h.Password(mdmBusSection.GetValue<string>("Password"));
+                 });
+                 cfg.ReceiveEndpoint(host, "Local_Test", c =>
+                 {
+                     c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
+                     c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
+                 });
+             });
+            bus.Start();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

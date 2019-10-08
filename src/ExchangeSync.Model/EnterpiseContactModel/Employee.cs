@@ -47,5 +47,7 @@ namespace ExchangeSync.Model.EnterpiseContactModel
         public DataSourceType DataSourceType { get; set; }
 
         public virtual List<EmployeePosition> Positions { get; set; }
+
+        public virtual EmployeeEmail EmployeeEmail { get; set; }
     }
 }

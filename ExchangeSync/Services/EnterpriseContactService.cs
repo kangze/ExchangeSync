@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ExchangeSync.Model;
 using ExchangeSync.Services.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Exchange.WebServices.Data;
 
 namespace ExchangeSync.Services
 {
@@ -38,6 +39,31 @@ namespace ExchangeSync.Services
                 UserId = employeeEmail.Employee.UserId.HasValue ? employeeEmail.Employee.UserId.ToString() : null,
                 EmailPassword = employeeEmail.Password
             };
+        }
+
+        public async Task<List<EmployeeBaseInfoDto>> SearchEmployeeBaseInfoByKeyword(string keyword)
+        {
+            var ls = new List<EmployeeBaseInfoDto>();
+            if (string.IsNullOrEmpty(keyword))
+                return ls;
+            var employees = await this._db.Employees
+                .Include(u => u.EmployeeEmail)
+                .Where(u => (u.Name.Contains(keyword) || u.Number.Contains(keyword) || u.UserName.Contains(keyword)) && !string.IsNullOrEmpty(u.UserName))
+                .ToListAsync();
+            foreach (var employee in employees)
+            {
+                ls.Add(new EmployeeBaseInfoDto()
+                {
+                    Id = employee.Id,
+                    Name = employee.Name,
+                    Number = employee.Number,
+                    EmailAddress = employee.UserName + "@scrbg.com",
+                    OpenId = employee.EmployeeEmail == null ? null : employee.EmployeeEmail.OpenId,
+                    UserId = employee.UserId.Value.ToString(),
+                    EmailPassword = employee.EmployeeEmail == null ? null : employee.EmployeeEmail.Password
+                });
+            }
+            return ls;
         }
     }
 }
