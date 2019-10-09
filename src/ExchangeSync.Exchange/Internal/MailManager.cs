@@ -66,7 +66,8 @@ namespace ExchangeSync.Exchange.Internal
         public async Task<List<MailInfo>> GetMailMessageAsync()
         {
             PropertySet propSet = new PropertySet(BasePropertySet.IdOnly);
-            Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, propSet);
+            Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.SentItems, propSet);
+
             var ss = await rootFolder.FindItems(new ItemView(10));
             var list = new List<MailInfo>();
             var regex = new Regex(@"<[^>]*>");
@@ -83,7 +84,13 @@ namespace ExchangeSync.Exchange.Internal
                     RecivedTime = mail.DateTimeReceived,
                     Sender = mail.Sender.Address,
                     SenderName = mail.Sender.Name,
-                    Attachments = mail.Attachments.Select(u => u.Name).ToList(),
+                    Attachments = mail.Attachments.Select(u => new AttachmentInfo()
+                    {
+                        Id = u.Id,
+                        MailId = mail.Id.UniqueId,
+                        Name = u.Name,
+                        Size = u.Size
+                    }).ToList(),
                     Readed = mail.IsRead,
                 };
                 list.Add(info);
@@ -96,7 +103,7 @@ namespace ExchangeSync.Exchange.Internal
             mailId = HttpUtility.UrlDecode(mailId);
             PropertySet propSet = new PropertySet(BasePropertySet.IdOnly);
             Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, propSet);
-            var searchFilter = new SearchFilter.IsEqualTo(EmailMessageSchema.Id, mailId);
+            var searchFilter = new SearchFilter.IsEqualTo(ItemSchema.Id, mailId);
             var ss = await rootFolder.FindItems(searchFilter, new ItemView(1));
             var mail = ss.First() as EmailMessage;
             await mail.Load();
@@ -108,12 +115,52 @@ namespace ExchangeSync.Exchange.Internal
                 RecivedTime = mail.DateTimeReceived,
                 Sender = mail.Sender.Address,
                 SenderName = mail.Sender.Name,
-                Attachments = mail.Attachments.Select(u => u.Name).ToList(),
+                Attachments = mail.Attachments.Select(u => new AttachmentInfo()
+                {
+                    Id = u.Id,
+                    MailId = mail.Id.UniqueId,
+                    Name = u.Name,
+                    Size = u.Size
+                }).ToList(),
                 Readed = mail.IsRead,
             };
+            await this.DownLoadAttachment(info.Id, "");
             return info;
         }
 
+        public async Task<MailInfo> DownLoadAttachment(string mailId, string attachmentId)
+        {
+            EmailMessage message = await EmailMessage.Bind(this._exchangeService, new ItemId(mailId), new PropertySet(ItemSchema.Attachments));
+            // Iterate through the attachments collection and load each attachment.
+            foreach (Attachment attachment in message.Attachments)
+            {
+                if (attachment is FileAttachment)
+                {
+                    FileAttachment fileAttachment = attachment as FileAttachment;
+                    // Load the attachment into a file.
+                    // This call results in a GetAttachment call to EWS.
+                    // DirectoryInfo directory = Directory.CreateDirectory("C:\\temp\\");
+                    fileAttachment.Load("C:\\temp\\" + fileAttachment.Name);
+
+                }
+            }
+            return null;
+        }
+
+        public async Task SetReaded(string mailId, bool readed)
+        {
+            EmailMessage message = await EmailMessage.Bind(this._exchangeService, new ItemId(mailId), new PropertySet(ItemSchema.IsResend));
+            if (message.IsRead == readed)
+                return;
+            message.IsRead = readed;
+            await message.Update(ConflictResolutionMode.AutoResolve);
+        }
+
+        public async Task DeleteMail(string mailId)
+        {
+            EmailMessage mail = await EmailMessage.Bind(this._exchangeService, new ItemId(mailId), PropertySet.IdOnly);
+            await mail.Delete(DeleteMode.MoveToDeletedItems);
+        }
 
 
         private static bool RedirectionUrlValidationCallback(string redirectionUrl)

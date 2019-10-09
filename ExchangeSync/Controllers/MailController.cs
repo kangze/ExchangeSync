@@ -81,5 +81,10 @@ namespace ExchangeSync.Controllers
             var item = await this._mailService.GetMailAsync(mailId);
             return Json(item);
         }
+
+        public async Task<IActionResult> DownloadAttachment(string attachmentId)
+        {
+            return null;
+        }
     }
 }

@@ -5,7 +5,7 @@ import { IPersonaSharedProps, Persona, PersonaInitialsColor, PersonaSize } from 
 import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 import { CommandBarButton } from 'office-ui-fabric-react/lib/Button';
 import { IOverflowSetItemProps, OverflowSet } from 'office-ui-fabric-react/lib/OverflowSet';
-import { DefaultButton } from 'office-ui-fabric-react';
+import { DefaultButton, IContextualMenuProps } from 'office-ui-fabric-react';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import axios from "axios";
 
@@ -21,6 +21,15 @@ import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 const stackTokens: IStackTokens = { childrenGap: 12 };
 
+const menuProps: IContextualMenuProps = {
+    items: [
+        {
+            key: 'emailMessage',
+            text: '下载',
+            iconProps: { iconName: 'Mail' }
+        }
+    ]
+};
 
 export default class SeparatorThemingExample extends React.Component<any, any> {
 
@@ -36,6 +45,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                 senderLink: null,
                 date: data.date,
                 content: data.content,
+                attachments: data.attachments
             }
         } else if ((window as any).data) {
             let data1 = (window as any).data;
@@ -48,6 +58,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                 senderLink: null,
                 date: data1.date,
                 content: data1.content,
+                attachments: data1.attachments
             }
         } else {
             this.state = { loading: true };
@@ -75,6 +86,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                 senderLink: data.sender,
                 date: data.date,
                 content: data.content ? data.content : data.description,
+                attachments: data.attachments
             })
         })
     }
@@ -101,6 +113,21 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                         />
                     </div>
                     <div style={{ clear: "both" }}></div>
+                    <div>
+                        {
+                            this.state.attachments.map((attach: string) =>
+                                <DefaultButton
+                                    styles={{ root: { border: "none", maxWidth: "75%", minHeight: 42, height: "auto", wordWrap: "break-word", wordBreak: "break-all" }, }}
+                                    iconProps={{ iconName: "PictureFill" }}
+                                    text={attach}
+                                    split
+                                    splitButtonAriaLabel="See 2 options"
+                                    aria-roledescription="split button"
+                                    menuProps={menuProps}
+                                />
+                            )
+                        }
+                    </div>
                     <div>
                         <iframe srcDoc={this.state.content} width={"100%"} height={800} style={{ border: "none" }}></iframe>
                     </div>

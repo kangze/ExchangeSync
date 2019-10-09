@@ -19,7 +19,7 @@ const context = { data: JSON.parse(data) } as any;
 let { html, css } = renderStatic(() => {
   return renderToString(
     <StaticRouter location={location} context={context}>
-      <Fabric>
+      <Fabric styles={{ root: { fontFamily: "微软雅黑", backgroundColor: "red" } }}>
         <App />
       </Fabric>
     </StaticRouter>
@@ -31,7 +31,7 @@ var doc = `
     <head>
     <title>我的Exchage邮箱-四川路桥</title>
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="/css/fabric.min.css" rel="stylesheet" />
     <script>

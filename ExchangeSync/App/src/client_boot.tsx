@@ -12,7 +12,7 @@ initializeIcons("/fonts/");
 
 ReactDOM.render(
     <Router>
-        <Fabric>
+        <Fabric styles={{root:{fontFamily:"微软雅黑"}}}>
             <App />
         </Fabric>
     </Router>

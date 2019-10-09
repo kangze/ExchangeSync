@@ -107,7 +107,7 @@ namespace ExchangeSync.Services
                     Sender = u.Sender,
                     SenderName = u.SenderName,
                     Readed = u.Readed,
-                    Attachments = u.Attachments,
+                    //Attachments = u.Attachments,
                 }).ToList()
             });
             ls.Add(new MailIndexViewModel()
@@ -121,7 +121,7 @@ namespace ExchangeSync.Services
                     Sender = u.Sender,
                     SenderName = u.SenderName,
                     Readed = u.Readed,
-                    Attachments = u.Attachments
+                    //Attachments = u.Attachments
                 }).ToList()
             });
             return ls;
@@ -145,7 +145,7 @@ namespace ExchangeSync.Services
                 Sender = result.Sender,
                 SenderName = result.SenderName,
                 Readed = result.Readed,
-                Attachments = result.Attachments
+                //Attachments = result.Attachments
             };
         }
 

@@ -33,6 +33,30 @@ namespace ExchangeSync.Model.ExchangeModel
         /// </summary>
         public DateTimeOffset RecivedTime { get; set; }
 
-        public List<string> Attachments { get; set; }
+        public List<AttachmentInfo> Attachments { get; set; }
+    }
+
+    public class AttachmentInfo
+    {
+
+        /// <summary>
+        /// 特质附件的Id
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// 对应邮件的Id
+        /// </summary>
+        public string MailId { get; set; }
+
+        /// <summary>
+        /// 附件的名称
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 大小,bytes
+        /// </summary>
+        public long Size { get; set; }
     }
 }
