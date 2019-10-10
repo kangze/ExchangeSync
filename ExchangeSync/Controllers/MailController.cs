@@ -17,12 +17,10 @@ namespace ExchangeSync.Controllers
 {
     public class MailController : Controller
     {
-        //private readonly IMapper _mapper;
         private readonly IMailService _mailService;
 
-        public MailController(/*IMapper mapper*/ IMailService mailService)
+        public MailController(IMailService mailService)
         {
-            //_mapper = mapper;
             this._mailService = mailService;
         }
 
@@ -54,7 +52,7 @@ namespace ExchangeSync.Controllers
         private async Task<List<MailInfo>> GetInbox()
         {
             var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
-            var result = await mailManager.GetMailMessageAsync();
+            var result = await mailManager.GetInBoxMessageAsync();
             return result;
         }
 

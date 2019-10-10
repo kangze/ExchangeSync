@@ -8,6 +8,7 @@ using ExchangeSync.Model.ExchangeModel;
 using Microsoft.Exchange.WebServices.Data;
 using Task = System.Threading.Tasks.Task;
 using System.Web;
+using AutoMapper;
 
 namespace ExchangeSync.Exchange.Internal
 {
@@ -17,6 +18,7 @@ namespace ExchangeSync.Exchange.Internal
         private readonly string _password;
 
         private readonly ExchangeService _exchangeService;
+        private readonly IMapper _mapper;
 
         private MailManager(string userName, string password)
         {
@@ -61,71 +63,78 @@ namespace ExchangeSync.Exchange.Internal
         }
 
         /// <summary>
-        /// 获取邮件消息
+        /// 获取收件箱的邮件
         /// </summary>
-        public async Task<List<MailInfo>> GetMailMessageAsync()
+        private async Task<List<MailInfo>> GetEmailMessageListAsync(WellKnownFolderName name)
         {
-            PropertySet propSet = new PropertySet(BasePropertySet.IdOnly);
-            Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.SentItems, propSet);
-
-            var ss = await rootFolder.FindItems(new ItemView(10));
+            PropertySet propSet = new PropertySet(new List<PropertyDefinitionBase>()
+            {
+                ItemSchema.Id,
+                ItemSchema.Subject,
+                ItemSchema.DateTimeReceived,
+                ItemSchema.DateTimeCreated,
+                ItemSchema.DateTimeSent,
+                EmailMessageSchema.Sender,
+                ItemSchema.HasAttachments,
+                EmailMessageSchema.IsRead,
+                ItemSchema.TextBody,
+                ItemSchema.DisplayCc,
+                ItemSchema.DisplayTo,
+            });
+            Folder rootFolder = await Folder.Bind(this._exchangeService, name, propSet);
+            //TODO:先设计成获取前200封邮件
+            var mailItems = await rootFolder.FindItems(new ItemView(200));
             var list = new List<MailInfo>();
-            var regex = new Regex(@"<[^>]*>");
-            foreach (var item in ss)
+            foreach (var item in mailItems)
             {
                 var mail = item as EmailMessage;
                 if (mail == null) continue;
-                await item.Load();
-                var info = new MailInfo()
-                {
-                    Id = mail.Id.UniqueId,
-                    Subject = mail.Subject,
-                    Content = Regex.Replace(mail.Body.ToString(), @"<[^>]*>", ""),
-                    RecivedTime = mail.DateTimeReceived,
-                    Sender = mail.Sender.Address,
-                    SenderName = mail.Sender.Name,
-                    Attachments = mail.Attachments.Select(u => new AttachmentInfo()
-                    {
-                        Id = u.Id,
-                        MailId = mail.Id.UniqueId,
-                        Name = u.Name,
-                        Size = u.Size
-                    }).ToList(),
-                    Readed = mail.IsRead,
-                };
-                list.Add(info);
+                await mail.Load(propSet);
+                list.Add(this.ConvertToMailInfo(mail, propSet));
             }
             return list;
+        }
+
+        public async Task<List<MailInfo>> GetInBoxMessageAsync()
+        {
+            var result = await this.GetEmailMessageListAsync(WellKnownFolderName.Inbox);
+            return result;
+        }
+
+        public async Task<List<MailInfo>> GetSentMailMessageAsync()
+        {
+            var result = await this.GetEmailMessageListAsync(WellKnownFolderName.SentItems);
+            return result;
+        }
+
+        public async Task<List<MailInfo>> GetDraftMailAsync()
+        {
+            var result = await this.GetEmailMessageListAsync(WellKnownFolderName.Drafts);
+            return result;
         }
 
         public async Task<MailInfo> GetMailAsync(string mailId)
         {
             mailId = HttpUtility.UrlDecode(mailId);
-            PropertySet propSet = new PropertySet(BasePropertySet.IdOnly);
+            PropertySet propSet = new PropertySet(new List<PropertyDefinitionBase>()
+            {
+                ItemSchema.Id,
+                ItemSchema.Subject,
+                ItemSchema.Body,
+                ItemSchema.DateTimeReceived,
+                EmailMessageSchema.Sender,
+                ItemSchema.Attachments,
+                EmailMessageSchema.IsRead,
+                ItemSchema.DisplayCc,
+                ItemSchema.DisplayTo
+            });
             Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, propSet);
             var searchFilter = new SearchFilter.IsEqualTo(ItemSchema.Id, mailId);
-            var ss = await rootFolder.FindItems(searchFilter, new ItemView(1));
-            var mail = ss.First() as EmailMessage;
-            await mail.Load();
-            var info = new MailInfo()
-            {
-                Id = mail.Id.UniqueId,
-                Subject = mail.Subject,
-                Content = mail.Body.ToString(),
-                RecivedTime = mail.DateTimeReceived,
-                Sender = mail.Sender.Address,
-                SenderName = mail.Sender.Name,
-                Attachments = mail.Attachments.Select(u => new AttachmentInfo()
-                {
-                    Id = u.Id,
-                    MailId = mail.Id.UniqueId,
-                    Name = u.Name,
-                    Size = u.Size
-                }).ToList(),
-                Readed = mail.IsRead,
-            };
-            await this.DownLoadAttachment(info.Id, "");
-            return info;
+            var mailItems = await rootFolder.FindItems(searchFilter, new ItemView(1));
+            if (!mailItems.Any()) return null;
+            var mail = mailItems.First() as EmailMessage;
+            if (mail == null) return null;
+            return this.ConvertToMailInfo(mail, propSet);
         }
 
         public async Task<MailInfo> DownLoadAttachment(string mailId, string attachmentId)
@@ -162,6 +171,54 @@ namespace ExchangeSync.Exchange.Internal
             await mail.Delete(DeleteMode.MoveToDeletedItems);
         }
 
+        private MailInfo ConvertToMailInfo(EmailMessage message, PropertySet sets)
+        {
+            if (message == null || sets == null) return null;
+            var mail = new MailInfo();
+            if (sets.Contains(ItemSchema.Id)) mail.Id = message.Id.UniqueId;
+            if (sets.Contains(ItemSchema.Subject)) mail.Subject = message.Subject;
+            if (sets.Contains(ItemSchema.Body)) mail.Content = message.Body.ToString();
+            if (sets.Contains(ItemSchema.TextBody)) mail.Description = message.TextBody.ToString();
+            if (sets.Contains(ItemSchema.DateTimeReceived)) mail.RecivedTime = message.DateTimeReceived;
+            if (sets.Contains(ItemSchema.DateTimeCreated)) mail.CreateTime = message.DateTimeCreated;
+            if (sets.Contains(ItemSchema.DateTimeSent)) mail.SentTime = message.DateTimeSent;
+            if (sets.Contains(EmailMessageSchema.Sender))
+            {
+                if (message.Sender != null)
+                {
+                    mail.Sender = message.Sender.Address;
+                    mail.SenderName = message.Sender.Name;
+                }
+            }
+            if (sets.Contains(ItemSchema.HasAttachments)) mail.HasAttachments = message.HasAttachments;
+            if (sets.Contains(ItemSchema.Attachments))
+                mail.Attachments = message.Attachments
+                    .Select(u => new AttachmentInfo() { Id = u.Id, Name = u.Name, Size = u.Size }).ToList();
+            if (sets.Contains(EmailMessageSchema.IsRead))
+                mail.Readed = mail.Readed;
+            if (sets.Contains(ItemSchema.DisplayTo))
+            {
+                var to = message.DisplayTo.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                mail.Recivers = to.Select(u =>
+                {
+                    if (true) //是一个人的名字
+                        return new EmailContact() { Name = u, Address = "" };
+                    return new EmailContact() { Name = "", Address = u };
+                }).ToList();
+            }
+
+            if (sets.Contains(ItemSchema.DisplayCc))
+            {
+                var cc = message.DisplayTo.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                mail.Cc = cc.Select(u =>
+                {
+                    if (true) //是一个人的名字
+                        return new EmailContact() { Name = u, Address = "" };
+                    return new EmailContact() { Name = "", Address = u };
+                }).ToList();
+            }
+            return mail;
+        }
 
         private static bool RedirectionUrlValidationCallback(string redirectionUrl)
         {
