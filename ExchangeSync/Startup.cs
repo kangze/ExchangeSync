@@ -56,6 +56,7 @@ namespace ExchangeSync
                 cfg.AddProfile<MappingProfile>();
             });
             var mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
             //var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
             // {
             //     var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>

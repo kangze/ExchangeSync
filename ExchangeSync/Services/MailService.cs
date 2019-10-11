@@ -82,45 +82,64 @@ namespace ExchangeSync.Services
             var lastMonth = thisMonth - 1;
             List<MailGroupViewModel> ls = new List<MailGroupViewModel>();
             var thisWeekData = mails.Where(u => u.RecivedTime >= startWeek && u.RecivedTime <= endWeek).ToList();
-            mails.RemoveAll(u => thisWeekData.Contains(u));
-            ls.Add(new MailGroupViewModel()
+            if (thisWeekData.Count != 0)
             {
-                GroupTitle = "本周",
-                Items = this._mapper.Map<List<MailItemViewModel>>(thisWeekData)
-            });
-            var lastWeekData = mails.Where(u => u.RecivedTime >= lastStartWeek && u.RecivedTime <= lastEndWeek)
-                .ToList();
-            mails.RemoveAll(u => lastWeekData.Contains(u));
-            ls.Add(new MailGroupViewModel()
-            {
-                GroupTitle = "上周",
-                Items = this._mapper.Map<List<MailItemViewModel>>(lastWeekData)
-            });
-            var thisMonthData = mails.Where(u => u.RecivedTime.Month == thisMonth).ToList();
-            mails.RemoveAll(u => thisMonthData.Contains(u));
-            ls.Add(new MailGroupViewModel()
-            {
-                GroupTitle = "本月",
-                Items = this._mapper.Map<List<MailItemViewModel>>(thisMonthData)
-            });
-            var lastMonthData = mails.Where(u => u.RecivedTime.Month == lastMonth).ToList();
-            mails.RemoveAll(u => lastMonthData.Contains(u));
-            ls.Add(new MailGroupViewModel()
-            {
-                GroupTitle = "上月",
-                Items = this._mapper.Map<List<MailItemViewModel>>(lastMonthData)
-            });
-            for (var i = lastMonth - 1; i <= 1; i--)
-            {
-                var items = mails.Where(u => u.RecivedTime.Month == i).ToList();
+                mails.RemoveAll(u => thisWeekData.Contains(u));
                 ls.Add(new MailGroupViewModel()
                 {
-                    GroupTitle = i + "月",
-                    Items = this._mapper.Map<List<MailItemViewModel>>(items),
+                    GroupTitle = "本周",
+                    Items = this._mapper.Map<List<MailItemViewModel>>(thisWeekData)
                 });
-                mails.RemoveAll(u => items.Contains(u));
+            }
+            
+            var lastWeekData = mails.Where(u => u.RecivedTime >= lastStartWeek && u.RecivedTime <= lastEndWeek)
+                .ToList();
+            if (lastWeekData.Count != 0)
+            {
+                mails.RemoveAll(u => lastWeekData.Contains(u));
+                ls.Add(new MailGroupViewModel()
+                {
+                    GroupTitle = "上周",
+                    Items = this._mapper.Map<List<MailItemViewModel>>(lastWeekData)
+                });
+            }
+            
+            var thisMonthData = mails.Where(u => u.RecivedTime.Month == thisMonth).ToList();
+            if (thisMonthData.Count != 0)
+            {
+                mails.RemoveAll(u => thisMonthData.Contains(u));
+                ls.Add(new MailGroupViewModel()
+                {
+                    GroupTitle = "本月",
+                    Items = this._mapper.Map<List<MailItemViewModel>>(thisMonthData)
+                });
+            }
+           
+            var lastMonthData = mails.Where(u => u.RecivedTime.Month == lastMonth).ToList();
+            if (lastMonthData.Count != 0)
+            {
+                mails.RemoveAll(u => lastMonthData.Contains(u));
+                ls.Add(new MailGroupViewModel()
+                {
+                    GroupTitle = "上月",
+                    Items = this._mapper.Map<List<MailItemViewModel>>(lastMonthData)
+                });
             }
 
+            if (mails.Count != 0)
+            {
+                for (var i = lastMonth - 1; i <= 1; i--)
+                {
+                    var items = mails.Where(u => u.RecivedTime.Month == i).ToList();
+                    ls.Add(new MailGroupViewModel()
+                    {
+                        GroupTitle = i + "月",
+                        Items = this._mapper.Map<List<MailItemViewModel>>(items),
+                    });
+                    mails.RemoveAll(u => items.Contains(u));
+                }
+            }
+            
             return ls;
         }
     }
