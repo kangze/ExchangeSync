@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Base.Mdm.Org.MsgContracts;
 using ExchangeSync.Model.EnterpiseContactModel;
+using ExchangeSync.Model.ExchangeModel;
+using ExchangeSync.Models;
 using Microsoft.Exchange.WebServices.Data;
 
 namespace ExchangeSync
@@ -35,6 +37,48 @@ namespace ExchangeSync
                     d.Positions = ConvertDbEmployeePosition(s, d);
                     if (string.IsNullOrEmpty(d.IdCardNo)) d.IdCardNo = "NA";
                 });
+
+            CreateMap<MailInfo, MailItemViewModel>()
+                .ForMember(u => u.MailId, opt => opt.MapFrom(u => u.Id))
+                .ForMember(u => u.Title, opt => opt.MapFrom(u => u.Subject))
+                .ForMember(u => u.Description, opt => opt.MapFrom(u => u.Description))
+                .ForMember(u => u.Sender, opt => opt.MapFrom(u => new MailContactViewModel()
+                {
+                    Name = u.SenderName,
+                    Address = u.Sender,
+                }))
+                .ForMember(u => u.Recivers, opt => opt.MapFrom(u => u.Recivers.Select(x => new MailContactViewModel()
+                {
+                    Name = x.Name,
+                    Address = x.Address
+                }).ToList()))
+                .ForMember(
+                    u => u.HasAttachments, opt => opt.MapFrom(u => u.HasAttachments))
+                .ForMember(u => u.Date, opt => opt.MapFrom(u => u.RecivedTime));
+
+            CreateMap<MailInfo, MailDetailViewModel>()
+                .ForMember(u => u.MailId, opt => opt.MapFrom(u => u.Id))
+                .ForMember(u => u.Title, opt => opt.MapFrom(u => u.Subject))
+                .ForMember(u => u.Content, opt => opt.MapFrom(u => u.Content))
+                .ForMember(u => u.Sender, opt => opt.MapFrom(u => new MailContactViewModel()
+                {
+                    Name = u.SenderName,
+                    Address = u.Sender,
+                }))
+                .ForMember(u => u.Recivers, opt => opt.MapFrom(u => u.Recivers.Select(x => new MailContactViewModel()
+                {
+                    Name = x.Name,
+                    Address = x.Address
+                }).ToList()))
+                .ForMember(u => u.HasAttachments, opt => opt.MapFrom(u => u.HasAttachments))
+                .ForMember(u => u.Attachments,
+                    opt => opt.MapFrom(u => u.Attachments.Select(x => new MailAttachmentViewModel()
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Size = x.Size
+                    }).ToList()))
+                .ForMember(u => u.Date, opt => opt.MapFrom(u => u.RecivedTime));
         }
 
         private List<Position> ConvertDbPositions(OrgUnitEntityMsg s, Department d)

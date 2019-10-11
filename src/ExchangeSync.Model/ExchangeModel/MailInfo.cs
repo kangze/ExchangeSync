@@ -44,7 +44,7 @@ namespace ExchangeSync.Model.ExchangeModel
         /// <summary>
         /// 接收日期
         /// </summary>
-        public DateTimeOffset? RecivedTime { get; set; }
+        public DateTimeOffset RecivedTime { get; set; }
 
         public DateTimeOffset? CreateTime { get; set; }
 
