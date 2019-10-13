@@ -21,24 +21,26 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
         if (cporps.staticContext && cporps.staticContext.data) { //服务器渲染(用于回复其他人的邮件)
             let data = cporps.staticContext.data;
             this.state = {
+                mailId: data.mailId,
                 reply: true,
                 replyloading: false,
                 title: "[回复]" + data.title,
-                content: "\r\r\r\r" + (data.content ? data.content : data.description),
-                reciver: data.sender,
-                reciverName: data.senderName,
+                content: "",
+                reciver: data.sender.address,
+                reciverName: data.sender.name,
                 copyto: "",
             }
         } else if ((window as any).data) {         //客户端二次渲染(用于回复其他人的邮件)
             let data = (window as any).data;
             delete (window as any).data;
             this.state = {
+                mailId: data.mailId,
                 reply: true,
                 replyloading: false,
                 title: "[回复]" + data.title,
-                content: "\r\r\r\r" + (data.content ? data.content : data.description),
-                reciver: data.sender,
-                reciverName: data.senderName,
+                content: "",
+                reciver: data.sender.address,
+                reciverName: data.sender.name,
                 copyto: "",
             }
         } else {                                    //客户端无状态渲染,表示从别的路由过来的
@@ -94,15 +96,20 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
             return;
         }
         let data = {
+            mailId: state.mailId,
             title: state["title"],
             content: state["content"],
-            reciver: state["reciver"][0].key,
-            copyTo: state["copyto"].map((item: any) => item.key)
+            reciver: state["reciver"],
+            copyTo: state["copyto"] ? state["copyto"].map((item: any) => item.key) : null
         };
-        console.log(data);
+        axios.post("/mail/reply", data).then(reponse => {
+            if (reponse.data.success)
+                alert('回复成功');
+        })
     }
 
     componentDidMount() {
+        console.log(this);
         if (this.state.reply) {
             let self = this;
             axios.get("/mail/GetMail?mailId=" + this.state.mailId).then(response => {
@@ -111,9 +118,9 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                     reply: true,
                     replyloading: false,
                     title: "[回复]" + data.title,
-                    content: "\r\r\r\r" + (data.content ? data.content : data.description),
-                    reciver: data.sender,
-                    reciverName: data.senderName,
+                    content: "",
+                    reciver: data.sender.address,
+                    reciverName: data.sender.name,
                     copyto: "",
                 });
             });
@@ -122,7 +129,6 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
 
 
     public render() {
-        console.log(this);
         if (this.state.reply && this.state.replyloading) {
             return (
                 <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
@@ -139,7 +145,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                         suggestionsHeaderText: '请输入姓名/邮件地址',
                         noResultsFoundText: '没有找到该用户'
                     }}
-                    selectedItems={this.state.reciver ? [{ key: this.state.reciver, name: this.state.reciverName }] : undefined}
+                    selectedItems={this.state.reciver && this.state.reply ? [{ key: this.state.reciver, name: this.state.reciverName }] : undefined}
                     itemLimit={1}
                     onChange={this._handleChange.bind(this, "reciver")}
                 />

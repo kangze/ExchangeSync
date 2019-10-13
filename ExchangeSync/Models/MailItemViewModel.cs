@@ -29,5 +29,8 @@ namespace ExchangeSync.Models
 
         [JsonProperty("date")]
         public string Date { get; set; }
+
+        [JsonProperty("readed")]
+        public bool Readed { get; set; }
     }
 }

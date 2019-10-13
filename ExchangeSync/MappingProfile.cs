@@ -42,6 +42,7 @@ namespace ExchangeSync
                 .ForMember(u => u.MailId, opt => opt.MapFrom(u => u.Id))
                 .ForMember(u => u.Title, opt => opt.MapFrom(u => u.Subject))
                 .ForMember(u => u.Description, opt => opt.MapFrom(u => u.Description))
+                .ForMember(u => u.Readed, opt => opt.MapFrom(u => u.Readed))
                 .ForMember(u => u.Sender, opt => opt.MapFrom(u => new MailContactViewModel()
                 {
                     Name = u.SenderName,
@@ -54,7 +55,11 @@ namespace ExchangeSync
                 }).ToList()))
                 .ForMember(
                     u => u.HasAttachments, opt => opt.MapFrom(u => u.HasAttachments))
-                .ForMember(u => u.Date, opt => opt.MapFrom(u => u.RecivedTime));
+                .ForMember(u => u.Date, opt => opt.MapFrom(u => u.RecivedTime))
+                .AfterMap((s, d) =>
+                {
+                    d.Date = s.RecivedTime.Month + "月" + s.RecivedTime.Day + "日";
+                });
 
             CreateMap<MailInfo, MailDetailViewModel>()
                 .ForMember(u => u.MailId, opt => opt.MapFrom(u => u.Id))
@@ -78,7 +83,12 @@ namespace ExchangeSync
                         Name = x.Name,
                         Size = x.Size
                     }).ToList()))
-                .ForMember(u => u.Date, opt => opt.MapFrom(u => u.RecivedTime));
+                .ForMember(u => u.Date, opt => opt.MapFrom(u => u.RecivedTime))
+                .AfterMap((s, d) =>
+                {
+                    d.Date = s.RecivedTime.Month + "月" + s.RecivedTime.Day + "日";
+                });
+
         }
 
         private List<Position> ConvertDbPositions(OrgUnitEntityMsg s, Department d)

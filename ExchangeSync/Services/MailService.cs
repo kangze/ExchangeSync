@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -15,6 +16,9 @@ namespace ExchangeSync.Services
     {
         private readonly IMapper _mapper;
 
+        public static string TestAccount = "v-ms-kz@scrbg.com";
+        public static string TestPassword = "tfs4418000";
+        public static string TestName = "康泽";
         public MailService(IMapper mapper)
         {
             _mapper = mapper;
@@ -27,9 +31,17 @@ namespace ExchangeSync.Services
         /// <returns></returns>
         public async Task<List<MailGroupViewModel>> GetDraftMailAsync(string identity)
         {
-            var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
+            var mailManager = MailManager.Create(TestAccount, TestPassword);
             var drafts = await mailManager.GetDraftMailAsync();
             var result = this.GroupMail(drafts);
+            foreach (var item in result.SelectMany(u => u.Items))
+            {
+                item.Sender = new MailContactViewModel()
+                {
+                    Name = TestName,
+                    Address = TestAccount,
+                };
+            }
             return result;
         }
 
@@ -40,7 +52,7 @@ namespace ExchangeSync.Services
         /// <returns></returns>
         public async Task<List<MailGroupViewModel>> GetIndexMailAsync(string identity)
         {
-            var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
+            var mailManager = MailManager.Create(TestAccount, TestPassword);
             var indexs = await mailManager.GetInBoxMessageAsync();
             var mails = this.GroupMail(indexs);
             return mails;
@@ -53,7 +65,7 @@ namespace ExchangeSync.Services
         /// <returns></returns>
         public async Task<MailDetailViewModel> GetMailAsync(string mailId)
         {
-            var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
+            var mailManager = MailManager.Create(TestAccount, TestPassword);
             var result = await mailManager.GetMailAsync(mailId);
             return this._mapper.Map<MailDetailViewModel>(result);
         }
@@ -65,7 +77,7 @@ namespace ExchangeSync.Services
         /// <returns></returns>
         public async Task<List<MailGroupViewModel>> GetSendedMailAsync(string identity)
         {
-            var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
+            var mailManager = MailManager.Create(TestAccount, TestPassword);
             var sents = await mailManager.GetSentMailMessageAsync();
             var mails = this.GroupMail(sents);
             return mails;
@@ -91,7 +103,7 @@ namespace ExchangeSync.Services
                     Items = this._mapper.Map<List<MailItemViewModel>>(thisWeekData)
                 });
             }
-            
+
             var lastWeekData = mails.Where(u => u.RecivedTime >= lastStartWeek && u.RecivedTime <= lastEndWeek)
                 .ToList();
             if (lastWeekData.Count != 0)
@@ -103,7 +115,7 @@ namespace ExchangeSync.Services
                     Items = this._mapper.Map<List<MailItemViewModel>>(lastWeekData)
                 });
             }
-            
+
             var thisMonthData = mails.Where(u => u.RecivedTime.Month == thisMonth).ToList();
             if (thisMonthData.Count != 0)
             {
@@ -114,7 +126,7 @@ namespace ExchangeSync.Services
                     Items = this._mapper.Map<List<MailItemViewModel>>(thisMonthData)
                 });
             }
-           
+
             var lastMonthData = mails.Where(u => u.RecivedTime.Month == lastMonth).ToList();
             if (lastMonthData.Count != 0)
             {
@@ -139,8 +151,33 @@ namespace ExchangeSync.Services
                     mails.RemoveAll(u => items.Contains(u));
                 }
             }
-            
+
             return ls;
         }
+
+        public async Task ReplyAsync(string mailId, string content)
+        {
+            var mailManager = MailManager.Create(TestAccount, TestPassword);
+            await mailManager.Reply(mailId, content);
+        }
+
+        public async Task<Stream> Download(string mailId, string attachmentId)
+        {
+            var mailManager = MailManager.Create(TestAccount, TestPassword);
+            var stream = await mailManager.DownLoadAttachment(mailId, attachmentId);
+            return stream;
+        }
+
+        public async Task Send(string title, string content, string reciver)
+        {
+            var mailManager = MailManager.Create(TestAccount, TestPassword);
+            await mailManager.SendMail(new Exchange.CreateMailModel()
+            {
+                Body = content,
+                Subject = title,
+                TargetMail = reciver
+            });
+        }
+
     }
 }

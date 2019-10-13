@@ -9,6 +9,7 @@ using Microsoft.Exchange.WebServices.Data;
 using Task = System.Threading.Tasks.Task;
 using System.Web;
 using AutoMapper;
+using System.IO;
 
 namespace ExchangeSync.Exchange.Internal
 {
@@ -59,7 +60,7 @@ namespace ExchangeSync.Exchange.Internal
             message.ToRecipients.Add(model.TargetMail);
             message.Subject = model.Subject;
             message.Body = new MessageBody(model.Body);
-            await message.Send();
+            await message.SendAndSaveCopy();
         }
 
         /// <summary>
@@ -131,29 +132,48 @@ namespace ExchangeSync.Exchange.Internal
             Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, propSet);
             var searchFilter = new SearchFilter.IsEqualTo(ItemSchema.Id, mailId);
             var mailItems = await rootFolder.FindItems(searchFilter, new ItemView(1));
-            if (!mailItems.Any()) return null;
-            var mail = mailItems.First() as EmailMessage;
-            if (mail == null) return null;
-            return this.ConvertToMailInfo(mail, propSet);
-        }
-
-        public async Task<MailInfo> DownLoadAttachment(string mailId, string attachmentId)
-        {
-            EmailMessage message = await EmailMessage.Bind(this._exchangeService, new ItemId(mailId), new PropertySet(ItemSchema.Attachments));
-            // Iterate through the attachments collection and load each attachment.
-            foreach (Attachment attachment in message.Attachments)
+            if (mailItems.Any())
             {
-                if (attachment is FileAttachment)
-                {
-                    FileAttachment fileAttachment = attachment as FileAttachment;
-                    // Load the attachment into a file.
-                    // This call results in a GetAttachment call to EWS.
-                    // DirectoryInfo directory = Directory.CreateDirectory("C:\\temp\\");
-                    fileAttachment.Load("C:\\temp\\" + fileAttachment.Name);
+                var mail = mailItems.First() as EmailMessage;
+                if (mail == null) return null;
+                await mail.Load(propSet);
+                return this.ConvertToMailInfo(mail, propSet);
+            }
 
-                }
+            Folder sentFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.SentItems, propSet);
+            var sentmailItems = await sentFolder.FindItems(searchFilter, new ItemView(1));
+            if (sentmailItems.Any())
+            {
+                var mail = sentmailItems.First() as EmailMessage;
+                if (mail == null) return null;
+                await mail.Load(propSet);
+                return this.ConvertToMailInfo(mail, propSet);
+            }
+
+            Folder draftrootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Drafts, propSet);
+            var draftmailItems = await draftrootFolder.FindItems(searchFilter, new ItemView(1));
+            if (draftmailItems.Any())
+            {
+                var mail = draftmailItems.First() as EmailMessage;
+                if (mail == null) return null;
+                await mail.Load(propSet);
+                return this.ConvertToMailInfo(mail, propSet);
             }
             return null;
+        }
+
+        public async Task<MemoryStream> DownLoadAttachment(string mailId, string attachmentId)
+        {
+            mailId = HttpUtility.UrlDecode(mailId);
+            attachmentId = HttpUtility.UrlDecode(attachmentId);
+            EmailMessage message = await EmailMessage.Bind(this._exchangeService, new ItemId(mailId), new PropertySet(ItemSchema.Attachments));
+            // Iterate through the attachments collection and load each attachment.
+            var attachment = message.Attachments.Where(u => u.Id.Equals(attachmentId, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            if (attachment == null) return null;
+            MemoryStream ms = new MemoryStream();
+            await attachment.Load();
+            ms.Write((attachment as FileAttachment).Content);
+            return ms;
         }
 
         public async Task SetReaded(string mailId, bool readed)
@@ -192,10 +212,10 @@ namespace ExchangeSync.Exchange.Internal
             }
             if (sets.Contains(ItemSchema.HasAttachments)) mail.HasAttachments = message.HasAttachments;
             if (sets.Contains(ItemSchema.Attachments))
-                mail.Attachments = message.Attachments
+                mail.Attachments = message.Attachments.Where(u => u is FileAttachment)
                     .Select(u => new AttachmentInfo() { Id = u.Id, Name = u.Name, Size = u.Size }).ToList();
             if (sets.Contains(EmailMessageSchema.IsRead))
-                mail.Readed = mail.Readed;
+                mail.Readed = message.IsRead;
             if (sets.Contains(ItemSchema.DisplayTo))
             {
                 var to = message.DisplayTo.Split(";", StringSplitOptions.RemoveEmptyEntries);
@@ -218,6 +238,19 @@ namespace ExchangeSync.Exchange.Internal
                 }).ToList();
             }
             return mail;
+        }
+
+        public async Task Reply(string mailId, string content)
+        {
+            mailId = HttpUtility.UrlDecode(mailId);
+            Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, BasePropertySet.IdOnly);
+            var searchFilter = new SearchFilter.IsEqualTo(ItemSchema.Id, mailId);
+            var mailItems = await rootFolder.FindItems(searchFilter, new ItemView(1));
+            if (mailItems.Count() == 0)
+                return;
+            var mail = mailItems.First() as EmailMessage;
+            if (mail is null) return;
+            await mail.Reply(new MessageBody(BodyType.HTML, content), true);
         }
 
         private static bool RedirectionUrlValidationCallback(string redirectionUrl)

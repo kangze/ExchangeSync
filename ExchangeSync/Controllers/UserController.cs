@@ -20,11 +20,21 @@ namespace ExchangeSync.Controllers
 
         public async Task<IActionResult> GetUser(string keyword)
         {
-
-            var employees = await this._enterpriseContactService.SearchEmployeeBaseInfoByKeyword(keyword);
             var ls = new List<object>();
-            foreach (var infoDto in employees)
-                ls.Add(new { key = infoDto.EmailAddress, name = infoDto.Name });
+            //try
+            //{
+            //    var employees = await this._enterpriseContactService.SearchEmployeeBaseInfoByKeyword(keyword);
+            //    foreach (var infoDto in employees)
+            //        ls.Add(new { key = infoDto.EmailAddress, name = infoDto.Name });
+            //}
+            //catch (Exception e)
+            //{
+
+            //}
+            ls.Add(new { key = "kangze25@hotmail.com", name = "微软康泽" });
+            //if (ls.Count == 0)
+            ls.Add(new { key = keyword, name = keyword });
+
             return Json(ls);
         }
     }

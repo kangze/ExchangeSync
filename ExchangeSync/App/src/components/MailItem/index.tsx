@@ -78,8 +78,8 @@ export interface IMailItemProps {
 }
 
 export interface IMailContact {
-    Name: string,
-    Address: string
+    name: string,
+    address: string
 }
 
 export default class MailItem extends React.PureComponent<any, any> {
@@ -145,24 +145,22 @@ export default class MailItem extends React.PureComponent<any, any> {
                 <Stack>
                     <Persona
                         onClick={this.handleClick.bind(this, item)}
-                        imageInitials={item.sender.Name[0]}
+                        imageInitials={item.sender.name[0]}
                         initialsColor={PersonaInitialsColor.magenta}
                         size={PersonaSize.size40}
                         styles={styles}>
                         <div>
                             <div>
-                                <Text key={item.sender.Name} style={style} variant="medium" nowrap block>{item.sender.Name}</Text>
+                                <Text key={item.sender.name} style={style} variant="medium" nowrap block>{item.sender.name}</Text>
                             </div>
 
                             <div>
                                 <Text key={item.title} style={style} variant="medium" nowrap block>
-                                    {
-                                        item.hasAttachments ?
-                                            (<div><Icon iconName="Attach" className="ms-IconExample" />{item.title}</div>)
-                                            :
-                                            item.title
-                                    }
+                                    {item.title}
+                                    {item.hasAttachments ? <Icon styles={{ root: { position: "absolute", right: 50, top: 20, fontSize: 15, color: "#005bac" } }} iconName="Attach" className="ms-IconExample" /> : null}
+
                                 </Text>
+
                             </div>
                             <div>
                                 <Text key={item.description} style={style} variant="medium" nowrap block>{item.description}</Text>
@@ -183,14 +181,16 @@ export default class MailItem extends React.PureComponent<any, any> {
         if (this.state.loading) {
             return (
                 <div style={{ marginLeft: 15, marginTop: 10 }}>
-                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
-                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
-                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
-                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
-                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20 } }} />
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20, width: "90%" } }} />
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20, width: "85%" } }} />
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20, width: "90%" } }} />
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20, width: "75%" } }} />
+                    <Shimmer customElementsGroup={this._getCustomElementsExampleTwo()} styles={{ root: { marginTop: 20, width: "80%" } }} />
                 </div>
             );
         }
+        if ((this.state as any).groups.length == 0)
+            return <div>服务器正确返回,但是没有内容哦...</div>
         return (
             <Stack tokens={{ childrenGap: 10 }}>
                 {(this.state as any).groups.map((group: any) => {

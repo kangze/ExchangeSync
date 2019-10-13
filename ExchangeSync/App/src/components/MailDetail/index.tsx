@@ -31,6 +31,17 @@ const menuProps: IContextualMenuProps = {
     ]
 };
 
+function GetMenus(mailId: string, attachmentid: string, name: string): IContextualMenuProps {
+    var items = [];
+    items.push({
+        key: 'emailMessage',
+        text: '下载',
+        iconProps: { iconName: 'Mail' },
+        href: "/mail/DownloadAttachment?mailId=" + encodeURIComponent(mailId) + "&attachmentid=" + encodeURIComponent(attachmentid) + "&attachmentName=" + name
+    })
+    return { items };
+}
+
 export default class SeparatorThemingExample extends React.Component<any, any> {
 
     constructor(props: any) {
@@ -41,8 +52,8 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                 loading: false,
                 mailId: data.mailId,
                 title: data.title,
-                sender: data.sender,
-                senderLink: null,
+                sender: data.sender.name,
+                senderLink: data.sender.address,
                 date: data.date,
                 content: data.content,
                 attachments: data.attachments
@@ -54,8 +65,8 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                 loading: false,
                 mailId: data1.mailId,
                 title: data1.title,
-                sender: data1.sender,
-                senderLink: null,
+                sender: data1.sender.name,
+                senderLink: data1.sender.address,
                 date: data1.date,
                 content: data1.content,
                 attachments: data1.attachments
@@ -82,10 +93,10 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                 loading: false,
                 mailId: data.mailId,
                 title: data.title,
-                sender: data.senderName,
-                senderLink: data.sender,
+                sender: data.sender.name,
+                senderLink: data.sender.address,
                 date: data.date,
-                content: data.content ? data.content : data.description,
+                content: data.content,
                 attachments: data.attachments
             })
         })
@@ -95,13 +106,14 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
         //let id=(this.props as any).match.params.mailId; 获取到的I
         if (this.state.loading)
             return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
+        let mailid = this.state.mailId;
         return (
             <Stack tokens={stackTokens}>
                 <div style={{ padding: 10, backgroundColor: "#eaeaea" }}>
                     <Text variant="large" >{this.state.title}</Text>
                 </div>
                 <div>
-                    <Persona secondaryText={'kangze25@126.com'} text={this.state.sender} size={PersonaSize.size48} styles={Styles.persona} />
+                    <Persona secondaryText={this.state.senderLink} text={this.state.sender} size={PersonaSize.size48} styles={Styles.persona} />
                     <div style={Styles.time}>
                         <Text variant="medium" >{this.state.date}</Text>
                         <OverflowSet
@@ -115,21 +127,21 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                     <div style={{ clear: "both" }}></div>
                     <div>
                         {
-                            this.state.attachments.map((attach: string) =>
+                            this.state.attachments.map((attach: any) =>
                                 <DefaultButton
                                     styles={{ root: { border: "none", maxWidth: "75%", minHeight: 42, height: "auto", wordWrap: "break-word", wordBreak: "break-all" }, }}
                                     iconProps={{ iconName: "PictureFill" }}
-                                    text={attach}
+                                    text={attach.name}
                                     split
                                     splitButtonAriaLabel="See 2 options"
                                     aria-roledescription="split button"
-                                    menuProps={menuProps}
+                                    menuProps={GetMenus(mailid, attach.id, attach.name)}
                                 />
                             )
                         }
                     </div>
                     <div>
-                        <iframe srcDoc={this.state.content} width={"100%"} height={800} style={{ border: "none" }}></iframe>
+                        <iframe srcDoc={this.state.content} width={"100%"} height={600} style={{ border: "none" }}></iframe>
                     </div>
                 </div>
                 <div style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>

@@ -80,9 +80,29 @@ namespace ExchangeSync.Controllers
             return Json(item);
         }
 
-        public async Task<IActionResult> DownloadAttachment(string attachmentId)
+        public async Task<IActionResult> DownloadAttachment(string mailId, string attachmentId, string attachmentName)
         {
-            return null;
+            var stream = await this._mailService.Download(mailId, attachmentId);
+            stream.Position = 0;
+            return File(stream, "application/octet-stream", attachmentName);
+        }
+
+        public async Task<IActionResult> Reply([FromBody]ReplyMailInput input)
+        {
+            if (!string.IsNullOrEmpty(input.MailId))
+            {
+                await this._mailService.ReplyAsync(input.MailId, input.Content);
+                return Json(new { success = true });
+            }
+            else
+            {
+                foreach (var item in input.Reciver)
+                {
+                    await this._mailService.Send(input.Title, input.Content, item.Key);
+                }
+                return Json(new { success = true });
+            }
+
         }
     }
 }
