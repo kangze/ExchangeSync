@@ -19,7 +19,7 @@ const context = { data: JSON.parse(data) } as any;
 let { html, css } = renderStatic(() => {
   return renderToString(
     <StaticRouter location={location} context={context}>
-      <Fabric styles={{ root: { fontFamily: "微软雅黑", backgroundColor: "red" } }}>
+      <Fabric>
         <App />
       </Fabric>
     </StaticRouter>

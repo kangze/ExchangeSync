@@ -39,7 +39,7 @@ export interface IMailItemProps {
     /**
      * 发件人
      */
-    sender: string,
+    sender: IMailContact,
 
     /**
      * 邮件标题
@@ -52,6 +52,11 @@ export interface IMailItemProps {
     mailId: string,
 
     /**
+     * 收件人的
+     */
+    recivers: IMailContact[],
+
+    /**
      * 邮件简短的描述信息
      */
     description: string
@@ -59,7 +64,7 @@ export interface IMailItemProps {
     /**
      * 指示邮件是否被读取
      */
-    readed: boolean,
+    readed?: boolean,
 
     /**
      * 邮件时间,是已经被服务器分号组的
@@ -69,7 +74,12 @@ export interface IMailItemProps {
     /**
      * 附件信息
      */
-    attachments: string[]
+    hasAttachments: boolean
+}
+
+export interface IMailContact {
+    Name: string,
+    Address: string
 }
 
 export default class MailItem extends React.PureComponent<any, any> {
@@ -79,13 +89,13 @@ export default class MailItem extends React.PureComponent<any, any> {
         if (props.staticContext && props.staticContext.data) {
             let data = props.staticContext.data;
             this.state = {
-                groups: data as IMailItemGroupProps[]
+                groups: data as IMailItemGroupedProps[]
             }
         } else if ((window as any).data) {
             let data = (window as any).data;
             delete (window as any).data;
             this.state = {
-                groups: data as IMailItemGroupProps[]
+                groups: data as IMailItemGroupedProps[]
             }
         } else {
             this.state = {
@@ -135,19 +145,19 @@ export default class MailItem extends React.PureComponent<any, any> {
                 <Stack>
                     <Persona
                         onClick={this.handleClick.bind(this, item)}
-                        imageInitials={item.sender[0]}
+                        imageInitials={item.sender.Name[0]}
                         initialsColor={PersonaInitialsColor.magenta}
                         size={PersonaSize.size40}
                         styles={styles}>
                         <div>
                             <div>
-                                <Text key={item.sender} style={style} variant="medium" nowrap block>{item.sender}</Text>
+                                <Text key={item.sender.Name} style={style} variant="medium" nowrap block>{item.sender.Name}</Text>
                             </div>
 
                             <div>
                                 <Text key={item.title} style={style} variant="medium" nowrap block>
                                     {
-                                        (item.attachments && item.attachments.length > 0) ?
+                                        item.hasAttachments ?
                                             (<div><Icon iconName="Attach" className="ms-IconExample" />{item.title}</div>)
                                             :
                                             item.title
@@ -187,7 +197,7 @@ export default class MailItem extends React.PureComponent<any, any> {
                     return (
                         <div>
                             <div style={{ marginLeft: 15, marginTop: 10 }}>
-                                <Text key={"group1"} variant="medium" nowrap block>上周</Text>
+                                <Text key={"group1"} variant="medium" nowrap block>{group.groupTitle}</Text>
                             </div>
                             {this.renderItem(group.items as any)}
                         </div>
