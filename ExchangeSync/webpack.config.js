@@ -3,7 +3,7 @@ const webpack = require('webpack');//引入webpack
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-    mode: "development",
+    mode: "production",
     entry: {
         client: "./app/src/client_boot.tsx",
     },
@@ -12,7 +12,7 @@ module.exports = {
         publicPath: "http://localhost:18080/dist/",
         path: path.resolve(__dirname, './wwwroot/js/')
     },
-    devtool: "inline-source-map",
+    //devtool: "inline-source-map",
     module: {
         rules: [
             {

@@ -7,6 +7,7 @@ import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 
 import { TagPicker, IBasePicker, ITag } from 'office-ui-fabric-react/lib/Pickers';
 
+declare var ZxEditor: any;
 
 export interface IMailCreateProps {
     reply: boolean,
@@ -109,7 +110,12 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
     }
 
     componentDidMount() {
-        console.log(this);
+
+        this.loadJs("/js/zx-editor.min.js", function () {
+            var zxEditor = new ZxEditor('#e', {
+                fixed: true
+            })
+        });
         if (this.state.reply) {
             let self = this;
             axios.get("/mail/GetMail?mailId=" + this.state.mailId).then(response => {
@@ -125,6 +131,27 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                 });
             });
         }
+    }
+
+    public loadJs(url: string, callback: any) {
+        var script = document.createElement('script') as any;
+        script.type = "text/javascript";
+        if (typeof (callback) != "undefined") {
+            if (script.readyState) {
+                script.onreadystatechange = function () {
+                    if (script.readyState == "loaded" || script.readyState == "complete") {
+                        script.onreadystatechange = null;
+                        callback();
+                    }
+                }
+            } else {
+                script.onload = function () {
+                    callback();
+                }
+            }
+        }
+        script.src = url;
+        document.body.appendChild(script);
     }
 
 
@@ -164,6 +191,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                 />
                 <TextField label="主题:" underlined value={this.state.title} onChange={this._handleInputChange.bind(this, "title")} />
                 <TextField label="邮件内容:" multiline rows={8} value={this.state.content} onChange={this._handleInputChange.bind(this, "content")} />
+                <div id="e"></div>
                 <PrimaryButton text="发送" allowDisabledFocus onClick={this._handleSend.bind(this)} />
             </Stack>
         );

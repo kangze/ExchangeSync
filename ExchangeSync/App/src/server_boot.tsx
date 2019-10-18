@@ -37,6 +37,7 @@ var doc = `
     <script>
       window.data=${data}
     </script>
+    <link rel="stylesheet" href="/css/zx-editor.min.css">
     <style>
         * {
             margin: 0;
