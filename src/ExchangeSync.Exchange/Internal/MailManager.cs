@@ -13,7 +13,7 @@ using System.IO;
 
 namespace ExchangeSync.Exchange.Internal
 {
-    public class MailManager
+    public partial class MailManager
     {
         private readonly string _userName;
         private readonly string _password;

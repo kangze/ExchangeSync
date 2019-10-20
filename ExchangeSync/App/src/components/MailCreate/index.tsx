@@ -11,7 +11,7 @@ declare var ZxEditor: any;
 
 export interface IMailCreateProps {
     reply: boolean,
-    mailId: string
+    mailId: string,
 }
 
 export default class MailCreate extends React.Component<IMailCreateProps, any> {
@@ -81,8 +81,15 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
         })
     }
 
+    /**
+     * 将会被废弃
+     * @param e 参数
+     */
     private _handleSend(e: any) {
         e.preventDefault();
+        var content = this.state.zxEditor.getContent();
+        console.log(content);
+        return;
         let state = this.state as any;
         if (!state["reciver"] || state["reciver"].length == 0) {
             alert("请选择收件人!");
@@ -99,7 +106,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
         let data = {
             mailId: state.mailId,
             title: state["title"],
-            content: state["content"],
+            //content: state["content"],
             reciver: state["reciver"],
             copyTo: state["copyto"] ? state["copyto"].map((item: any) => item.key) : null
         };
@@ -109,12 +116,23 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
         })
     }
 
+    componentDidUpdate() {
+        (window as any).content = this.state;
+    }
+
     componentDidMount() {
 
+        let self = this;
         this.loadJs("/js/zx-editor.min.js", function () {
             var zxEditor = new ZxEditor('#e', {
-                fixed: true
+                fixed: true,
+                placeholder: "点击编辑..."
+            });
+            zxEditor.on('change', function () {
+                var content = self.state.zxEditor.getContent();
+                self.setState({ content });
             })
+            self.setState({ zxEditor });
         });
         if (this.state.reply) {
             let self = this;
@@ -190,9 +208,8 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                     onChange={this._handleChange.bind(this, "copyto")}
                 />
                 <TextField label="主题:" underlined value={this.state.title} onChange={this._handleInputChange.bind(this, "title")} />
-                <TextField label="邮件内容:" multiline rows={8} value={this.state.content} onChange={this._handleInputChange.bind(this, "content")} />
+                <Label>&nbsp;&nbsp;&nbsp;邮件内容:</Label>
                 <div id="e"></div>
-                <PrimaryButton text="发送" allowDisabledFocus onClick={this._handleSend.bind(this)} />
             </Stack>
         );
     }
