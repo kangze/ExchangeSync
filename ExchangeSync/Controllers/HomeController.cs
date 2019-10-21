@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using ExchangeSync.Exchange.Model;
+using ExchangeSync.Extension;
 using Microsoft.AspNetCore.Mvc;
 using ExchangeSync.Models;
 using ExchangeSync.Services;
@@ -15,11 +17,13 @@ namespace ExchangeSync.Controllers
     {
         private readonly IServerRenderService _serverRenderService;
         private readonly IMailService _mailService;
+        private readonly ICalendarService _calendarService;
 
-        public HomeController(IServerRenderService serverRenderService, IMailService mailService)
+        public HomeController(IServerRenderService serverRenderService, IMailService mailService, ICalendarService calendarService)
         {
             this._serverRenderService = serverRenderService;
             this._mailService = mailService;
+            _calendarService = calendarService;
         }
 
         public async Task<IActionResult> Index()
@@ -50,6 +54,11 @@ namespace ExchangeSync.Controllers
                     return Redirect("/");
                 var mailId = split[2];
                 data = await this._mailService.GetMailAsync(mailId);
+            }
+            else if (path.Contains("calendar"))
+            {
+                data = await this._calendarService.GetMyAppointmentsAsync();
+                data = this._calendarService.GroupedCalendarAppointments(data as List<AppointMentDto>);
             }
             else if (path.Contains("reply"))
             {

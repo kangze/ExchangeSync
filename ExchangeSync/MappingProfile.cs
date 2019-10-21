@@ -6,9 +6,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Base.Mdm.Org.MsgContracts;
+using ExchangeSync.Exchange.Model;
 using ExchangeSync.Model.EnterpiseContactModel;
 using ExchangeSync.Model.ExchangeModel;
 using ExchangeSync.Models;
+using ExchangeSync.Models.Inputs;
 using Microsoft.Exchange.WebServices.Data;
 
 namespace ExchangeSync
@@ -88,6 +90,9 @@ namespace ExchangeSync
                 {
                     d.Date = s.RecivedTime.Month + "月" + s.RecivedTime.Day + "日";
                 });
+
+            CreateMap<AppointMenInput, AppointMentDto>()
+                .ForMember(u => u.Subject, opt => opt.MapFrom(u => u.Title));
 
         }
 
