@@ -124,7 +124,6 @@ export default class CalendarCreate extends React.Component<any, any>{
 
     public render() {
         const { firstDayOfWeek } = this.state;
-        console.log(this);
         return (
             <Stack tokens={{ childrenGap: 20 }} styles={{ root: { width: "100%" } }}>
                 <br />
