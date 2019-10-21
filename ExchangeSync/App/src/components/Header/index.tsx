@@ -71,10 +71,10 @@ const menus = [
         path: "/draft"
     },
     {
-        name: "我的日历(正在施工...)",
+        name: "我的日历",
         icon: "EditMail",
         key: "editMail",
-        //path: "/"
+        path: "/calendar"
     },
 
 ]

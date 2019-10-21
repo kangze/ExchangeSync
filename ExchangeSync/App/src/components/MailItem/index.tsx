@@ -232,14 +232,14 @@ export default class MailItem extends React.PureComponent<any, any> {
                 style={{ display: 'flex' }}
             >
                 <ShimmerElementsGroup
-                    shimmerElements={[{ type: ShimmerElementType.circle, height: 40 }, { type: ShimmerElementType.gap, width: 10, height: 40 }]}
+                    shimmerElements={[{ type: ShimmerElementType.circle, height: 45 }, { type: ShimmerElementType.gap, width: 10, height: 60 }]}
                 />
                 <ShimmerElementsGroup
                     flexWrap={true}
                     shimmerElements={[
-                        { type: ShimmerElementType.line, width: 400, height: 10 },
-                        { type: ShimmerElementType.gap, width: 100, height: 20 },
-                        { type: ShimmerElementType.line, width: 500, height: 10 }
+                        { type: ShimmerElementType.line, width: 400, height: 15 },
+                        { type: ShimmerElementType.gap, width: 100, height: 30 },
+                        { type: ShimmerElementType.line, width: 500, height: 15 }
                     ]}
                 />
             </div>

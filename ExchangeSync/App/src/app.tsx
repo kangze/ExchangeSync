@@ -7,6 +7,8 @@ import MailDetail from "./components/MailDetail";
 import MailCreate from "./components/MailCreate";
 import Header from "./components/Header";
 import MailCreateHeader from "./components/Header/CreateMail";
+import MailCalendar from "./components/MailCalendar";
+import MailCalendarCreate from "./components/MailCalendar/CalendarCreate";
 
 export default class App extends React.Component<any, any> {
 
@@ -22,28 +24,63 @@ export default class App extends React.Component<any, any> {
     }
 
     public render() {
-
-        //创建一个对象来保持内容
-        let contentStorage = {
-            content: null as any,
-            setContent: function (content: any) {
-                this.content = content;
-            }
-        }
-
         return (
             <Layout>
-                <Route exact path="/" render={(param: any) => <Header title={this.state.title} {...param} />} />
-                <Route exact path="/" render={(param: any) => <Item changeTitle={this.changeTitle.bind(this)} type="index" {...param} />} />
-                <Route exact path="/sended" render={(param: any) => <Item changeTitle={this.changeTitle.bind(this)} type="sended" {...param} />} />
-                <Route exact path="/draft" render={(param: any) => <Item changeTitle={this.changeTitle.bind(this)} type="draft" {...param} />} />
+                <Route exact path="/" render={(param: any) => {
+                    return (<div>
+                        <Header title={"收件箱"} {...param} />
+                        <Item changeTitle={this.changeTitle.bind(this)} type="index" {...param} />
+                    </div>);
+                }} />
 
-                <Route path="/detail/:mailId" render={(param: any) => <MailDetail changeTitle={this.changeTitle.bind(this)} {...param} />} />
+                <Route exact path="/sended" render={(param: any) => {
+                    return (<div>
+                        <Header title={"已发送邮件"} {...param} />
+                        <Item changeTitle={this.changeTitle.bind(this)} type="sended" {...param} />
+                    </div>);
+                }} />
 
-                <Route path="/create" render={(param: any) => <MailCreateHeader changeTitle={this.changeTitle.bind(this)} {...param} />} />
-                <Route path="/create" render={(param: any) => <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />} />
+                <Route exact path="/draft" render={(param: any) => {
+                    return (<div>
+                        <Header title={"草稿箱"} {...param} />
+                        <Item changeTitle={this.changeTitle.bind(this)} type="draft" {...param} />
+                    </div>);
+                }} />
 
-                <Route path="/reply/:mailId" render={(param: any) => <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />} />
+                <Route exact path="/detail/:mailId" render={(param: any) => {
+                    return (<div>
+                        <Header title={"邮件详情"} {...param} />
+                        <MailDetail changeTitle={this.changeTitle.bind(this)} {...param} />
+                    </div>);
+                }} />
+
+                <Route exact path="/create" render={(param: any) => {
+                    return (<div>
+                        <MailCreateHeader changeTitle={this.changeTitle.bind(this)} {...param} />
+                        <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />
+                    </div>);
+                }} />
+
+                <Route exact path="/reply/:mailId" render={(param: any) => {
+                    return (<div>
+                        <Header title={"回复"} {...param} />
+                        <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />
+                    </div>);
+                }} />
+
+                <Route exact path="/calendar" render={(param: any) => {
+                    return (<div>
+                        <Header title={"我的日历/会议"} {...param} />
+                        <MailCalendar showGoToToday={true} autoNavigateOnSelection={false} dateRangeType={0} isMonthPickerVisible={false} changeTitle={this.changeTitle.bind(this)} {...param} />
+                    </div>);
+                }} />
+
+                <Route exact path="/createCalendar" render={(param: any) => {
+                    return (<div>
+                        <MailCreateHeader changeTitle={this.changeTitle.bind(this)} {...param} />
+                        <MailCalendarCreate changeTitle={this.changeTitle.bind(this)} {...param} />
+                    </div>);
+                }} />
             </Layout>
         );
     }

@@ -81,41 +81,6 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
         })
     }
 
-    /**
-     * 将会被废弃
-     * @param e 参数
-     */
-    private _handleSend(e: any) {
-        e.preventDefault();
-        var content = this.state.zxEditor.getContent();
-        console.log(content);
-        return;
-        let state = this.state as any;
-        if (!state["reciver"] || state["reciver"].length == 0) {
-            alert("请选择收件人!");
-            return;
-        }
-        if (!state["title"]) {
-            alert("请输入邮件主题");
-            return;
-        }
-        if (!state["content"]) {
-            alert("请输入邮件内容");
-            return;
-        }
-        let data = {
-            mailId: state.mailId,
-            title: state["title"],
-            //content: state["content"],
-            reciver: state["reciver"],
-            copyTo: state["copyto"] ? state["copyto"].map((item: any) => item.key) : null
-        };
-        axios.post("/mail/reply", data).then(reponse => {
-            if (reponse.data.success)
-                alert('回复成功');
-        })
-    }
-
     componentDidUpdate() {
         (window as any).content = this.state;
     }
