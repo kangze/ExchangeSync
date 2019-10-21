@@ -40,9 +40,9 @@ namespace ExchangeSync.Controllers
                 return Json(new { success = false });
             if (input.AddToSkype)
             {
-                //var skypeResult = await this._meetingService.CreateOnlineMeetingAsync(input.Title, input.Body);
-                //var joinhttp = skypeResult.JoinUrl;
-                var joinhttp = "https://meet.scrbg.com/v-ms-kz/HDED4XL3";
+                var skypeResult = await this._meetingService.CreateOnlineMeetingAsync(input.Title, input.Body);
+                var joinhttp = skypeResult.JoinUrl;
+                //var joinhttp = "https://meet.scrbg.com/v-ms-kz/HDED4XL3";
                 var joinUrl = "<a target=\"blank\" href =\"" + joinhttp + "\">点击参加Skype会议</a>";
                 input.Body += joinUrl;
             }

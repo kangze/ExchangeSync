@@ -117,6 +117,7 @@ namespace ExchangeSync.Exchange.Internal
         public async Task<MailInfo> GetMailAsync(string mailId)
         {
             mailId = HttpUtility.UrlDecode(mailId);
+            mailId = mailId.Replace(' ', '+');
             PropertySet propSet = new PropertySet(new List<PropertyDefinitionBase>()
             {
                 ItemSchema.Id,
@@ -165,7 +166,9 @@ namespace ExchangeSync.Exchange.Internal
         public async Task<MemoryStream> DownLoadAttachment(string mailId, string attachmentId)
         {
             mailId = HttpUtility.UrlDecode(mailId);
+            mailId = mailId.Replace(' ', '+');
             attachmentId = HttpUtility.UrlDecode(attachmentId);
+            attachmentId = attachmentId.Replace(' ', '+');
             EmailMessage message = await EmailMessage.Bind(this._exchangeService, new ItemId(mailId), new PropertySet(ItemSchema.Attachments));
             // Iterate through the attachments collection and load each attachment.
             var attachment = message.Attachments.Where(u => u.Id.Equals(attachmentId, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
@@ -243,6 +246,7 @@ namespace ExchangeSync.Exchange.Internal
         public async Task Reply(string mailId, string content)
         {
             mailId = HttpUtility.UrlDecode(mailId);
+            mailId = mailId.Replace(' ', '+');
             Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, BasePropertySet.IdOnly);
             var searchFilter = new SearchFilter.IsEqualTo(ItemSchema.Id, mailId);
             var mailItems = await rootFolder.FindItems(searchFilter, new ItemView(1));

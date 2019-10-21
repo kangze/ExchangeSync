@@ -23,15 +23,14 @@ namespace ExchangeSync.Controllers
             var ls = new List<object>();
             try
             {
-                //var employees = await this._enterpriseContactService.SearchEmployeeBaseInfoByKeyword(keyword);
-                //foreach (var infoDto in employees)
-                //    ls.Add(new { key = infoDto.EmailAddress, name = infoDto.Name });
+                var employees = await this._enterpriseContactService.SearchEmployeeBaseInfoByKeyword(keyword);
+                foreach (var infoDto in employees)
+                    ls.Add(new { key = infoDto.EmailAddress, name = infoDto.Name });
             }
             catch (Exception e)
             {
 
             }
-            ls.Add(new { key = "kangze25@hotmail.com", name = "微软康泽" });
             ls.Add(new { key = keyword, name = keyword });
 
             return Json(ls);

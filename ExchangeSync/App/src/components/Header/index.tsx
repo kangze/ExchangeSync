@@ -42,7 +42,7 @@ const styles = {
     } as React.CSSProperties,
     textp: {
         margin: 10,
-        color: "#D53A00",
+        color: "#005bac",
         textAlign: "center",
     } as React.CSSProperties,
 }
@@ -116,7 +116,7 @@ export default class Header extends React.Component<any, any> {
                     type={PanelType.smallFixedNear}
                     onDismiss={this._hidePanel}
                     isLightDismiss={true}
-                    headerText="kangze25@126.com">
+                    headerText="scbzzx@scrbg.com">
 
                     {menus.map(item => {
                         return (

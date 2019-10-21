@@ -14,9 +14,9 @@ namespace ExchangeSync.Services
     {
         private readonly IMapper _mapper;
 
-        public static string TestAccount = "v-ms-kz@scrbg.com";
-        public static string TestPassword = "tfs4418000";
-        public static string TestName = "康泽";
+        public static string TestAccount = "scbzzx@scrbg.com";
+        public static string TestPassword = "a123456";
+        public static string TestName = "王力为";
 
         public CalendarService(IMapper mapper)
         {

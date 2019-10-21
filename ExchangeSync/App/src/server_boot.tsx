@@ -45,7 +45,7 @@ var doc = `
         }
 
         body {
-            background-color: "#fff";
+            background-color: white;
         }
         
     </style>
@@ -53,7 +53,7 @@ var doc = `
     </head>
     <body>
           <div id="app">${html}</div>
-          <script src="/js/client.js"></script>
+          <script src="http://localhost:18080/dist/client.js"></script>
           <script src="/js/zx-editor.min.js"></script>
     </body>
     </html>
