@@ -72,7 +72,7 @@ const menus = [
     },
     {
         name: "我的日历",
-        icon: "EditMail",
+        icon: "Calendar",
         key: "editMail",
         path: "/calendar"
     },

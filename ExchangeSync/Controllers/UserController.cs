@@ -32,8 +32,7 @@ namespace ExchangeSync.Controllers
 
             }
             ls.Add(new { key = "kangze25@hotmail.com", name = "微软康泽" });
-            if (ls.Count == 0)
-                ls.Add(new { key = keyword, name = keyword });
+            ls.Add(new { key = keyword, name = keyword });
 
             return Json(ls);
         }

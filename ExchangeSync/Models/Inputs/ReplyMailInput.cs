@@ -13,7 +13,7 @@ namespace ExchangeSync.Models.Inputs
 
         public string Content { get; set; }
 
-        public MailContactInput[] Reciver { get; set; }
+        public string[] Reciver { get; set; }
 
         public string[] CopyTo { get; set; }
     }

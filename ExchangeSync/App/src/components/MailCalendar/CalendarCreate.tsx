@@ -5,6 +5,7 @@ import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Stack, IStackProps } from 'office-ui-fabric-react/lib/Stack';
 import axios from "axios";
 import { PrimaryButton, Label } from 'office-ui-fabric-react';
+import { Checkbox, ICheckboxProps } from 'office-ui-fabric-react/lib/Checkbox';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react';
 import { TagPicker, IBasePicker, ITag } from 'office-ui-fabric-react/lib/Pickers';
@@ -91,14 +92,47 @@ export default class CalendarCreate extends React.Component<any, any>{
         document.body.appendChild(script);
     }
 
+    private _formatDate(date?: Date): string {
+        if (!date)
+            return "还未选择时间格式";
+        return date.toLocaleDateString();
+    }
+
+    private handleSelectDate(name?: string, date?: Date) {
+        this.setState({ [name]: date });
+    }
+
+    private _handleInputChange(name: string, e: any) {
+        if (name == "AddToSkype") {
+            this.setState({
+                [name]: !this.state.AddToSkype
+            })
+            return;
+        }
+        this.setState({
+            [name]: e.target.value
+        })
+    }
+
+    private _handleChange(name: string, items: ITag[]) {
+        this.setState({ [name]: items });
+    }
+
+    componentDidUpdate() {
+        (window as any).createCalendar = this.state;
+    }
+
     public render() {
         const { firstDayOfWeek } = this.state;
+        console.log(this);
         return (
             <Stack tokens={{ childrenGap: 20 }} styles={{ root: { width: "100%" } }}>
                 <br />
-                <TextField label="主题:" underlined />
-                <DatePicker firstDayOfWeek={firstDayOfWeek} strings={DayPickerStrings} placeholder="选择日期..." ariaLabel="选择日期..." label="&nbsp;&nbsp;&nbsp;起始时间：" />
-                <DatePicker firstDayOfWeek={firstDayOfWeek} strings={DayPickerStrings} placeholder="选择日期..." ariaLabel="选择日期..." label="&nbsp;&nbsp;&nbsp;结束时间：" />
+                <TextField value={this.state.title} onChange={this._handleInputChange.bind(this, "title")} label="主题：" underlined />
+                <TextField value={this.state.location} onChange={this._handleInputChange.bind(this, "location")} label="地点：" underlined />
+                <Checkbox label="同步创建Skype会议" checked={this.state.AddToSkype} onChange={this._handleInputChange.bind(this, "AddToSkype")} />
+                <DatePicker value={this.state.start} onSelectDate={this.handleSelectDate.bind(this, "start")} formatDate={this._formatDate} firstDayOfWeek={firstDayOfWeek} strings={DayPickerStrings} placeholder="选择日期..." ariaLabel="选择日期..." label="&nbsp;&nbsp;&nbsp;起始时间：" />
+                <DatePicker value={this.state.end} onSelectDate={this.handleSelectDate.bind(this, "end")} formatDate={this._formatDate} firstDayOfWeek={firstDayOfWeek} strings={DayPickerStrings} placeholder="选择日期..." ariaLabel="选择日期..." label="&nbsp;&nbsp;&nbsp;结束时间：" />
                 <Label>&nbsp;&nbsp;&nbsp;参会人员:</Label>
                 <TagPicker
                     styles={{ root: { marginTop: "0px !important" }, text: { borderTopStyle: "none", borderRightStyle: "none", borderLeftStyle: "none" } }}
@@ -109,7 +143,7 @@ export default class CalendarCreate extends React.Component<any, any>{
                         noResultsFoundText: '没有找到该用户'
                     }}
                     itemLimit={100}
-                //onChange={this._handleChange.bind(this, "copyto")}
+                    onChange={this._handleChange.bind(this, "attendees")}
                 />
                 <Label>&nbsp;&nbsp;&nbsp;内容:</Label>
                 <div id="e"></div>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ExchangeSync.Services;
 using Microsoft.Extensions.Options;
@@ -16,6 +17,10 @@ namespace ExchangeSyncTest.ServicesTest
         [TestMethod]
         public async Task GetUserAccessTokenAsync_Test()
         {
+
+            var input = "<img src=\"data:image/jpeg;base64,/9j/4AAQSkZJRg\"><\"\">";
+            Regex regImg = new Regex(@"<img\b[^<>]*?\bsrc[\s\t\r\n]*=[\s\t\r\n]*[""']?[\s\t\r\n]*(?<imgUrl>[^\s\t\r\n""'<>]*)[^<>]*?/?[\s\t\r\n]*>", RegexOptions.IgnoreCase);
+            var match = regImg.Match(input);
             var service = new IdentityService(new HttpClient(), new IdOptions(new IdSvrOption()
             {
                 IssuerUri = "https://login.scrbg.com",

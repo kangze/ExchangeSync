@@ -63,7 +63,7 @@ export default class App extends React.Component<any, any> {
 
                 <Route exact path="/reply/:mailId" render={(param: any) => {
                     return (<div>
-                        <Header title={"回复"} {...param} />
+                        <MailCreateHeader title={"回复"} {...param} />
                         <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />
                     </div>);
                 }} />

@@ -44,6 +44,27 @@ export default class CalendarItem extends React.Component<any, any>{
         (this.props as any).history.push("/createCalendar");
     }
 
+    private _handleWeekOfDay(day: number) {
+        switch (day) {
+            case 0:
+                return "日";
+            case 1:
+                return "一";
+            case 2:
+                return "二";
+            case 3:
+                return "三";
+            case 4:
+                return "四";
+            case 5:
+                return "五";
+            case 6:
+                return "六";
+            default:
+                return "未知";
+        }
+    }
+
     private _reander_month(year: number, month: number, data: any) {
         let imgUrl = "/img/" + month + ".jpg";
         return (
@@ -56,14 +77,14 @@ export default class CalendarItem extends React.Component<any, any>{
                 {data.map((u: any) => {
                     return (
                         <div>
-                            <div style={{ float: "left", width: "20%", textAlign: "center", height: 45 }}>
-                                <Text variant="medium" style={{ color: "black" }}>周{u.week}</Text>
+                            <div style={{ marginTop: 5, float: "left", width: "20%", textAlign: "center", height: 40 }}>
+                                <Text variant="medium" style={{ color: "black" }}>周{this._handleWeekOfDay(u.week)}</Text>
                                 <br />
                                 <Text variant="large" style={{ color: "black", fontWeight: 500 }}>{u.day}</Text>
                             </div>
-                            <div style={{ float: "left", width: "77%", backgroundColor: "#079848", borderRadius: 5, height: 45 }}>
-                                <div style={{ paddingTop: 8, paddingLeft: 13 }}>
-                                    <Text variant="large" style={{ color: "white" }}>{u.title}</Text>
+                            <div style={{ marginTop: 10, marginBottom: 10, float: "left", width: "79%", backgroundColor: "#069661", borderRadius: 5, height: 35 }}>
+                                <div style={{ paddingTop: 4, paddingLeft: 13 }}>
+                                    <Text variant="large" style={{ color: "white" }}>{!u.title?"暂无标题":u.title}</Text>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +97,6 @@ export default class CalendarItem extends React.Component<any, any>{
 
     public render() {
         let self = this;
-        console.log(this);
         if (this.state.loading)
             return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
         return (

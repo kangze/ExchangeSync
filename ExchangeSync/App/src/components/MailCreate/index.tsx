@@ -72,7 +72,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
     }
 
     private _handleChange(name: string, items: ITag[]) {
-        this.setState({ [name]: items });
+        this.setState({ [name]: items.map(u => u.key) });
     }
 
     private _handleInputChange(name: string, e: any) {
@@ -86,9 +86,8 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
     }
 
     componentDidMount() {
-
         let self = this;
-        this.loadJs("/js/zx-editor.min.js", function () {
+        if (!this.state.reply) {
             var zxEditor = new ZxEditor('#e', {
                 fixed: true,
                 placeholder: "点击编辑..."
@@ -96,9 +95,9 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
             zxEditor.on('change', function () {
                 var content = self.state.zxEditor.getContent();
                 self.setState({ content });
-            })
+            });
             self.setState({ zxEditor });
-        });
+        }
         if (this.state.reply) {
             let self = this;
             axios.get("/mail/GetMail?mailId=" + this.state.mailId).then(response => {
@@ -108,33 +107,21 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                     replyloading: false,
                     title: "[回复]" + data.title,
                     content: "",
-                    reciver: data.sender.address,
+                    reciver: [data.sender.address],
                     reciverName: data.sender.name,
                     copyto: "",
                 });
+                var zxEditor = new ZxEditor('#e', {
+                    fixed: true,
+                    placeholder: "点击编辑..."
+                });
+                zxEditor.on('change', function () {
+                    var content = self.state.zxEditor.getContent();
+                    self.setState({ content });
+                })
+                self.setState({ zxEditor });
             });
         }
-    }
-
-    public loadJs(url: string, callback: any) {
-        var script = document.createElement('script') as any;
-        script.type = "text/javascript";
-        if (typeof (callback) != "undefined") {
-            if (script.readyState) {
-                script.onreadystatechange = function () {
-                    if (script.readyState == "loaded" || script.readyState == "complete") {
-                        script.onreadystatechange = null;
-                        callback();
-                    }
-                }
-            } else {
-                script.onload = function () {
-                    callback();
-                }
-            }
-        }
-        script.src = url;
-        document.body.appendChild(script);
     }
 
 
@@ -174,7 +161,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                 />
                 <TextField label="主题:" underlined value={this.state.title} onChange={this._handleInputChange.bind(this, "title")} />
                 <Label>&nbsp;&nbsp;&nbsp;邮件内容:</Label>
-                <div id="e"></div>
+                <div id="e" ref="e"></div>
             </Stack>
         );
     }

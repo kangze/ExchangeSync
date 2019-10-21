@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using ExchangeSync.Exchange;
@@ -87,18 +88,38 @@ namespace ExchangeSync.Controllers
             return File(stream, "application/octet-stream", attachmentName);
         }
 
+        private string ConvertImage(string content)
+        {
+            //如果是图片的话,必须使用CID
+            //if (string.IsNullOrEmpty(content))
+            //    content = "";
+            //Regex regImg = new Regex(@"<img\b[^<>]*?\bsrc[\s\t\r\n]*=[\s\t\r\n]*[""']?[\s\t\r\n]*(?<imgUrl>[^\s\t\r\n""'<>]*)[^<>]*?/?[\s\t\r\n]*>", RegexOptions.IgnoreCase);
+            //var matches = regImg.Matches(content);
+            //if (matches.Count == 0)
+            //    return content;
+            //foreach (Match match in matches)
+            //{
+            //    var imgBase64 = match.Groups[1].Value;
+            //    var id = Guid.NewGuid().ToString("N");
+            //    ImagesController.Images.Add(id, imgBase64);
+            //    content=content.Replace(imgBase64, Request.Scheme+"://"+Request.Host+ "/img/1.jpg");
+            //}
+            return content;
+        }
+
         public async Task<IActionResult> Reply([FromBody]ReplyMailInput input)
         {
+            input.Content = ConvertImage(input.Content);
+            await this._mailService.ReplyAsync(input.MailId, input.Content);
             if (!string.IsNullOrEmpty(input.MailId))
             {
-                await this._mailService.ReplyAsync(input.MailId, input.Content);
                 return Json(new { success = true });
             }
             else
             {
                 foreach (var item in input.Reciver)
                 {
-                    await this._mailService.Send(input.Title, input.Content, item.Key);
+                    await this._mailService.Send(input.Title, input.Content, item);
                 }
                 return Json(new { success = true });
             }

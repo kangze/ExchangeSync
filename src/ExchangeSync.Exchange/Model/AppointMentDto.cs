@@ -52,13 +52,13 @@ namespace ExchangeSync.Exchange.Model
     public enum AppointMentType
     {
         /// <summary>
-        /// 约会
-        /// </summary>
-        Date = 0,
-
-        /// <summary>
         /// 会议
         /// </summary>
-        Talk = 1
+        Talk = 0,
+        /// <summary>
+        /// 约会
+        /// </summary>
+        Date = 1,
+
     }
 }

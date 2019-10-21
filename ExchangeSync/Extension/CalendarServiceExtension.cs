@@ -22,8 +22,8 @@ namespace ExchangeSync.Extension
                 Day = u.Start.Day,
                 Week = Convert.ToInt32(u.Start.DayOfWeek),
             });
-            var groups = viewModles.GroupBy(u => new { u.Year, u.Month })
-                .OrderBy(u => u.Key.Year).ThenBy(u => u.Key.Month).ToList();
+            var groups = viewModles.GroupBy(u => new { year = u.Year,month = u.Month })
+                .OrderBy(u => u.Key.year).ThenBy(u => u.Key.month).ToList();
             var result = new List<object>();
             foreach (var item in groups)
             {

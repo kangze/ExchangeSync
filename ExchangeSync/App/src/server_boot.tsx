@@ -54,6 +54,7 @@ var doc = `
     <body>
           <div id="app">${html}</div>
           <script src="http://localhost:18080/dist/client.js"></script>
+          <script src="/js/zx-editor.min.js"></script>
     </body>
     </html>
 `;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExchangeSync.Extension;
 using ExchangeSync.Models;
 using ExchangeSync.Models.Inputs;
 using ExchangeSync.Services;
@@ -29,37 +30,22 @@ namespace ExchangeSync.Controllers
         public async Task<IActionResult> MyAppointMents()
         {
             var list = await this._calendarService.GetMyAppointmentsAsync();
-            var viewModles = list.Select(u => new AppointMentViewModel()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Title = u.Subject,
-                Year = u.Start.Year,
-                Month = u.Start.Month,
-                Day = u.Start.Day,
-                Week = Convert.ToInt32(u.Start.DayOfWeek),
-            });
-            var groups = viewModles.GroupBy(u => new { u.Year, u.Month })
-                .OrderBy(u => u.Key.Year).ThenBy(u => u.Key.Month).ToList();
-            var result = new List<object>();
-            foreach (var item in groups)
-            {
-                var appoints = new { key = item.Key, data = item.ToList() };
-                result.Add(appoints);
-            }
+            var result = this._calendarService.GroupedCalendarAppointments(list);
             return Json(result);
         }
 
-        public async Task<IActionResult> CreateAppointMent(AppointMenInput input)
+        public async Task<IActionResult> CreateAppointMent([FromBody]AppointMenInput input)
         {
             if (input == null)
                 return Json(new { success = false });
             if (input.AddToSkype)
             {
                 var skypeResult = await this._meetingService.CreateOnlineMeetingAsync(input.Title, input.Body);
-                input.Body += skypeResult.JoinUrl;
+                var joinUrl = "<a href=\"" + skypeResult.JoinUrl + "\">点击参加Skype会议</a>";
+                input.Body += joinUrl;
             }
             await this._calendarService.CreateAppointMentAsync(input);
-            return Json(true);
+            return Json(new { success = true });
         }
     }
 }

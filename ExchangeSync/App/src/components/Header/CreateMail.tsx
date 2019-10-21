@@ -22,7 +22,57 @@ export default class CreateMail extends React.Component<any, any>{
 
     private _handleSend(e: any) {
         e.preventDefault();
+        if ((window as any).content) {
+            this._handleMailCreateSend();
+        } else {
+            this._handleCalendarSend();
+        }
+    }
+
+    private _handleCalendarSend() {
+        var state = (window as any).createCalendar;
+        delete (window as any).createCalendar;
+        if (!state.title) {
+            alert("请输入会议标题!");
+            return;
+        }
+        if (!state.location) {
+            alert("请输入会议地点!");
+            return;
+        }
+        if (!state.start) {
+            alert("请输入会议开始时间");
+            return;
+        }
+        if (!state.end) {
+            alert("请输入会议结束时间");
+            return;
+        }
+        if (!state.attendees || state.attendees.length == 0) {
+            alert("请输入会议参与人员");
+            return;
+        }
+        var content = state.zxEditor.getHtml();
+        var data = {
+            title: state.title,
+            body: content,
+            location: state.location,
+            start: state.start.toLocaleDateString(),
+            end: state.end.toLocaleDateString(),
+            attendees: state.attendees ? state.attendees.map((item: any) => item.key) : null,
+            AddToSkype: state.AddToSkype
+        }
+        axios.post("/Calendar/CreateAppointMent", data).then(reponse => {
+            if (reponse.data.success) {
+                alert('回复成功');
+                (this.props as any).history.push("/calendar");
+            }
+        })
+    }
+
+    private _handleMailCreateSend() {
         let state = (window as any).content;
+        delete (window as any).content;
         state["content"] = state.zxEditor.getHtml();
         if (!state["reciver"] || state["reciver"].length == 0) {
             alert("请选择收件人!");
@@ -57,7 +107,7 @@ export default class CreateMail extends React.Component<any, any>{
                     <IconButton onClick={this._handleCancel.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 21, color: "white" } }} iconProps={{ iconName: 'Cancel' }} title="取消" ariaLabel="取消" />
                 </div>
                 <div style={{ float: "left" }}>
-                    <Text variant="xLarge" style={{ color: "white" }}>新建邮件</Text>
+                    <Text variant="xLarge" style={{ color: "white" }}>{this.props.title}</Text>
                     <br />
                     <Text variant="medium" style={{ color: "white" }}>kangze25@126.com</Text>
                 </div>
