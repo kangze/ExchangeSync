@@ -53,6 +53,7 @@ namespace ExchangeSync.Exchange.Internal
                 listItem.Subject = appointment.Subject;
                 listItem.Start = appointment.Start;
                 listItem.End = appointment.End;
+                list.Add(listItem);
             }
 
             return list;

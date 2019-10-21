@@ -31,8 +31,7 @@ export default class CalendarItem extends React.Component<any, any>{
         if (!this.state.loading)
             return;
         let self = this;
-        let mailId = this.props.match.params.mailId;
-        axios.get("/mail/GetMail?mailId=" + mailId).then(response => {
+        axios.get("/Calendar/MyAppointMents").then(response => {
             let data = response.data;
             self.setState({
                 loading: false,
@@ -58,9 +57,9 @@ export default class CalendarItem extends React.Component<any, any>{
                     return (
                         <div>
                             <div style={{ float: "left", width: "20%", textAlign: "center", height: 45 }}>
-                                <Text variant="medium" style={{ color: "black" }}>{u.week}</Text>
+                                <Text variant="medium" style={{ color: "black" }}>周{u.week}</Text>
                                 <br />
-                                <Text variant="large" style={{ color: "black" }}>{u.day}</Text>
+                                <Text variant="large" style={{ color: "black", fontWeight: 500 }}>{u.day}</Text>
                             </div>
                             <div style={{ float: "left", width: "77%", backgroundColor: "#079848", borderRadius: 5, height: 45 }}>
                                 <div style={{ paddingTop: 8, paddingLeft: 13 }}>
@@ -70,12 +69,14 @@ export default class CalendarItem extends React.Component<any, any>{
                         </div>
                     );
                 })}
+                <div style={{ clear: "both" }}></div>
             </div>
         );
     }
 
     public render() {
         let self = this;
+        console.log(this);
         if (this.state.loading)
             return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
         return (

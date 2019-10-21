@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using ExchangeSync.Model;
 using ExchangeSync.Model.Consumers;
 using ExchangeSync.Services;
+using ExchangeSync.Skype;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,6 +48,13 @@ namespace ExchangeSync
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server"));
             services.AddScoped<IMailService, MailService>();
+            services.AddScoped<ICalendarService, CalendarService>();
+            services.AddScoped<IMeetingService, MeetingService>();
+            services.AddHttpClient<IMeetingService, MeetingService>();
+            services.AddScoped<SkypeBootstraper>(u => new SkypeBootstraper(new HttpClient(), new SkypeOption()
+            {
+                DiscoverServer = "http://lyncdiscoverinternal.scrbg.com/"
+            }));
             services.AddScoped<IEnterpriseContactService, EnterpriseContactService>();
             var builder = new DbContextOptionsBuilder<ServiceDbContext>()
                 //.UseLazyLoadingProxies()
