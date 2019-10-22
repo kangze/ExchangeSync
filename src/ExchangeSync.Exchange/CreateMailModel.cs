@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,5 +23,21 @@ namespace ExchangeSync.Exchange
         /// 正文
         /// </summary>
         public string Body { get; set; }
+
+        /// <summary>
+        /// 附件
+        /// </summary>
+        public List<AttachmentMailModel> Attachments { get; set; }
+
+
+    }
+
+    public class AttachmentMailModel
+    {
+        public string Id { get; set; }
+
+        public byte[] Bytes { get; set; }
+
+        public string Name { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace ExchangeSync.Model
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseSqlServer(@"Data Source=(local)\SQLEXPRESS;Initial Catalog=ExchangeSync_Connect;Integrated Security=True;MultipleActiveResultSets=true");
+                optionsBuilder.UseSqlServer(@"Data Source=192.168.100.42,1433;Database=UserSync;User Id=dev; Password=dev123;MultipleActiveResultSets=true");
         }
 
         public DbSet<Department> Departments { get; set; }

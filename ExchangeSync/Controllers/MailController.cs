@@ -13,6 +13,7 @@ using ExchangeSync.Models;
 using ExchangeSync.Models.Inputs;
 using ExchangeSync.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ExchangeSync.Controllers
 {
@@ -88,28 +89,36 @@ namespace ExchangeSync.Controllers
             return File(stream, "application/octet-stream", attachmentName);
         }
 
-        private string ConvertImage(string content)
+        private void ConvertImage(ReplyMailInput input)
         {
             //如果是图片的话,必须使用CID
-            //if (string.IsNullOrEmpty(content))
-            //    content = "";
-            //Regex regImg = new Regex(@"<img\b[^<>]*?\bsrc[\s\t\r\n]*=[\s\t\r\n]*[""']?[\s\t\r\n]*(?<imgUrl>[^\s\t\r\n""'<>]*)[^<>]*?/?[\s\t\r\n]*>", RegexOptions.IgnoreCase);
-            //var matches = regImg.Matches(content);
-            //if (matches.Count == 0)
-            //    return content;
-            //foreach (Match match in matches)
-            //{
-            //    var imgBase64 = match.Groups[1].Value;
-            //    var id = Guid.NewGuid().ToString("N");
-            //    ImagesController.Images.Add(id, imgBase64);
-            //    content=content.Replace(imgBase64, Request.Scheme+"://"+Request.Host+ "/img/1.jpg");
-            //}
-            return content;
+            if (string.IsNullOrEmpty(input.Content))
+                input.Content = "";
+            Regex regImg = new Regex(@"<img\b[^<>]*?\bsrc[\s\t\r\n]*=[\s\t\r\n]*[""']?[\s\t\r\n]*(?<imgUrl>[^\s\t\r\n""'<>]*)[^<>]*?/?[\s\t\r\n]*>", RegexOptions.IgnoreCase);
+            var matches = regImg.Matches(input.Content);
+            if (matches.Count == 0)
+                return;
+            foreach (Match match in matches)
+            {
+                var imgSrc = match.Groups[1].Value;
+                var imgBase64 = imgSrc.Split(',')[1];
+                var imgBytes = Convert.FromBase64String(imgBase64);
+                var attachmentId = Guid.NewGuid().ToString("N");
+                input.Content = input.Content.Replace(imgSrc, "cid:" + attachmentId);
+                if (input.Attachments == null)
+                    input.Attachments = new List<AttachmentInput>();
+                input.Attachments.Add(new AttachmentInput()
+                {
+                    Id = attachmentId,
+                    Name = "附件-" + matches.IndexOf(match),
+                    Bytes = imgBytes
+                });
+            }
         }
 
         public async Task<IActionResult> Reply([FromBody]ReplyMailInput input)
         {
-            input.Content = ConvertImage(input.Content);
+            this.ConvertImage(input);
             await this._mailService.ReplyAsync(input.MailId, input.Content);
             if (!string.IsNullOrEmpty(input.MailId))
             {

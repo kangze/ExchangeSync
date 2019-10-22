@@ -60,6 +60,14 @@ namespace ExchangeSync.Exchange.Internal
             message.ToRecipients.Add(model.TargetMail);
             message.Subject = model.Subject;
             message.Body = new MessageBody(model.Body);
+            if (model.Attachments != null && model.Attachments.Count > 0)
+            {
+                foreach (var attachment in model.Attachments)
+                {
+                    message.Attachments.AddFileAttachment(attachment.Name, attachment.Bytes);
+                }
+            }
+
             await message.SendAndSaveCopy();
         }
 

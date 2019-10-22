@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,6 +17,18 @@ namespace ExchangeSync.Models.Inputs
         public string[] Reciver { get; set; }
 
         public string[] CopyTo { get; set; }
+
+        public List<AttachmentInput> Attachments { get; set; }
+
+    }
+
+    public class AttachmentInput
+    {
+        public string Id { get; set; }
+
+        public byte[] Bytes { get; set; }
+
+        public string Name { get; set; }
     }
 
     public class MailContactInput
