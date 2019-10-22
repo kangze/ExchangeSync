@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExchangeSync.Exchange.Model;
+using Microsoft.AspNetCore.Http;
 
 namespace ExchangeSync.Models.Inputs
 {
@@ -22,14 +23,20 @@ namespace ExchangeSync.Models.Inputs
         /// <summary>
         /// 开始时间
         /// </summary>
-        public DateTime Start { get; set; }
+        public string Start { get; set; }
+
+        public string StartTime { get; set; }
 
         public bool AddToSkype { get; set; }
+
+        public bool FullDay { get; set; }
 
         /// <summary>
         /// 结束时间
         /// </summary>
-        public DateTime End { get; set; }
+        public string End { get; set; }
+
+        public string EndTime { get; set; }
 
         /// <summary>
         /// 约会的地点
@@ -50,5 +57,9 @@ namespace ExchangeSync.Models.Inputs
         /// 会议的类型
         /// </summary>
         public AppointMentType Type { get; set; }
+
+        public List<AttachmentInput> Attachments { get; set; }
+
+        public List<IFormFile> Attachment { get; set; }
     }
 }

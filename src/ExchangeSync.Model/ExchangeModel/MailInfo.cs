@@ -53,6 +53,8 @@ namespace ExchangeSync.Model.ExchangeModel
         public List<AttachmentInfo> Attachments { get; set; }
 
         public bool HasAttachments { get; set; }
+
+        public string FolderName { get; set; }
     }
 
     public class AttachmentInfo
@@ -73,10 +75,16 @@ namespace ExchangeSync.Model.ExchangeModel
         /// </summary>
         public string Name { get; set; }
 
+        public string ContentId { get; set; }
+
+        public bool IsInline { get; set; }
+
         /// <summary>
         /// 大小,bytes
         /// </summary>
         public long Size { get; set; }
+
+        public byte[] Bytes { get; set; }
     }
 
     public class EmailContact

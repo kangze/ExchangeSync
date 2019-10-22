@@ -26,7 +26,20 @@ namespace ExchangeSync.Services
         public async Task CreateAppointMentAsync(AppointMenInput input)
         {
             var mailManager = MailManager.Create(TestAccount, TestPassword);
-            await mailManager.CreateAppointMentAsync(this._mapper.Map<AppointMentDto>(input));
+            input.Body = MailService.ConverToHtml(input.Body);
+            var dto = this._mapper.Map<AppointMentDto>(input);
+            dto.Attachments = new List<Exchange.AttachmentMailModel>();
+            foreach (var item in input.Attachments)
+            {
+                dto.Attachments.Add(new Exchange.AttachmentMailModel()
+                {
+                    Bytes = item.Bytes,
+                    Name = item.Name,
+                    Id = item.Id,
+                    IsPackage=item.IsPackage
+                });
+            }
+            await mailManager.CreateAppointMentAsync(dto);
         }
 
         public Task<List<AppointMentDto>> GetMyAppointmentsAsync()

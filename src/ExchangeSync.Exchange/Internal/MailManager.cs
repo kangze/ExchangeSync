@@ -57,14 +57,18 @@ namespace ExchangeSync.Exchange.Internal
         public async Task SendMail(CreateMailModel model)
         {
             var message = new EmailMessage(this._exchangeService);
-            message.ToRecipients.Add(model.TargetMail);
+            message.ToRecipients.AddRange(model.TargetMail);
+            message.CcRecipients.AddRange(model.Cc);
             message.Subject = model.Subject;
-            message.Body = new MessageBody(model.Body);
+            message.Body = new MessageBody(BodyType.HTML, model.Body);
             if (model.Attachments != null && model.Attachments.Count > 0)
             {
                 foreach (var attachment in model.Attachments)
                 {
-                    message.Attachments.AddFileAttachment(attachment.Name, attachment.Bytes);
+                    var at = message.Attachments.AddFileAttachment(attachment.Name, attachment.Bytes);
+                    at.ContentId = attachment.Id;
+                    at.ContentType = "GIF/Image";
+                    at.IsInline = !attachment.IsPackage;//很重要
                 }
             }
 
@@ -99,7 +103,7 @@ namespace ExchangeSync.Exchange.Internal
                 var mail = item as EmailMessage;
                 if (mail == null) continue;
                 await mail.Load(propSet);
-                list.Add(this.ConvertToMailInfo(mail, propSet));
+                list.Add(await this.ConvertToMailInfo(mail, propSet));
             }
             return list;
         }
@@ -134,6 +138,7 @@ namespace ExchangeSync.Exchange.Internal
                 ItemSchema.DateTimeReceived,
                 EmailMessageSchema.Sender,
                 ItemSchema.Attachments,
+                ItemSchema.HasAttachments,
                 EmailMessageSchema.IsRead,
                 ItemSchema.DisplayCc,
                 ItemSchema.DisplayTo
@@ -146,7 +151,11 @@ namespace ExchangeSync.Exchange.Internal
                 var mail = mailItems.First() as EmailMessage;
                 if (mail == null) return null;
                 await mail.Load(propSet);
-                return this.ConvertToMailInfo(mail, propSet);
+                var result = await this.ConvertToMailInfo(mail, propSet);
+                result.FolderName = "inbox";
+                //自动标记
+                await this.SetReaded(mailId, true);
+                return result;
             }
 
             Folder sentFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.SentItems, propSet);
@@ -156,7 +165,9 @@ namespace ExchangeSync.Exchange.Internal
                 var mail = sentmailItems.First() as EmailMessage;
                 if (mail == null) return null;
                 await mail.Load(propSet);
-                return this.ConvertToMailInfo(mail, propSet);
+                var result = await this.ConvertToMailInfo(mail, propSet);
+                result.FolderName = "sent";
+                return result;
             }
 
             Folder draftrootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Drafts, propSet);
@@ -166,7 +177,9 @@ namespace ExchangeSync.Exchange.Internal
                 var mail = draftmailItems.First() as EmailMessage;
                 if (mail == null) return null;
                 await mail.Load(propSet);
-                return this.ConvertToMailInfo(mail, propSet);
+                var result = await this.ConvertToMailInfo(mail, propSet);
+                result.FolderName = "draft";
+                return result;
             }
             return null;
         }
@@ -189,7 +202,9 @@ namespace ExchangeSync.Exchange.Internal
 
         public async Task SetReaded(string mailId, bool readed)
         {
-            EmailMessage message = await EmailMessage.Bind(this._exchangeService, new ItemId(mailId), new PropertySet(ItemSchema.IsResend));
+            mailId = HttpUtility.UrlDecode(mailId);
+            mailId = mailId.Replace(' ', '+');
+            EmailMessage message = await EmailMessage.Bind(this._exchangeService, new ItemId(mailId), new PropertySet(EmailMessageSchema.IsRead));
             if (message.IsRead == readed)
                 return;
             message.IsRead = readed;
@@ -198,14 +213,17 @@ namespace ExchangeSync.Exchange.Internal
 
         public async Task DeleteMail(string mailId)
         {
+            mailId = HttpUtility.UrlDecode(mailId);
+            mailId = mailId.Replace(' ', '+');
             EmailMessage mail = await EmailMessage.Bind(this._exchangeService, new ItemId(mailId), PropertySet.IdOnly);
             await mail.Delete(DeleteMode.MoveToDeletedItems);
         }
 
-        private MailInfo ConvertToMailInfo(EmailMessage message, PropertySet sets)
+        private async Task<MailInfo> ConvertToMailInfo(EmailMessage message, PropertySet sets)
         {
             if (message == null || sets == null) return null;
             var mail = new MailInfo();
+            mail.Attachments = new List<AttachmentInfo>();
             if (sets.Contains(ItemSchema.Id)) mail.Id = message.Id.UniqueId;
             if (sets.Contains(ItemSchema.Subject)) mail.Subject = message.Subject;
             if (sets.Contains(ItemSchema.Body)) mail.Content = message.Body.ToString();
@@ -223,8 +241,29 @@ namespace ExchangeSync.Exchange.Internal
             }
             if (sets.Contains(ItemSchema.HasAttachments)) mail.HasAttachments = message.HasAttachments;
             if (sets.Contains(ItemSchema.Attachments))
-                mail.Attachments = message.Attachments.Where(u => u is FileAttachment)
-                    .Select(u => new AttachmentInfo() { Id = u.Id, Name = u.Name, Size = u.Size }).ToList();
+            {
+                var list = new List<AttachmentInfo>();
+                var fileAttachments = message.Attachments.Where(u => u is FileAttachment);
+                foreach (var file in fileAttachments)
+                {
+                    var item = new AttachmentInfo();
+                    if (file.IsInline)
+                    {
+                        await file.Load();
+                        item.Bytes = (file as FileAttachment).Content;
+                    }
+                    item.ContentId = file.ContentId;
+                    item.Name = file.Name;
+                    item.Id = file.Id;
+                    item.MailId = message.Id.ToString();
+                    item.Size = file.Size;
+                    item.IsInline = file.IsInline;
+                    list.Add(item);
+                }
+                mail.Attachments = list;
+                mail.HasAttachments = mail.Attachments.Count != 0;
+            }
+
             if (sets.Contains(EmailMessageSchema.IsRead))
                 mail.Readed = message.IsRead;
             if (sets.Contains(ItemSchema.DisplayTo))
@@ -248,10 +287,25 @@ namespace ExchangeSync.Exchange.Internal
                     return new EmailContact() { Name = "", Address = u };
                 }).ToList();
             }
+
+            //开始设置内敛属性
+            var inlineAttachments = mail.Attachments.Where(u => u.IsInline).ToList();
+            if (inlineAttachments.Count != 0)
+            {
+                //开始处理
+                foreach (var attachment in inlineAttachments)
+                {
+                    var cid = "cid:" + attachment.ContentId;
+                    var base64str = Convert.ToBase64String(attachment.Bytes);
+                    var imgSrc = "data:image/jpeg;base64," + base64str;
+                    mail.Content = mail.Content.Replace(cid, imgSrc);
+                }
+            }
+
             return mail;
         }
 
-        public async Task Reply(string mailId, string content)
+        public async Task Reply(string mailId, string content, string[] Cc, List<AttachmentMailModel> attachments)
         {
             mailId = HttpUtility.UrlDecode(mailId);
             mailId = mailId.Replace(' ', '+');
@@ -262,7 +316,19 @@ namespace ExchangeSync.Exchange.Internal
                 return;
             var mail = mailItems.First() as EmailMessage;
             if (mail is null) return;
-            await mail.Reply(new MessageBody(BodyType.HTML, content), true);
+            ResponseMessage responseMessage = mail.CreateReply(true);
+            responseMessage.BodyPrefix = content;
+            EmailMessage reply = await responseMessage.Save();
+            foreach (var attachment in attachments)
+            {
+                var attachedment = reply.Attachments.AddFileAttachment(attachment.Name, attachment.Bytes);
+                attachedment.ContentId = attachment.Id;
+                attachedment.ContentType = "GIF/Image";
+                attachedment.IsInline = !attachment.IsPackage;//很重要
+            }
+            reply.CcRecipients.AddRange(Cc);
+            await reply.Update(ConflictResolutionMode.AutoResolve);
+            await reply.SendAndSaveCopy();
         }
 
         private static bool RedirectionUrlValidationCallback(string redirectionUrl)

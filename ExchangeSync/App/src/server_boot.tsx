@@ -52,9 +52,10 @@ var doc = `
     <style>${css}</style>
     </head>
     <body>
-          <div id="app">${html}</div>
-          <script src="/js/client.js"></script>
+          <div id="app-react">${html}</div>
+          <script src="http://localhost:18080/dist/client.js"></script>
           <script src="/js/zx-editor.min.js"></script>
+          <script src="/js/calendar.js"></script>
     </body>
     </html>
 `;

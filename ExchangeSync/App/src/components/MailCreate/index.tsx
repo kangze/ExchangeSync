@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Stack, IStackProps } from 'office-ui-fabric-react/lib/Stack';
-import { PrimaryButton, Label } from 'office-ui-fabric-react';
+import { PrimaryButton, Label,DefaultButton } from 'office-ui-fabric-react';
 import axios from "axios";
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 
@@ -73,6 +73,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
 
     private _handleChange(name: string, items: ITag[]) {
         this.setState({ [name]: items.map(u => u.key) });
+        console.log(this);
     }
 
     private _handleInputChange(name: string, e: any) {
@@ -87,6 +88,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
 
     componentDidMount() {
         let self = this;
+        (window as any).content = true;
         if (!this.state.reply) {
             var zxEditor = new ZxEditor('#e', {
                 fixed: true,
@@ -142,7 +144,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                         suggestionsHeaderText: '请输入姓名/邮件地址',
                         noResultsFoundText: '没有找到该用户'
                     }}
-                    selectedItems={this.state.reciver && this.state.reply ? [{ key: this.state.reciver, name: this.state.reciverName }] : undefined}
+                    selectedItems={this.state.reciver && this.state.reply ? [{ key: this.state.reciver[0], name: this.state.reciverName }] : undefined}
                     itemLimit={1}
                     onChange={this._handleChange.bind(this, "reciver")}
                 />
@@ -159,7 +161,14 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                     itemLimit={100}
                     onChange={this._handleChange.bind(this, "copyto")}
                 />
-                <TextField label="主题:" underlined value={this.state.title} onChange={this._handleInputChange.bind(this, "title")} />
+                <TextField iconProps={{
+                    iconName: 'LocationDot', styles: {
+                        root: {
+                            fontSize: 16,
+                        }
+                    }
+                }} label="主题:" underlined value={this.state.title} onChange={this._handleInputChange.bind(this, "title")} />
+                <TextField id="attachmentMail" multiple label="附件:" underlined  type="file"/>
                 <Label>&nbsp;&nbsp;&nbsp;邮件内容:</Label>
                 <div id="e" ref="e"></div>
             </Stack>

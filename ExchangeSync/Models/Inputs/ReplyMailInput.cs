@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,8 @@ namespace ExchangeSync.Models.Inputs
 
         public List<AttachmentInput> Attachments { get; set; }
 
+        public List<IFormFile> Attachment { get; set; }
+
     }
 
     public class AttachmentInput
@@ -29,6 +32,8 @@ namespace ExchangeSync.Models.Inputs
         public byte[] Bytes { get; set; }
 
         public string Name { get; set; }
+
+        public bool IsPackage { get; set; }
     }
 
     public class MailContactInput

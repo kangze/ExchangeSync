@@ -17,7 +17,7 @@ ReactDOM.render(
         </Fabric>
     </Router>
     ,
-    document.getElementById("app")
+    document.getElementById("app-react")
 );
 
 module.hot.accept();

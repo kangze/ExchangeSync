@@ -6,6 +6,7 @@ import { IconButton } from 'office-ui-fabric-react/lib/Button';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import { Shimmer, ShimmerElementsGroup, ShimmerElementType } from 'office-ui-fabric-react/lib/Shimmer';
 import axios from "axios";
+import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 
@@ -13,6 +14,19 @@ const examplePersona: IPersonaSharedProps = {
     imageInitials: "M",
     size: PersonaSize.size48,
 };
+
+const colors=[
+    "#750b1c",
+    "#a4262c",
+    "#498205",
+    "#038387",
+    "#005b70",
+    "#0078d4",
+    "#004e8c",
+    "#8764b8",
+    "#881798",
+    "#8e562e",
+]
 
 const styles = {
     root: {
@@ -142,11 +156,11 @@ export default class MailItem extends React.PureComponent<any, any> {
             //没有读取的邮件，所有字体设置为粗体
             if (!item.readed) style = { fontWeight: "bold" } as React.CSSProperties;
             return (
-                <Stack>
+                <Stack style={{ marginTop: 5, marginBottom: 10 }}>
                     <Persona
                         onClick={this.handleClick.bind(this, item)}
                         imageInitials={item.sender.name[0]}
-                        initialsColor={PersonaInitialsColor.magenta}
+                        initialsColor={ parseInt((10*Math.random()).toString()) as PersonaInitialsColor}
                         size={PersonaSize.size40}
                         styles={styles}>
                         <div>
@@ -171,7 +185,8 @@ export default class MailItem extends React.PureComponent<any, any> {
                             </div>
                         </div>
                     </Persona>
-                    <hr style={{ backgroundColor: "#927a7a", marginTop: 10, height: 1, border: "none" }} />
+                    <div style={{ clear: "both" }}></div>
+                    <hr style={{ backgroundColor: "#584b4b4f", marginTop: 16, height: 1, border: "none" }} />
                 </Stack>
             );
         })
@@ -203,17 +218,15 @@ export default class MailItem extends React.PureComponent<any, any> {
                         </div>
                     );
                 })}
-                <div style={{ position: "fixed", right: 20, bottom: 20 }}>
+                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 52, width: 59, right: 20, bottom: 20, paddingLeft: 5, paddingTop: 12, boxShadow: Depths.depth64 }}>
                     <IconButton
                         iconProps={{
-                            iconName: 'EditMail', styles: {
+                            iconName: 'Edit', styles: {
                                 root: {
-                                    color: "#0a61af",
-                                    fontSize: 48,
+                                    color: "white",
+                                    fontSize: 32,
+                                    left: 10
                                 },
-                                imageContainer: {
-                                    height: 128
-                                }
                             }
                         }}
                         title="Add"

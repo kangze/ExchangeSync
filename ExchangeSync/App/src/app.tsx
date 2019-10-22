@@ -56,28 +56,28 @@ export default class App extends React.Component<any, any> {
 
                 <Route exact path="/create" render={(param: any) => {
                     return (<div>
-                        <MailCreateHeader title={"新建邮件"} {...param} />
+                        <MailCreateHeader message={"发送成功"} title={"新建邮件"} {...param} />
                         <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />
                     </div>);
                 }} />
 
                 <Route exact path="/reply/:mailId" render={(param: any) => {
                     return (<div>
-                        <MailCreateHeader title={"回复"} {...param} />
+                        <MailCreateHeader message={"回复成功"} title={"回复"} {...param} />
                         <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />
                     </div>);
                 }} />
 
                 <Route exact path="/calendar" render={(param: any) => {
                     return (<div>
-                        <Header title={"我的日历/会议"} {...param} />
+                        <Header message={"创建日历事件成功"} title={"我的日历/会议"} {...param} />
                         <MailCalendar showGoToToday={true} autoNavigateOnSelection={false} dateRangeType={0} isMonthPickerVisible={false} changeTitle={this.changeTitle.bind(this)} {...param} />
                     </div>);
                 }} />
 
                 <Route exact path="/createCalendar" render={(param: any) => {
                     return (<div>
-                        <MailCreateHeader changeTitle={this.changeTitle.bind(this)} {...param} />
+                        <MailCreateHeader message={"创建会议成功"} title={"创建会议"} {...param} />
                         <MailCalendarCreate changeTitle={this.changeTitle.bind(this)} {...param} />
                     </div>);
                 }} />

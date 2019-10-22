@@ -92,7 +92,17 @@ namespace ExchangeSync
                 });
 
             CreateMap<AppointMenInput, AppointMentDto>()
-                .ForMember(u => u.Subject, opt => opt.MapFrom(u => u.Title));
+                .ForMember(u => u.Attachments, opt => opt.Ignore())
+                .ForMember(u => u.Subject, opt => opt.MapFrom(u => u.Title))
+                .AfterMap((s, d) =>
+                {
+                    //全天事件
+                    d.Start = DateTime.Parse(s.Start + " " + s.StartTime);
+                    if (!s.FullDay)
+                        d.End = DateTime.Parse(s.End + " " + s.EndTime);
+                    else
+                        d.Start = new DateTime(d.Start.Year, d.Start.Month, d.Start.Day, 0, 0, 0);
+                });
 
         }
 

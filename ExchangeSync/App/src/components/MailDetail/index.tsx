@@ -9,7 +9,7 @@ import { DefaultButton, IContextualMenuProps } from 'office-ui-fabric-react';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import axios from "axios";
 
-import { ActionMenus, Styles } from "./action";
+import { ActionMenus, Styles, InBoxMenu,SentMenu,DraftMenu } from "./action";
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 
 
@@ -56,7 +56,8 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                 senderLink: data.sender.address,
                 date: data.date,
                 content: data.content,
-                attachments: data.attachments
+                attachments: data.attachments,
+                folderName: data.folderName
             }
         } else if ((window as any).data) {
             let data1 = (window as any).data;
@@ -69,7 +70,8 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                 senderLink: data1.sender.address,
                 date: data1.date,
                 content: data1.content,
-                attachments: data1.attachments
+                attachments: data1.attachments,
+                folderName: data1.folderName
             }
         } else {
             this.state = { loading: true };
@@ -97,13 +99,37 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                 senderLink: data.sender.address,
                 date: data.date,
                 content: data.content,
-                attachments: data.attachments
+                attachments: data.attachments,
+                folderName: data.folderName,
             })
         })
     }
 
+    public getMenu(name: string,mailId:string) {
+        if (name == "inbox") {
+           let menu=InBoxMenu.map(u=>{
+                u.onClick=u.onClick.bind(this,mailId);
+                return u;
+            })
+            return menu;
+        } else if(name="sent"){
+            let menu=SentMenu.map(u=>{
+                u.onClick=u.onClick.bind(this,mailId);
+                return u;
+            })
+            return menu;
+        } else{
+            let menu=DraftMenu.map(u=>{
+                u.onClick=u.onClick.bind(this,mailId);
+                return u;
+            })
+            return menu;
+        }
+    }
+
     public render(): JSX.Element {
         //let id=(this.props as any).match.params.mailId; 获取到的I
+        var canReply = (window as any).location.pathname == "/";
         if (this.state.loading)
             return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
         let mailid = this.state.mailId;
@@ -118,7 +144,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                         <Text variant="medium" >{this.state.date}</Text>
                         <OverflowSet
                             vertical
-                            overflowItems={ActionMenus}
+                            overflowItems={this.getMenu(this.state.folderName,this.state.mailId)}
                             onRenderOverflowButton={this._onRenderOverflowButton}
                             onRenderItem={this._onRenderItem}
                             styles={Styles.overflowItem}
@@ -144,14 +170,17 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                         <iframe srcDoc={this.state.content} width={"100%"} height={600} style={{ border: "none" }}></iframe>
                     </div>
                 </div>
-                <div style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>
-                    <DefaultButton
-                        text="回复"
-                        allowDisabledFocus
-                        styles={{ root: { width: "100%" } }}
-                        onClick={this.handleReply.bind(this, this.state.mailId)}
-                    />
-                </div>
+                {
+                    this.state.folderName === "inbox" ?
+                        <div style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>
+                            <DefaultButton
+                                text="回复"
+                                allowDisabledFocus
+                                styles={{ root: { width: "100%" } }}
+                                onClick={this.handleReply.bind(this, this.state.mailId)}
+                            />
+                        </div> : undefined
+                }
             </Stack>
         );
     }

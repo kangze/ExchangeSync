@@ -1,4 +1,5 @@
 const noOp = function () { };
+import axios from "axios";
 export const ActionMenus = [
     {
         key: 'markReaded',
@@ -65,4 +66,75 @@ export const Styles = {
         }
     }
 };
+export const DraftMenu=[
+    {
+        key: 'markReaded',
+        iconProps: {
+            iconName: "Delete"
+        },
+        name: '删除此邮件',
+        onClick: (mailId: string) => {
+            axios.post("/mail/Delete?mailid=" + mailId).then(response => {
+                if (response.data.success) {
+                    alert("删除成功!");
+                }
+            }).catch(u => {
+                alert("请稍后重新尝试");
+            })
+        }
+    },
+]
 
+export const SentMenu=[
+    {
+        key: 'markReaded',
+        iconProps: {
+            iconName: "Delete"
+        },
+        name: '删除此邮件',
+        onClick: (mailId: string) => {
+            axios.post("/mail/Delete?mailid=" + mailId).then(response => {
+                if (response.data.success) {
+                    alert("删除成功!");
+                }
+            }).catch(u => {
+                alert("请稍后重新尝试");
+            })
+        }
+    },
+]
+
+export const InBoxMenu = [
+    {
+        key: 'markReaded',
+        iconProps: {
+            iconName: "Read"
+        },
+        name: '标记为未读',
+        onClick: (mailId: string) => {
+            axios.post("/mail/setunreade?mailid=" + mailId).then(response => {
+                if (response.data.success) {
+                    alert("已经标记为未读!");
+                }
+            }).catch(u => {
+                alert("请稍后重新尝试");
+            })
+        }
+    },
+    {
+        key: 'markReaded',
+        iconProps: {
+            iconName: "Delete"
+        },
+        name: '删除此邮件',
+        onClick: (mailId: string) => {
+            axios.post("/mail/Delete?mailid=" + mailId).then(response => {
+                if (response.data.success) {
+                    alert("删除成功!");
+                }
+            }).catch(u => {
+                alert("请稍后重新尝试");
+            })
+        }
+    },
+];

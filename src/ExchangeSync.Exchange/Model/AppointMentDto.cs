@@ -47,6 +47,13 @@ namespace ExchangeSync.Exchange.Model
         /// 会议的类型
         /// </summary>
         public AppointMentType Type { get; set; }
+
+        public bool FullDay { get; set; }
+
+        /// <summary>
+        /// 附件
+        /// </summary>
+        public List<AttachmentMailModel> Attachments { get; set; }
     }
 
     public enum AppointMentType

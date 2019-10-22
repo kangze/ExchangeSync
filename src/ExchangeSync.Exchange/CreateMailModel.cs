@@ -12,7 +12,9 @@ namespace ExchangeSync.Exchange
         /// <summary>
         /// 接收方
         /// </summary>
-        public string TargetMail { get; set; }
+        public string[] TargetMail { get; set; }
+
+        public string[] Cc { get; set; }
 
         /// <summary>
         /// 标题
@@ -39,5 +41,7 @@ namespace ExchangeSync.Exchange
         public byte[] Bytes { get; set; }
 
         public string Name { get; set; }
+
+        public bool IsPackage { get; set; }
     }
 }

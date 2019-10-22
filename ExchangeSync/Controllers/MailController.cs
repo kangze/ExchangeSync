@@ -58,28 +58,23 @@ namespace ExchangeSync.Controllers
             return result;
         }
 
-
-        /// <summary>
-        /// 客户端发送邮件
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IActionResult> PostAsync(NewMailInput input)
-        {
-            var service = MailManager.Create("", "");
-            await service.SendMail(new CreateMailModel()
-            {
-                Subject = input.Subject,
-                Body = input.Body,
-                TargetMail = input.Recivers.FirstOrDefault()
-            });
-            return Ok("Ok");
-        }
-
         public async Task<IActionResult> GetMail(string mailId)
         {
-            await Task.Delay(TimeSpan.FromSeconds(0.5));
+
             var item = await this._mailService.GetMailAsync(mailId);
             return Json(item);
+        }
+
+        public async Task<IActionResult> SetUnReade(string mailId)
+        {
+            await this._mailService.SetUnReade(mailId);
+            return Json(new { success = true });
+        }
+
+        public async Task<IActionResult> Delete(string mailId)
+        {
+            await this._mailService.Delete(mailId);
+            return Json(new { success = true });
         }
 
         public async Task<IActionResult> DownloadAttachment(string mailId, string attachmentId, string attachmentName)
@@ -94,6 +89,8 @@ namespace ExchangeSync.Controllers
             //如果是图片的话,必须使用CID
             if (string.IsNullOrEmpty(input.Content))
                 input.Content = "";
+            if (input.Attachments == null)
+                input.Attachments = new List<AttachmentInput>();
             Regex regImg = new Regex(@"<img\b[^<>]*?\bsrc[\s\t\r\n]*=[\s\t\r\n]*[""']?[\s\t\r\n]*(?<imgUrl>[^\s\t\r\n""'<>]*)[^<>]*?/?[\s\t\r\n]*>", RegexOptions.IgnoreCase);
             var matches = regImg.Matches(input.Content);
             if (matches.Count == 0)
@@ -103,33 +100,50 @@ namespace ExchangeSync.Controllers
                 var imgSrc = match.Groups[1].Value;
                 var imgBase64 = imgSrc.Split(',')[1];
                 var imgBytes = Convert.FromBase64String(imgBase64);
-                var attachmentId = Guid.NewGuid().ToString("N");
+                var attachmentId = Guid.NewGuid().ToString("N").ToLower() + ".jpg";
                 input.Content = input.Content.Replace(imgSrc, "cid:" + attachmentId);
-                if (input.Attachments == null)
-                    input.Attachments = new List<AttachmentInput>();
+                
                 input.Attachments.Add(new AttachmentInput()
                 {
                     Id = attachmentId,
-                    Name = "附件-" + matches.IndexOf(match),
+                    Name = attachmentId,
                     Bytes = imgBytes
                 });
             }
         }
 
-        public async Task<IActionResult> Reply([FromBody]ReplyMailInput input)
+        public async Task<IActionResult> Reply([FromForm]ReplyMailInput input)
         {
             this.ConvertImage(input);
-            await this._mailService.ReplyAsync(input.MailId, input.Content);
+            if (input.Attachment != null)
+            {
+                foreach (var it in input.Attachment)
+                {
+                    var stream = it.OpenReadStream();
+                    var bytes = new byte[it.Length];
+                    await stream.ReadAsync(bytes, 0, bytes.Length);
+                    var name = Guid.NewGuid().ToString("N").ToLower() + "-" + it.FileName;
+                    input.Attachments.Add(new AttachmentInput()
+                    {
+                        Bytes = bytes,
+                        Name = name,
+                        Id = name,
+                        IsPackage = true,
+                    });
+                }
+            }
+            if (input.CopyTo == null)
+                input.CopyTo = new string[0];
+            if (input.Attachments == null)
+                input.Attachments = new List<AttachmentInput>();
             if (!string.IsNullOrEmpty(input.MailId))
             {
+                await this._mailService.ReplyAsync(input.MailId, input.Content, input.CopyTo, input.Attachments);
                 return Json(new { success = true });
             }
             else
             {
-                foreach (var item in input.Reciver)
-                {
-                    await this._mailService.Send(input.Title, input.Content, item);
-                }
+                await this._mailService.Send(input.Title, input.Content, input.Reciver, input.CopyTo, input.Attachments);
                 return Json(new { success = true });
             }
 

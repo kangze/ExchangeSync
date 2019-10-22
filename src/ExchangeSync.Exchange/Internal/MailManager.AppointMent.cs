@@ -20,8 +20,19 @@ namespace ExchangeSync.Exchange.Internal
             appointment.Subject = dto.Subject;
             appointment.Body = dto.Body;
             appointment.Start = dto.Start;
-            appointment.End = dto.End;
+            appointment.IsAllDayEvent = dto.FullDay;
+            if (!dto.FullDay)
+                appointment.End = dto.End;
+            else
+                appointment.End = new DateTime(dto.Start.Year, dto.Start.Month, dto.Start.Day, 23, 59, 59);
             appointment.Location = dto.Location;
+            foreach(var attachment in dto.Attachments)
+            {
+                var at = appointment.Attachments.AddFileAttachment(attachment.Name, attachment.Bytes);
+                at.ContentId = attachment.Id;
+                at.ContentType = "GIF/Image";
+                at.IsInline = !attachment.IsPackage;//很重要
+            }
             if (dto.Type == AppointMentType.Talk)
                 dto.Attendees.ForEach(u => appointment.RequiredAttendees.Add(u));
             if (dto.Type == AppointMentType.Talk) await appointment.Save(SendInvitationsMode.SendToAllAndSaveCopy);

@@ -32,5 +32,8 @@ namespace ExchangeSync.Models
 
         [JsonProperty("date")]
         public string Date { get; set; }
+
+        [JsonProperty("folderName")]
+        public string FolderName { get; set; }
     }
 }

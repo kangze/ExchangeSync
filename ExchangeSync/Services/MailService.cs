@@ -8,6 +8,7 @@ using ExchangeSync.Exchange.Internal;
 using ExchangeSync.Helper;
 using ExchangeSync.Model.ExchangeModel;
 using ExchangeSync.Models;
+using ExchangeSync.Models.Inputs;
 using Newtonsoft.Json;
 
 namespace ExchangeSync.Services
@@ -164,10 +165,16 @@ namespace ExchangeSync.Services
             return ls;
         }
 
-        public async Task ReplyAsync(string mailId, string content)
+        public async Task ReplyAsync(string mailId, string content, string[] Cc, List<AttachmentInput> attachments)
         {
             var mailManager = MailManager.Create(TestAccount, TestPassword);
-            await mailManager.Reply(mailId, content);
+            await mailManager.Reply(mailId, ConverToHtml(content), Cc, attachments.Select(u => new Exchange.AttachmentMailModel()
+            {
+                Id = u.Id,
+                Bytes = u.Bytes,
+                Name = u.Name,
+                IsPackage=u.IsPackage
+            }).ToList());
         }
 
         public async Task<Stream> Download(string mailId, string attachmentId)
@@ -177,16 +184,54 @@ namespace ExchangeSync.Services
             return stream;
         }
 
-        public async Task Send(string title, string content, string reciver)
+        public async Task Send(string title, string content, string[] reciver, string[] cc, List<AttachmentInput> attachments)
         {
             var mailManager = MailManager.Create(TestAccount, TestPassword);
             await mailManager.SendMail(new Exchange.CreateMailModel()
             {
-                Body = content,
+                Body = ConverToHtml(content),
                 Subject = title,
-                TargetMail = reciver
+                TargetMail = reciver,
+                Cc = cc,
+                Attachments = attachments.Select(u => new Exchange.AttachmentMailModel()
+                {
+                    Id = u.Id,
+                    Bytes = u.Bytes,
+                    Name = u.Name
+                }).ToList()
             });
         }
 
+        public static string ConverToHtml(string content)
+        {
+            var html = @"<!DOCTYPE html>
+                         <html lang=""en"">
+                         <head>
+                             <meta charset=""UTF-8"">
+                             <meta name=""viewport"" content=""width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"" />
+                             <meta http-equiv=""X-UA-Compatible"" content=""ie=edge"">
+                             <style>
+                                img{width:100%}
+                            </style>
+                         </head>
+                         <body>
+                             {content}
+                         </body>
+                         </html>";
+            html = html.Replace("{content}", content);
+            return html;
+        }
+
+        public async Task SetUnReade(string mailId)
+        {
+            var mailManager = MailManager.Create(TestAccount, TestPassword);
+            await mailManager.SetReaded(mailId, false);
+        }
+
+        public async Task Delete(string mailId)
+        {
+            var mailManager = MailManager.Create(TestAccount, TestPassword);
+            await mailManager.DeleteMail(mailId);
+        }
     }
 }

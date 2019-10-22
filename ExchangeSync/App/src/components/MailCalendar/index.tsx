@@ -5,6 +5,11 @@ import axios from "axios";
 import { IconButton } from 'office-ui-fabric-react/lib/Button';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 
+import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
+
+declare var ZxEditor: any;
+declare var calendar: any;
+
 export default class CalendarItem extends React.Component<any, any>{
 
     constructor(props: any) {
@@ -28,6 +33,11 @@ export default class CalendarItem extends React.Component<any, any>{
     }
 
     componentDidMount() {
+        // new calendar({
+        //     el: document.querySelector("#app"),
+        //     currentDate: "2019/08/28",
+        //     // onDayClick
+        // });
         if (!this.state.loading)
             return;
         let self = this;
@@ -69,6 +79,8 @@ export default class CalendarItem extends React.Component<any, any>{
         let imgUrl = "/img/" + month + ".jpg";
         return (
             <div>
+                <div id="values"></div>
+                <div id="app"></div>
                 <div style={{ width: "100%", height: 200, backgroundImage: 'url(' + imgUrl + ')', backgroundRepeat: "round" }}>
                     <div style={{ paddingLeft: "20%", paddingTop: 20 }}>
                         <Text variant="xLarge" style={{ color: "black" }}>{year}年{month}月</Text>
@@ -84,7 +96,7 @@ export default class CalendarItem extends React.Component<any, any>{
                             </div>
                             <div style={{ marginTop: 10, marginBottom: 10, float: "left", width: "79%", backgroundColor: "#069661", borderRadius: 5, height: 35 }}>
                                 <div style={{ paddingTop: 4, paddingLeft: 13 }}>
-                                    <Text variant="large" style={{ color: "white" }}>{!u.title?"暂无标题":u.title}</Text>
+                                    <Text variant="large" style={{ color: "white" }}>{!u.title ? "暂无标题" : u.title}</Text>
                                 </div>
                             </div>
                         </div>
@@ -104,17 +116,17 @@ export default class CalendarItem extends React.Component<any, any>{
                 {this.state.groups.map((group: any) => {
                     return self._reander_month(group.key.year, group.key.month, group.data);
                 })}
-                <div style={{ position: "fixed", right: 20, bottom: 20 }}>
+                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 44, width: 56, right: 20, bottom: 20, paddingLeft: 8, paddingTop: 20, boxShadow: Depths.depth64 }}>
                     <IconButton
                         iconProps={{
                             iconName: 'CalendarSettings', styles: {
                                 root: {
-                                    color: "#0a61af",
-                                    fontSize: 54,
+                                    color: "white",
+                                    fontSize: 32,
                                 }
                             }
                         }}
-                        styles={{ root: { height: 64 } }}
+                        
                         title="Add"
                         ariaLabel="Add"
                         onClick={this._handleCreateCalendar.bind(this)}

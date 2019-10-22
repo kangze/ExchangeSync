@@ -4,7 +4,6 @@ import { IconButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
-
 require("./index.css");
 
 const styles = {
@@ -16,7 +15,7 @@ const styles = {
         paddingTop: 6,
         textAlign: "left",
         fontSize: 15,
-        "float": "left",
+        "float": "right",
         width: "15%",
     } as React.CSSProperties,
     appsdiv: {
@@ -102,13 +101,14 @@ export default class Header extends React.Component<any, any> {
 
                 </div>
 
-                <div style={styles.logodiv} >
-                    <img style={styles.img} src="https://bi.scrbg.com/images/logo.png" />
-                </div>
+                
                 <div style={styles.text}>
                     <p style={styles.textp}>
                         <span>{this.props.title}</span>
                     </p>
+                </div>
+                <div style={styles.logodiv} >
+                    <img style={styles.img} src="https://bi.scrbg.com/images/logo.png" />
                 </div>
                 <div style={{ clear: "both" }}></div>
                 <Panel
