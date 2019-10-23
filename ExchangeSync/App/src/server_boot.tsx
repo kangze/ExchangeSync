@@ -47,7 +47,19 @@ var doc = `
         body {
             background-color: white;
         }
-        
+        .kz .ms-DatePicker-table{
+          width: 100%;
+      }
+      .kz .ms-DatePicker-weekday{
+          width: 12%;
+      }
+      
+      .kz .ms-DatePicker-holder{
+          width: 98%;
+      }
+      .kz .ms-DatePicker-optionGrid{ width:100%}
+      .kz .ms-DatePicker-monthPicker{width:100%}
+      .kz .ms-DatePicker-monthOption{width:16%}
     </style>
     <style>${css}</style>
     </head>
