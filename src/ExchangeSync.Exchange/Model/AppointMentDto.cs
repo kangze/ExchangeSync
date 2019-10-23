@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,16 +12,19 @@ namespace ExchangeSync.Exchange.Model
         /// <summary>
         /// 会议/约会 的主题
         /// </summary>
+        [JsonProperty("title")]
         public string Subject { get; set; }
 
         /// <summary>
         /// 内容信息
         /// </summary>
+        [JsonProperty("body")]
         public string Body { get; set; }
 
         /// <summary>
         /// 开始时间
         /// </summary>
+        [JsonProperty("start")]
         public DateTime Start { get; set; }
 
         /// <summary>

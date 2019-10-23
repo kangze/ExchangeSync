@@ -26,7 +26,7 @@ namespace ExchangeSync.Exchange.Internal
             else
                 appointment.End = new DateTime(dto.Start.Year, dto.Start.Month, dto.Start.Day, 23, 59, 59);
             appointment.Location = dto.Location;
-            foreach(var attachment in dto.Attachments)
+            foreach (var attachment in dto.Attachments)
             {
                 var at = appointment.Attachments.AddFileAttachment(attachment.Name, attachment.Bytes);
                 at.ContentId = attachment.Id;
@@ -61,9 +61,13 @@ namespace ExchangeSync.Exchange.Internal
             foreach (var appointment in appointments)
             {
                 var listItem = new AppointMentDto();
+                await appointment.Load(new PropertySet(AppointmentSchema.TextBody, ItemSchema.Subject,
+                AppointmentSchema.Start,
+                AppointmentSchema.End));
                 listItem.Subject = appointment.Subject;
                 listItem.Start = appointment.Start;
                 listItem.End = appointment.End;
+                listItem.Body = appointment.TextBody;
                 list.Add(listItem);
             }
 

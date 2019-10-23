@@ -28,10 +28,10 @@ namespace ExchangeSync.Controllers
         /// 获取我的会议
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> MyAppointMents()
+        public async Task<IActionResult> MyAppointMents(int year, int month, int day)
         {
             var list = await this._calendarService.GetMyAppointmentsAsync();
-            var result = this._calendarService.GroupedCalendarAppointments(list);
+            var result = list.Where(u => u.Start.Year == year && u.Start.Month == month && u.Start.Day == day).ToList();
             return Json(result);
         }
 
@@ -39,18 +39,18 @@ namespace ExchangeSync.Controllers
         /// 获取我的会议
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> GetForbidden(int year, int month,int day)
+        public async Task<IActionResult> GetForbidden(int year, int month, int day)
         {
             var result = await this._calendarService.GetMyAppointmentsAsync();
             var nowDate = new DateTime(year, month, day);
             var beforeDate = nowDate.AddMonths(-1);
             var afterDate = nowDate.AddMonths(1);
-           
+
             //计算区间
             var forbiddenDays = new List<DateTime>();
             for (var start = beforeDate; start < afterDate; start = start.AddDays(1))
             {
-                if (result.Count(u => u.Start.Year == start.Year && u.Start.Month == start.Month && u.Start.Day==start.Day) == 0)
+                if (result.Count(u => u.Start.Year == start.Year && u.Start.Month == start.Month && u.Start.Day == start.Day) == 0)
                     forbiddenDays.Add(start);
             }
             return Json(forbiddenDays);
