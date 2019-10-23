@@ -11,8 +11,7 @@ import { Calendar, DateRangeType } from 'office-ui-fabric-react/lib/Calendar';
 
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react';
 
-declare var ZxEditor: any;
-declare var calendar: any;
+
 
 const classNames = mergeStyleSets({
     exampleRoot: {
@@ -84,7 +83,7 @@ export default class CalendarItem extends React.Component<any, any>{
                     key={1}
                     className={classNames.nameText}
                 >
-                    王力为
+                    王跃
               </Link>,
                 <span key={2}> 创建了 </span>,
                 <span key={3} className={classNames.nameText}>

@@ -116,7 +116,7 @@ export default class Header extends React.Component<any, any> {
                     type={PanelType.smallFixedNear}
                     onDismiss={this._hidePanel}
                     isLightDismiss={true}
-                    headerText="scbzzx@scrbg.com">
+                    headerText="wangyue@scrbg.com">
 
                     {menus.map(item => {
                         return (

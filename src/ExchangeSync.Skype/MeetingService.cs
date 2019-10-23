@@ -23,7 +23,7 @@ namespace ExchangeSync.Skype
 
         public async Task<CreateMeetingResult> CreateOnlineMeetingAsync(string subject, string description)
         {
-            await this._bootstraper.StartAsync("v-ms-kz@scrbg.com", "tfs4418000");
+            await this._bootstraper.StartAsync("wangyue@scrbg.com", "111111");
 
             var content = new StringContent(JsonConvert.SerializeObject(new
             {

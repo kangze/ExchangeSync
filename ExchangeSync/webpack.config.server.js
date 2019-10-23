@@ -2,7 +2,8 @@
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-    mode: "development",
+    //mode: "development",
+    mode: "production",
     entry: {
         server: "./app/src/server_boot.tsx"
     },

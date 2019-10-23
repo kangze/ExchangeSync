@@ -33,6 +33,7 @@ var doc = `
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#0078d4" />
     <link href="/css/fabric.min.css" rel="stylesheet" />
     <script>
       window.data=${data}
@@ -65,9 +66,8 @@ var doc = `
     </head>
     <body>
           <div id="app-react">${html}</div>
-          <script src="http://localhost:18080/dist/client.js"></script>
           <script src="/js/zx-editor.min.js"></script>
-          <script src="/js/calendar.js"></script>
+          <script src="/js/client.js"></script>
     </body>
     </html>
 `;

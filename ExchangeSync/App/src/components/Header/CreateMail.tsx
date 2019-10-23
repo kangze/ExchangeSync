@@ -172,7 +172,7 @@ export default class CreateMail extends React.Component<any, any>{
                 <div style={{ float: "left" }}>
                     <Text variant="xLarge" style={{ color: "white" }}>{this.props.title}</Text>
                     <br />
-                    <Text variant="medium" style={{ color: "white" }}>scbzzx@scrbg.com</Text>
+                    <Text variant="medium" style={{ color: "white" }}>wangyue@scrbg.com</Text>
                 </div>
                 <div style={{ float: "right" }}>
                     <IconButton onClick={this._handleSend.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 32, color: "white" } }} iconProps={{ iconName: 'Send' }} title="取消" ariaLabel="取消" />

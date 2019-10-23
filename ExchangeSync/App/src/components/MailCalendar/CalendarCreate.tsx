@@ -92,38 +92,15 @@ export default class CalendarCreate extends React.Component<any, any>{
     componentDidMount() {
         let self = this;
         delete (window as any).content;
-        this.loadJs("/js/zx-editor.min.js", function () {
-            var zxEditor = new ZxEditor('#e', {
-                fixed: true,
-                placeholder: "点击编辑..."
-            });
-            zxEditor.on('change', function () {
-                var content = self.state.zxEditor.getContent();
-                self.setState({ content });
-            })
-            self.setState({ zxEditor });
+        var zxEditor = new ZxEditor('#e', {
+            fixed: true,
+            placeholder: "点击编辑..."
         });
-    }
-
-    public loadJs(url: string, callback: any) {
-        var script = document.createElement('script') as any;
-        script.type = "text/javascript";
-        if (typeof (callback) != "undefined") {
-            if (script.readyState) {
-                script.onreadystatechange = function () {
-                    if (script.readyState == "loaded" || script.readyState == "complete") {
-                        script.onreadystatechange = null;
-                        callback();
-                    }
-                }
-            } else {
-                script.onload = function () {
-                    callback();
-                }
-            }
-        }
-        script.src = url;
-        document.body.appendChild(script);
+        zxEditor.on('change', function () {
+            var content = self.state.zxEditor.getContent();
+            self.setState({ content });
+        })
+        self.setState({ zxEditor });
     }
 
     private _formatDate(date?: Date): string {
