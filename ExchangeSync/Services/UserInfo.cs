@@ -8,7 +8,7 @@ namespace ExchangeSync.Services
 {
     public class UserInfo
     {
-        public Guid SsoId { get; set; }
+        public string SsoId { get; set; }
 
         public string Name { get; set; }
 
@@ -16,9 +16,11 @@ namespace ExchangeSync.Services
 
         public string Number { get; set; }
 
-        public Guid MdmId { get; set; }
+        public string MdmId { get; set; }
 
         public string IdCardNo { get; set; }
+
+        public string AccessToken { get; set; }
 
 
     }

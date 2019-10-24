@@ -28,18 +28,8 @@ namespace ExchangeSync.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //这里统一分析所有的url
-            //1./detail/2222
-            //2./index  服务器端渲染
-
-            //new
-            //{
-            //    title = "服务器标题",
-            //    sender = "server",
-            //    date = "2017-8-8",
-            //    content = "服务器内容",
-            //}
             var path = Request.Path.ToString();
+            var user = new { userName = MailService.TestAccount, name = MailService.TestName };
             object data = null;
             if (path == "" || path == "/")
                 data = await this._mailService.GetIndexMailAsync("");
@@ -69,7 +59,7 @@ namespace ExchangeSync.Controllers
                 data = await this._mailService.GetMailAsync(mailId);
             }
 
-            var html = this._serverRenderService.Render(Request.Path, data);
+            var html = this._serverRenderService.Render(Request.Path, data, user);
             return Content(html, "text/html; charset=utf-8");
         }
 

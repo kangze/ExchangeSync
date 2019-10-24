@@ -17,10 +17,10 @@ namespace ExchangeSync.Services
             _serverFileName = serverFileName;
         }
 
-        public string Render(string path, object data)
+        public string Render(string path, object data, object user)
         {
             var sb = new StringBuilder();
-            var dataStr = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+            var dataStr = Newtonsoft.Json.JsonConvert.SerializeObject(new { data, user });
             var base64Str = Convert.ToBase64String(Encoding.UTF8.GetBytes(dataStr));
             var psi = new ProcessStartInfo("node", this._serverFileName + " " + path + " " + base64Str)
             {

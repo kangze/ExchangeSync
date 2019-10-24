@@ -32,12 +32,12 @@ namespace ExchangeSync.Services
             var jObject = JObject.Parse(raw);
             return new UserInfo()
             {
-                SsoId = Guid.Parse(jObject["sub"].ToString()),
+                //SsoId = Guid.Parse(jObject["sub"].ToString()),
                 Name = jObject["name"].ToString(),
                 UserName = jObject["preferred_username"].ToString(),
                 Number = jObject["employee_number"].ToString(),
                 IdCardNo = jObject["idcard_number"].ToString(),
-                MdmId = Guid.Parse(jObject["employee_mdmid"].ToString()),
+                //MdmId = Guid.Parse(jObject["employee_mdmid"].ToString()),
             };
         }
     }

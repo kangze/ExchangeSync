@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ExchangeSync.Model.EnterpiseContactModel
 {
-    public class EmployeeEmail
+    public class EmployeeAuth
     {
-        public Guid EmployeeId { get; set; }
+        [Key]
+        public string Number { get; set; }
 
-        public virtual Employee Employee { get; set; }
+        public string IdCardNo { get; set; }
 
         public string OpenId { get; set; }
 

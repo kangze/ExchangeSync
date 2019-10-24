@@ -44,7 +44,7 @@ namespace ExchangeSync.Model.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Number");
+                    b.HasIndex("Name");
 
                     b.HasIndex("ParentId");
 
@@ -77,6 +77,11 @@ namespace ExchangeSync.Model.Migrations
                         .IsRequired()
                         .HasMaxLength(64);
 
+                    b.Property<string>("OpenId")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("Password");
+
                     b.Property<Guid>("PrimaryDepartmentId");
 
                     b.Property<Guid>("PrimaryPositionId");
@@ -101,22 +106,20 @@ namespace ExchangeSync.Model.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("ExchangeSync.Model.EnterpiseContactModel.EmployeeEmail", b =>
+            modelBuilder.Entity("ExchangeSync.Model.EnterpiseContactModel.EmployeeAuth", b =>
                 {
-                    b.Property<Guid>("EmployeeId")
+                    b.Property<string>("Number")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid?>("EmployeeId1");
+                    b.Property<string>("IdCardNo");
 
                     b.Property<string>("OpenId");
 
                     b.Property<string>("Password");
 
-                    b.HasKey("EmployeeId");
+                    b.HasKey("Number");
 
-                    b.HasIndex("EmployeeId1");
-
-                    b.ToTable("EmployeeEmails");
+                    b.ToTable("EmployeeAuths");
                 });
 
             modelBuilder.Entity("ExchangeSync.Model.EnterpiseContactModel.EmployeePosition", b =>
@@ -161,13 +164,6 @@ namespace ExchangeSync.Model.Migrations
                     b.HasOne("ExchangeSync.Model.EnterpiseContactModel.Department", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
-                });
-
-            modelBuilder.Entity("ExchangeSync.Model.EnterpiseContactModel.EmployeeEmail", b =>
-                {
-                    b.HasOne("ExchangeSync.Model.EnterpiseContactModel.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId1");
                 });
 
             modelBuilder.Entity("ExchangeSync.Model.EnterpiseContactModel.EmployeePosition", b =>

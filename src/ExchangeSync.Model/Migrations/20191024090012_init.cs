@@ -32,14 +32,30 @@ namespace ExchangeSync.Model.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EmployeeAuths",
+                columns: table => new
+                {
+                    Number = table.Column<string>(nullable: false),
+                    IdCardNo = table.Column<string>(nullable: true),
+                    OpenId = table.Column<string>(nullable: true),
+                    Password = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployeeAuths", x => x.Number);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Employees",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Number = table.Column<string>(maxLength: 64, nullable: false),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
                     UserId = table.Column<Guid>(nullable: true),
+                    OpenId = table.Column<string>(maxLength: 128, nullable: true),
+                    Password = table.Column<string>(nullable: true),
                     UserName = table.Column<string>(maxLength: 128, nullable: true),
+                    Number = table.Column<string>(maxLength: 64, nullable: false),
                     IdCardNo = table.Column<string>(maxLength: 128, nullable: false),
                     Mobile = table.Column<string>(maxLength: 128, nullable: true),
                     Gender = table.Column<int>(nullable: false),
@@ -74,26 +90,6 @@ namespace ExchangeSync.Model.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmployeeEmails",
-                columns: table => new
-                {
-                    EmployeeId = table.Column<Guid>(nullable: false),
-                    EmployeeId1 = table.Column<Guid>(nullable: true),
-                    OpenId = table.Column<string>(nullable: true),
-                    Password = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmployeeEmails", x => x.EmployeeId);
-                    table.ForeignKey(
-                        name: "FK_EmployeeEmails_Employees_EmployeeId1",
-                        column: x => x.EmployeeId1,
-                        principalTable: "Employees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "EmployeePositions",
                 columns: table => new
                 {
@@ -120,19 +116,14 @@ namespace ExchangeSync.Model.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Departments_Number",
+                name: "IX_Departments_Name",
                 table: "Departments",
-                column: "Number");
+                column: "Name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Departments_ParentId",
                 table: "Departments",
                 column: "ParentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EmployeeEmails_EmployeeId1",
-                table: "EmployeeEmails",
-                column: "EmployeeId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeePositions_PositionId",
@@ -173,7 +164,7 @@ namespace ExchangeSync.Model.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "EmployeeEmails");
+                name: "EmployeeAuths");
 
             migrationBuilder.DropTable(
                 name: "EmployeePositions");

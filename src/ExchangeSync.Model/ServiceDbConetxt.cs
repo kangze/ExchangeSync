@@ -23,7 +23,7 @@ namespace ExchangeSync.Model
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseSqlServer(@"Data Source=192.168.100.42,1433;Database=UserSync;User Id=dev; Password=dev123;MultipleActiveResultSets=true");
+                optionsBuilder.UseSqlServer(@"Server=db-01.server.scrbg.com,1433;Database=ITSCRBG_Contact;User Id=base;Password=MS@scrbg2016;MultipleActiveResultSets=true");
         }
 
         public DbSet<Department> Departments { get; set; }
@@ -34,13 +34,12 @@ namespace ExchangeSync.Model
 
         public DbSet<EmployeePosition> EmployeePositions { get; set; }
 
-        public DbSet<EmployeeEmail> EmployeeEmails { get; set; }
+        public DbSet<EmployeeAuth> EmployeeAuths { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Department>()
-                .HasIndex(o => o.Number);
-
+                .HasIndex(o => o.Name);
             modelBuilder.Entity<Employee>()
                .HasIndex(o => o.Number);
             modelBuilder.Entity<Employee>()
@@ -51,12 +50,9 @@ namespace ExchangeSync.Model
               .HasIndex(o => o.IdCardNo);
             modelBuilder.Entity<Employee>()
              .HasIndex(o => o.PrimaryDepartmentId);
-
             modelBuilder.Entity<EmployeePosition>()
                 .HasKey(o => new { o.EmployeeId, o.PositionId });
 
-            modelBuilder.Entity<EmployeeEmail>()
-                .HasKey(o => o.EmployeeId);
         }
     }
 }

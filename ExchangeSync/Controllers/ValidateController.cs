@@ -5,12 +5,20 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using ExchangeSync.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeSync.Controllers
 {
     public class ValidateController : Controller
     {
+        private readonly IIdentityService _identityService;
+
+        public ValidateController(IIdentityService identityService)
+        {
+            _identityService = identityService;
+        }
+
         [HttpGet]
         [HttpPost]
         [Route("/Validate.html")]
@@ -29,6 +37,21 @@ namespace ExchangeSync.Controllers
             var json = await response.Content.ReadAsStringAsync();
             return Content(json);
 
+        }
+
+        /// <summary>
+        /// 用于单点登录的验证回调
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> AuthticationCallback(string a, string p)
+        {
+            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(p))
+                return BadRequest("空的用户账户信息!");
+            //var accessToken=await this._identityService.GetUserAccessTokenAsync()
+            //var userInfo = await this._identityService.GetUserInfoAsync();
+            return Content("");
         }
     }
 }

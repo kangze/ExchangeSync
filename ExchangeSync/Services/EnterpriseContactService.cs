@@ -24,46 +24,45 @@ namespace ExchangeSync.Services
             if (string.IsNullOrEmpty(openId))
                 throw new ArgumentNullException(nameof(openId));
             openId = openId.ToLower();
-            var employeeEmail = await this._db.EmployeeEmails
-                .Include(u => u.Employee)
-                .FirstOrDefaultAsync(u => u.OpenId == openId);
-            if (employeeEmail == null || employeeEmail.Employee == null)
-                throw new Exception("没有找到该用户相关的信息!");
-            return new EmployeeBaseInfoDto()
-            {
-                Id = employeeEmail.EmployeeId,
-                Name = employeeEmail.Employee.Name,
-                Number = employeeEmail.Employee.Number,
-                EmailAddress = employeeEmail.Employee.UserName + "@scrbg.com",
-                OpenId = employeeEmail.OpenId,
-                UserId = employeeEmail.Employee.UserId.HasValue ? employeeEmail.Employee.UserId.ToString() : null,
-                EmailPassword = employeeEmail.Password
-            };
+            //var employeeEmail = 
+            //if (employeeEmail == null || employeeEmail.Employee == null)
+            throw new Exception("没有找到该用户相关的信息!");
+            //return new EmployeeBaseInfoDto()
+            //{
+            //    Id = employeeEmail.EmployeeId,
+            //    Name = employeeEmail.Employee.Name,
+            //    Number = employeeEmail.Employee.Number,
+            //    EmailAddress = employeeEmail.Employee.UserName + "@scrbg.com",
+            //    OpenId = employeeEmail.OpenId,
+            //    UserId = employeeEmail.Employee.UserId.HasValue ? employeeEmail.Employee.UserId.ToString() : null,
+            //    EmailPassword = employeeEmail.Password
+            //};
         }
 
         public async Task<List<EmployeeBaseInfoDto>> SearchEmployeeBaseInfoByKeyword(string keyword)
         {
-            var ls = new List<EmployeeBaseInfoDto>();
-            if (string.IsNullOrEmpty(keyword))
-                return ls;
-            var employees = await this._db.Employees
-                .Include(u => u.EmployeeEmail)
-                .Where(u => (u.Name.Contains(keyword) || u.Number.Contains(keyword) || u.UserName.Contains(keyword)) && !string.IsNullOrEmpty(u.UserName))
-                .ToListAsync();
-            foreach (var employee in employees)
-            {
-                ls.Add(new EmployeeBaseInfoDto()
-                {
-                    Id = employee.Id,
-                    Name = employee.Name,
-                    Number = employee.Number,
-                    EmailAddress = employee.UserName + "@scrbg.com",
-                    OpenId = employee.EmployeeEmail == null ? null : employee.EmployeeEmail.OpenId,
-                    UserId = employee.UserId.Value.ToString(),
-                    EmailPassword = employee.EmployeeEmail == null ? null : employee.EmployeeEmail.Password
-                });
-            }
-            return ls;
+            //var ls = new List<EmployeeBaseInfoDto>();
+            //if (string.IsNullOrEmpty(keyword))
+            //    return ls;
+            //var employees = await this._db.Employees
+            //    .Include(u => u.EmployeeEmail)
+            //    .Where(u => (u.Name.Contains(keyword) || u.Number.Contains(keyword) || u.UserName.Contains(keyword)) && !string.IsNullOrEmpty(u.UserName))
+            //    .ToListAsync();
+            //foreach (var employee in employees)
+            //{
+            //    ls.Add(new EmployeeBaseInfoDto()
+            //    {
+            //        Id = employee.Id,
+            //        Name = employee.Name,
+            //        Number = employee.Number,
+            //        EmailAddress = employee.UserName + "@scrbg.com",
+            //        OpenId = employee.EmployeeEmail == null ? null : employee.EmployeeEmail.OpenId,
+            //        UserId = employee.UserId.Value.ToString(),
+            //        EmailPassword = employee.EmployeeEmail == null ? null : employee.EmployeeEmail.Password
+            //    });
+            //}
+            //return ls;
+            return null;
         }
     }
 }

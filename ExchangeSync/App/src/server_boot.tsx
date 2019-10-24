@@ -13,9 +13,12 @@ initializeIcons("/fonts/");
 var location = process.argv[2];
 var detailBase64 = process.argv[3];
 
-var data = new Buffer(detailBase64, 'base64').toString();
+var dataWarpper = JSON.parse(new Buffer(detailBase64, 'base64').toString());
+var data = dataWarpper.data;
+var user = dataWarpper.user;
 
-const context = { data: JSON.parse(data) } as any;
+
+const context = { data: data } as any;
 let { html, css } = renderStatic(() => {
   return renderToString(
     <StaticRouter location={location} context={context}>
@@ -36,7 +39,8 @@ var doc = `
     <meta name="theme-color" content="#0078d4" />
     <link href="/css/fabric.min.css" rel="stylesheet" />
     <script>
-      window.data=${data}
+      window.data=${JSON.stringify(data)};
+      window.user=${JSON.stringify(user)};
     </script>
     <link rel="stylesheet" href="/css/zx-editor.min.css">
     <style>

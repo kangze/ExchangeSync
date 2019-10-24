@@ -10,25 +10,27 @@ namespace ExchangeSync.Model.EnterpiseContactModel
         public Guid Id { get; set; }
 
         [Required]
+        [StringLength(128)]
+        public string Name { get; set; }
+
+        public Guid? UserId { get; set; }
+
+        [StringLength(128)]
+        public string OpenId { get; set; }
+
+        public string Password { get; set; }
+
+        [StringLength(128)]
+        public string UserName { get; set; }
+
+        [Required]
         [StringLength(64)]
-        //[Index]
         public string Number { get; set; }
 
         [Required]
         [StringLength(128)]
-        public string Name { get; set; }
-
-        //[Index]
-        public Guid? UserId { get; set; }
-
-        [StringLength(128)]
-        //[Index]
-        public string UserName { get; set; }
-
-        [Required]
-        [StringLength(128)]
-        //[Index]
         public string IdCardNo { get; set; }
+
 
         [StringLength(128)]
         public string Mobile { get; set; }
@@ -37,7 +39,6 @@ namespace ExchangeSync.Model.EnterpiseContactModel
 
         public string Avatar { get; set; }
 
-        //[Index]
         [Required]
         public Guid PrimaryDepartmentId { get; set; }
 
@@ -48,6 +49,5 @@ namespace ExchangeSync.Model.EnterpiseContactModel
 
         public virtual List<EmployeePosition> Positions { get; set; }
 
-        public virtual EmployeeEmail EmployeeEmail { get; set; }
     }
 }

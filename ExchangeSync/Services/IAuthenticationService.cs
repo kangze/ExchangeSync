@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace ExchangeSync.Services
 {
-    public interface IServerRenderService
+    public interface IAuthenticationService
     {
-        string Render(string path, object data,object user);
+        
     }
 }
