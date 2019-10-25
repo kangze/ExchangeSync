@@ -9,11 +9,12 @@ using ExchangeSync.Extension;
 using Microsoft.AspNetCore.Mvc;
 using ExchangeSync.Models;
 using ExchangeSync.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.NodeServices;
 
 namespace ExchangeSync.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : ExchangeControllerBase
     {
         private readonly IServerRenderService _serverRenderService;
         private readonly IMailService _mailService;
@@ -26,24 +27,28 @@ namespace ExchangeSync.Controllers
             _calendarService = calendarService;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var path = Request.Path.ToString();
-            var user = new { userName = MailService.TestAccount, name = MailService.TestName };
+            //get userName
+            var userName = this.GetUserName();
+            var name = this.GetName();
+            var user = new { userName = userName, name = name };
             object data = null;
             if (path == "" || path == "/")
-                data = await this._mailService.GetIndexMailAsync("");
+                data = await this._mailService.GetIndexMailAsync(userName);
             else if (path.Contains("sended"))
-                data = await this._mailService.GetSendedMailAsync("");
+                data = await this._mailService.GetSendedMailAsync(userName);
             else if (path.Contains("draft"))
-                data = await this._mailService.GetDraftMailAsync("");
+                data = await this._mailService.GetDraftMailAsync(userName);
             else if (path.Contains("detail"))
             {
                 var split = path.Split('/');
                 if (split.Length != 3)
                     return Redirect("/");
                 var mailId = split[2];
-                data = await this._mailService.GetMailAsync(mailId);
+                data = await this._mailService.GetMailAsync(userName, mailId);
             }
             else if (path.Contains("calendar"))
             {
@@ -56,7 +61,7 @@ namespace ExchangeSync.Controllers
                 if (split.Length != 3)
                     return Redirect("/");
                 var mailId = split[2];
-                data = await this._mailService.GetMailAsync(mailId);
+                data = await this._mailService.GetMailAsync(userName, mailId);
             }
 
             var html = this._serverRenderService.Render(Request.Path, data, user);

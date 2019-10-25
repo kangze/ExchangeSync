@@ -12,12 +12,13 @@ using ExchangeSync.Model.ExchangeModel;
 using ExchangeSync.Models;
 using ExchangeSync.Models.Inputs;
 using ExchangeSync.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ExchangeSync.Controllers
 {
-    public class MailController : Controller
+    public class MailController : ExchangeControllerBase
     {
         private readonly IMailService _mailService;
 
@@ -58,28 +59,35 @@ namespace ExchangeSync.Controllers
             return result;
         }
 
+        [Authorize]
         public async Task<IActionResult> GetMail(string mailId)
         {
-
-            var item = await this._mailService.GetMailAsync(mailId);
+            var userName = this.GetUserName();
+            var item = await this._mailService.GetMailAsync(userName, mailId);
             return Json(item);
         }
 
+        [Authorize]
         public async Task<IActionResult> SetUnReade(string mailId)
         {
-            await this._mailService.SetUnReade(mailId);
+            var userName = this.GetUserName();
+            await this._mailService.SetUnReade(userName, mailId);
             return Json(new { success = true });
         }
 
+        [Authorize]
         public async Task<IActionResult> Delete(string mailId)
         {
-            await this._mailService.Delete(mailId);
+            var userName = this.GetUserName();
+            await this._mailService.Delete(userName, mailId);
             return Json(new { success = true });
         }
 
+        [Authorize]
         public async Task<IActionResult> DownloadAttachment(string mailId, string attachmentId, string attachmentName)
         {
-            var stream = await this._mailService.Download(mailId, attachmentId);
+            var userName = this.GetUserName();
+            var stream = await this._mailService.Download(userName, mailId, attachmentId);
             stream.Position = 0;
             return File(stream, "application/octet-stream", attachmentName);
         }
@@ -102,7 +110,7 @@ namespace ExchangeSync.Controllers
                 var imgBytes = Convert.FromBase64String(imgBase64);
                 var attachmentId = Guid.NewGuid().ToString("N").ToLower() + ".jpg";
                 input.Content = input.Content.Replace(imgSrc, "cid:" + attachmentId);
-                
+
                 input.Attachments.Add(new AttachmentInput()
                 {
                     Id = attachmentId,
@@ -112,8 +120,10 @@ namespace ExchangeSync.Controllers
             }
         }
 
+        [Authorize]
         public async Task<IActionResult> Reply([FromForm]ReplyMailInput input)
         {
+            var userName = this.GetUserName();
             this.ConvertImage(input);
             if (input.Attachment != null)
             {
@@ -138,12 +148,12 @@ namespace ExchangeSync.Controllers
                 input.Attachments = new List<AttachmentInput>();
             if (!string.IsNullOrEmpty(input.MailId))
             {
-                await this._mailService.ReplyAsync(input.MailId, input.Content, input.CopyTo, input.Attachments);
+                await this._mailService.ReplyAsync(userName, input.MailId, input.Content, input.CopyTo, input.Attachments);
                 return Json(new { success = true });
             }
             else
             {
-                await this._mailService.Send(input.Title, input.Content, input.Reciver, input.CopyTo, input.Attachments);
+                await this._mailService.Send(userName, input.Title, input.Content, input.Reciver, input.CopyTo, input.Attachments);
                 return Json(new { success = true });
             }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,8 +18,8 @@ namespace ExchangeSync.Services
         /// <returns></returns>
         Task<string> GetClientCredentialAccessTokenAsync(string scope, string clientId, string clientSecret);
 
-        Task<string> GetUserAccessTokenAsync(string userName, string userPassword, string scope);
+        Task<string> GetUserAccessTokenAsync(string userName, string userPassword);
 
-        Task<string> GetUserInfoAsync(string accessToken);
+        Task<IEnumerable<Claim>> GetUserInfoAsync(string accessToken);
     }
 }

@@ -19,7 +19,7 @@ namespace ExchangeSync
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseUrls("http://*:10121")
+                //.UseUrls("http://*:10121")
                 .UseStartup<Startup>();
     }
 }

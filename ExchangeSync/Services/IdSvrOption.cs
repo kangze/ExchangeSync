@@ -9,10 +9,11 @@ namespace ExchangeSync.Services
     public class IdSvrOption
     {
         public string IssuerUri { get; set; }
-        public bool RequireHttps { get; set; }
 
         public string ClientId { get; set; }
 
         public string ClientSecret { get; set; }
+
+        public string[] Scopes { get; set; }
     }
 }

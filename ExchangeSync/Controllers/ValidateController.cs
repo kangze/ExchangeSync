@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using ExchangeSync.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeSync.Controllers
@@ -49,9 +51,12 @@ namespace ExchangeSync.Controllers
         {
             if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(p))
                 return BadRequest("空的用户账户信息!");
-            //var accessToken=await this._identityService.GetUserAccessTokenAsync()
-            //var userInfo = await this._identityService.GetUserInfoAsync();
-            return Content("");
+            var accessToken = await this._identityService.GetUserAccessTokenAsync(a.Trim(), p.Trim());
+            var claims = await this._identityService.GetUserInfoAsync(accessToken);
+            var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+            claimsIdentity.AddClaim(new Claim("access_token", accessToken));
+            await HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(claimsIdentity));
+            return Redirect("~/");
         }
     }
 }

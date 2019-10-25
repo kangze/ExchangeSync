@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using IdentityModel.Client;
@@ -36,7 +37,7 @@ namespace ExchangeSync.Services
             return tokenResponse.AccessToken;
         }
 
-        public async Task<string> GetUserAccessTokenAsync(string userName, string userPassword, string scope)
+        public async Task<string> GetUserAccessTokenAsync(string userName, string userPassword)
         {
             var disco = await GetDiscoveryDocumentResponseAsync();
             var tokenResponse = await _httpClient.RequestPasswordTokenAsync(new PasswordTokenRequest()
@@ -46,12 +47,12 @@ namespace ExchangeSync.Services
                 Password = userPassword,
                 ClientId = this._option.ClientId,
                 ClientSecret = this._option.ClientSecret,
-                Scope = scope,
+                Scope = string.Join(" ", this._option.Scopes)
             });
-            return tokenResponse.Raw;
+            return tokenResponse.AccessToken;
         }
 
-        public async Task<string> GetUserInfoAsync(string accessToken)
+        public async Task<IEnumerable<Claim>> GetUserInfoAsync(string accessToken)
         {
             var disco = await GetDiscoveryDocumentResponseAsync();
             var userInfoResponse = await _httpClient.GetUserInfoAsync(new UserInfoRequest()
@@ -60,7 +61,7 @@ namespace ExchangeSync.Services
                 Token = accessToken,
             });
             if (userInfoResponse.IsError) throw new Exception(userInfoResponse.Error);
-            return userInfoResponse.Raw;
+            return userInfoResponse.Claims;
         }
 
         private async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentResponseAsync()
@@ -70,7 +71,7 @@ namespace ExchangeSync.Services
                 Address = _option.IssuerUri,
                 Policy =
                 {
-                    RequireHttps = _option.RequireHttps
+                    RequireHttps = _option.IssuerUri.Contains("https")
                 }
             });
             if (disco.IsError) throw new Exception(disco.Error);

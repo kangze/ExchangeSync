@@ -41,10 +41,18 @@ namespace ExchangeSync
             services.AddHttpContextAccessor();
             var databseSection = Configuration.GetSection("Database");
             var mdmBusSection = Configuration.GetSection("MdmBus");
+            services.Configure<IdSvrOption>(Configuration.GetSection("IdSvr"));
             services.AddDbContext<ServiceDbContext>(option =>
             {
                 option.UseSqlServer(databseSection.GetValue<string>("ConnectString"));
             });
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "Cookies";
+                    options.DefaultChallengeScheme = "oidc";
+                })
+                .AddCookie("Cookies");
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server.js"));
             services.AddScoped<IMailService, MailService>();
