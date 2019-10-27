@@ -5,6 +5,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 require("./index.css");
+import Empty from "../_shared/Empty";
 
 const styles = {
     root: {
@@ -90,6 +91,8 @@ export default class Header extends React.Component<any, any> {
     }
 
     public render() {
+        let userName = "";
+        if (window) userName = (window as any).user.userName + "@scrbg.com";
         return (
             <div style={styles.root}>
                 <div style={styles.appsdiv}>
@@ -101,7 +104,7 @@ export default class Header extends React.Component<any, any> {
 
                 </div>
 
-                
+
                 <div style={styles.text}>
                     <p style={styles.textp}>
                         <span>{this.props.title}</span>
@@ -116,8 +119,8 @@ export default class Header extends React.Component<any, any> {
                     type={PanelType.smallFixedNear}
                     onDismiss={this._hidePanel}
                     isLightDismiss={true}
-                    headerText="wangyue@scrbg.com">
-
+                    headerText={userName}>
+                    <hr style={{ border: "none", height: 2, margin: 0, backgroundColor: "#005bac" }} />
                     {menus.map(item => {
                         return (
                             <DefaultButton

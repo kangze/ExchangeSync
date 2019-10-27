@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ExchangeSync.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExchangeSync.Controllers
@@ -53,9 +54,9 @@ namespace ExchangeSync.Controllers
                 return BadRequest("空的用户账户信息!");
             var accessToken = await this._identityService.GetUserAccessTokenAsync(a.Trim(), p.Trim());
             var claims = await this._identityService.GetUserInfoAsync(accessToken);
-            var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             claimsIdentity.AddClaim(new Claim("access_token", accessToken));
-            await HttpContext.SignInAsync("Cookies", new ClaimsPrincipal(claimsIdentity));
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
             return Redirect("~/");
         }
     }

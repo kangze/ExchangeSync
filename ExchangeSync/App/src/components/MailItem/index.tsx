@@ -8,14 +8,14 @@ import { Shimmer, ShimmerElementsGroup, ShimmerElementType } from 'office-ui-fab
 import axios from "axios";
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
-
+import Empty from "../_shared/Empty";
 
 const examplePersona: IPersonaSharedProps = {
     imageInitials: "M",
     size: PersonaSize.size48,
 };
 
-const colors=[
+const colors = [
     "#750b1c",
     "#a4262c",
     "#498205",
@@ -160,7 +160,7 @@ export default class MailItem extends React.PureComponent<any, any> {
                     <Persona
                         onClick={this.handleClick.bind(this, item)}
                         imageInitials={item.sender.name[0]}
-                        initialsColor={ parseInt((10*Math.random()).toString()) as PersonaInitialsColor}
+                        initialsColor={parseInt((10 * Math.random()).toString()) as PersonaInitialsColor}
                         size={PersonaSize.size40}
                         styles={styles}>
                         <div>
@@ -205,7 +205,7 @@ export default class MailItem extends React.PureComponent<any, any> {
             );
         }
         if ((this.state as any).groups.length == 0)
-            return <div>服务器正确返回,但是没有内容哦...</div>
+            return <Empty />
         return (
             <Stack tokens={{ childrenGap: 10 }}>
                 {(this.state as any).groups.map((group: any) => {
@@ -218,7 +218,7 @@ export default class MailItem extends React.PureComponent<any, any> {
                         </div>
                     );
                 })}
-                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 52, width: 59, right: 20, bottom: 20, paddingLeft: 5, paddingTop: 12, boxShadow: Depths.depth64 }}>
+                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 56, right: 20, bottom: 20, paddingLeft: 8, paddingTop: 15, boxShadow: Depths.depth64 }}>
                     <IconButton
                         iconProps={{
                             iconName: 'Edit', styles: {

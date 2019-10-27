@@ -33,7 +33,7 @@ namespace ExchangeSync.Services
         /// <returns></returns>
         public async Task<List<MailGroupViewModel>> GetDraftMailAsync(string identity)
         {
-             var mailManager = await GetMailManager(identity);
+            var mailManager = await GetMailManager(identity);
             var drafts = await mailManager.GetDraftMailAsync();
             var result = this.GroupMail(drafts);
             foreach (var item in result.SelectMany(u => u.Items))
@@ -66,7 +66,7 @@ namespace ExchangeSync.Services
         /// </summary>
         /// <param name="mailId"></param>
         /// <returns></returns>
-        public async Task<MailDetailViewModel> GetMailAsync(string identity,string mailId)
+        public async Task<MailDetailViewModel> GetMailAsync(string identity, string mailId)
         {
             var mailManager = await GetMailManager(identity);
             var result = await mailManager.GetMailAsync(mailId);
@@ -210,6 +210,7 @@ namespace ExchangeSync.Services
             if (auth == null)
                 return null;
             return MailManager.Create(identity, auth.Password.DecodeBase64());
+            //return await Task.FromResult(MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000"));
 
         }
 

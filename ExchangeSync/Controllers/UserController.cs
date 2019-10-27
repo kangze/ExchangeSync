@@ -25,7 +25,7 @@ namespace ExchangeSync.Controllers
             {
                 var employees = await this._enterpriseContactService.SearchEmployeeBaseInfoByKeyword(keyword);
                 foreach (var infoDto in employees)
-                    ls.Add(new { key = infoDto.EmailAddress, name = infoDto.Name });
+                    ls.Add(new { key = infoDto.EmailAddress, name = infoDto.Name + "_" + infoDto.Number });
             }
             catch (Exception e)
             {

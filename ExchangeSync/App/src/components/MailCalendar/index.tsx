@@ -8,17 +8,19 @@ import { ActivityItem, IActivityItemProps, Link, mergeStyleSets } from 'office-u
 
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { Calendar, DateRangeType } from 'office-ui-fabric-react/lib/Calendar';
-
+import Empty from "../_shared/Empty";
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react';
 
 
 
 const classNames = mergeStyleSets({
     exampleRoot: {
-        marginTop: '20px'
+        marginTop: '20px',
+        marginLeft: 13,
     },
     nameText: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontSize: 15
     }
 });
 
@@ -35,7 +37,7 @@ const DayPickerStrings: IDatePickerStrings = {
 
     shortDays: ['日', '一', '二', '三', '四', '五', '六'],
 
-    goToToday: 'Go to today',
+    goToToday: '转到今天',
     prevMonthAriaLabel: 'Go to previous month',
     nextMonthAriaLabel: 'Go to next month',
     prevYearAriaLabel: 'Go to previous year',
@@ -76,6 +78,8 @@ export default class CalendarItem extends React.Component<any, any>{
     }
 
     public createItem(data: any) {
+        var date = new Date(data.start);
+        var dateStr = date.toLocaleString('chinese', { hour12: false });
         var item = {
             key: 1,
             activityDescription: [
@@ -92,7 +96,7 @@ export default class CalendarItem extends React.Component<any, any>{
             ],
             activityPersonas: [{ imageUrl: "TestImages.personaMale" }],
             comments: data.body,
-            timeStamp: data.start,
+            timeStamp: "开始时间: " + dateStr,
         }
         return item;
     }
@@ -136,13 +140,13 @@ export default class CalendarItem extends React.Component<any, any>{
             self.setState({ forbiddenDate: dates });
         });
         self.setState({
-            loading:true,
+            loading: true,
         })
         axios.get("/Calendar/MyAppointMents?year=" + date.getFullYear() + "&month=" + (date.getMonth() + 1) + "&day=" + (date.getDate())).then(response => {
-             let data = response.data;
+            let data = response.data;
             self.setState({
                 groups: data,
-                loading:false,
+                loading: false,
             })
         })
     }
@@ -182,7 +186,7 @@ export default class CalendarItem extends React.Component<any, any>{
         let self = this;
         const { firstDayOfWeek } = this.state;
         var groups = (this.state.groups as any).map((data: any) => self.createItem(data));
-        
+
         return (
             <div>
                 <Calendar
@@ -207,13 +211,18 @@ export default class CalendarItem extends React.Component<any, any>{
                     showSixWeeksByDefault={this.props.showSixWeeksByDefault}
                     workWeekDays={this.props.workWeekDays}
                 />
-                {this.state.loading?<Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />:groups.map((item: any) => {
-                    return <ActivityItem {...item} className={classNames.exampleRoot} />
-                })}
-                
+                {this.state.loading ?
+                    <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
+                    :
+                    groups.length == 0 ?
+                        <Empty calendar={true} />
+                        :
+                        groups.map((item: any) => <ActivityItem {...item} className={classNames.exampleRoot} />)
+                }
 
 
-                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 44, width: 56, right: 20, bottom: 20, paddingLeft: 8, paddingTop: 20, boxShadow: Depths.depth64 }}>
+
+                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 47, width: 56, right: 20, bottom: 20, paddingLeft: 8, paddingTop: 17, boxShadow: Depths.depth64 }}>
                     <IconButton
                         iconProps={{
                             iconName: 'CalendarSettings', styles: {
