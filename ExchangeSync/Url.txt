@@ -1,0 +1,4 @@
+﻿1 {"_links":{"self":{"href":"https://sfbpool.scrbg.com/Autodiscover/AutodiscoverService.svc/root?originalDomain=scrbg.com"},"user":{"href":"https://sfbpool.scrbg.com/Autodiscover/AutodiscoverService.svc/root/oauth/user?originalDomain=scrbg.com"},"xframe":{"href":"https://sfbpool.scrbg.com/Autodiscover/XFrame/XFrame.html"}}}
+2 https://sfbpool.scrbg.com/WebTicket/oauthtoken
+
+3{"_links":{"self":{"href":"https://sfbpool.scrbg.com/Autodiscover/AutodiscoverService.svc/root/oauth/user"},"applications":{"href":"https://sfbpool.scrbg.com/ucwa/oauth/v1/applications"},"xframe":{"href":"https://sfbpool.scrbg.com/Autodiscover/XFrame/XFrame.html"}}}
