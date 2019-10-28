@@ -52,21 +52,26 @@ export default class CalendarItem extends React.Component<any, any>{
         super(props);
         if (props.staticContext && props.staticContext.data) {
             let data = props.staticContext.data;
+            let user=props.staticContext.user;
             this.state = {
                 groups: data,
                 loading: false,
-                firstDayOfWeek: DayOfWeek.Monday
+                firstDayOfWeek: DayOfWeek.Monday,
+                user:user
             }
         } else if ((window as any).data) {
             let data1 = (window as any).data;
+            let user=(window as any).user;
             delete (window as any).data;
             this.state = {
                 groups: data1,
                 loading: false,
-                firstDayOfWeek: DayOfWeek.Monday
+                firstDayOfWeek: DayOfWeek.Monday,
+                user:user
             }
         } else {
-            this.state = { loading: true, firstDayOfWeek: DayOfWeek.Monday, groups: [] };
+            let user = (window as any).user;
+            this.state = {user:user, loading: true, firstDayOfWeek: DayOfWeek.Monday, groups: [] };
         }
     }
 
@@ -87,7 +92,7 @@ export default class CalendarItem extends React.Component<any, any>{
                     key={1}
                     className={classNames.nameText}
                 >
-                    王跃
+                    {this.state.user.name}
               </Link>,
                 <span key={2}> 创建了 </span>,
                 <span key={3} className={classNames.nameText}>

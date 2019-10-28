@@ -7,7 +7,7 @@ import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 require("./index.css");
 import Empty from "../_shared/Empty";
 
-declare var window:any;
+declare var window: any;
 
 const styles = {
     root: {
@@ -83,9 +83,26 @@ const menus = [
 
 export default class Header extends React.Component<any, any> {
 
-    public state = {
-        showPanel: false
-    };
+    constructor(props: any) {
+        super(props);
+        if (props.staticContext && props.staticContext.data) {
+            let user = props.staticContext.user;
+            this.state = {
+                user: user
+            }
+        } else if ((window as any).user) {
+            let user = (window as any).user;
+            this.state = {
+                user: user
+            }
+        } else {
+            let user = (window as any).user;
+            this.state = {
+                showPanel: false,
+                user: user
+            }
+        }
+    }
 
     public handleMenuClick(path: string) {
         (this.props as any).history.push(path);
@@ -93,9 +110,7 @@ export default class Header extends React.Component<any, any> {
     }
 
     public render() {
-        let userName = "";
-        // if (window)
-        //     userName = (window as any).user.userName + "@scrbg.com";
+        let userName = this.state.user.userName + "@scrbg.com";
         return (
             <div style={styles.root}>
                 <div style={styles.appsdiv}>

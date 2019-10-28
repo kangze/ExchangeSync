@@ -102,18 +102,24 @@ export default class MailItem extends React.PureComponent<any, any> {
         super(props);
         if (props.staticContext && props.staticContext.data) {
             let data = props.staticContext.data;
+            let user = props.staticContext.user;
             this.state = {
-                groups: data as IMailItemGroupedProps[]
+                groups: data as IMailItemGroupedProps[],
+                user:user
             }
         } else if ((window as any).data) {
             let data = (window as any).data;
             delete (window as any).data;
+            let user=(window as any).user;
             this.state = {
-                groups: data as IMailItemGroupedProps[]
+                groups: data as IMailItemGroupedProps[],
+                user:user
             }
         } else {
+            let user=(window as any).user;
             this.state = {
-                loading: true
+                loading: true,
+                user:user
             }
         }
     }

@@ -18,7 +18,7 @@ var data = dataWarpper.data;
 var user = dataWarpper.user;
 
 
-const context = { data: data } as any;
+const context = { data: data,user:user } as any;
 let { html, css } = renderStatic(() => {
   return renderToString(
     <StaticRouter location={location} context={context}>
