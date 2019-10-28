@@ -22,5 +22,12 @@ namespace ExchangeSync.Controllers
             var name = name_claim.Value;
             return name;
         }
+
+        public string GetNumber()
+        {
+            var number_claim = User.Claims.FirstOrDefault(u => u.Type == "employee_number");
+            var number = number_claim.Value;
+            return number;
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace ExchangeSyncTest.SkypeTest
                 DiscoverServer = "http://lyncdiscoverinternal.scrbg.com/"
             });
             var service = new MeetingService(service0, new HttpClient());
-            await service.CreateOnlineMeetingAsync("测试", "描述");
+           // await service.CreateOnlineMeetingAsync("测试", "描述");
         }
     }
 }

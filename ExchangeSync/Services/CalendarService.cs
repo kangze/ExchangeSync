@@ -14,18 +14,14 @@ namespace ExchangeSync.Services
     {
         private readonly IMapper _mapper;
 
-        public static string TestAccount = "wangyue@scrbg.com";
-        public static string TestPassword = "111111";
-        public static string TestName = "王跃";
-
         public CalendarService(IMapper mapper)
         {
             _mapper = mapper;
         }
 
-        public async Task CreateAppointMentAsync(AppointMenInput input)
+        public async Task CreateAppointMentAsync(AppointMenInput input, string username, string password)
         {
-            var mailManager = MailManager.Create(TestAccount, TestPassword);
+            var mailManager = MailManager.Create(username, password);
             input.Body = MailService.ConverToHtml(input.Body);
             var dto = this._mapper.Map<AppointMentDto>(input);
             dto.Attachments = new List<Exchange.AttachmentMailModel>();
@@ -36,15 +32,15 @@ namespace ExchangeSync.Services
                     Bytes = item.Bytes,
                     Name = item.Name,
                     Id = item.Id,
-                    IsPackage=item.IsPackage
+                    IsPackage = item.IsPackage
                 });
             }
             await mailManager.CreateAppointMentAsync(dto);
         }
 
-        public Task<List<AppointMentDto>> GetMyAppointmentsAsync()
+        public Task<List<AppointMentDto>> GetMyAppointmentsAsync(string username, string password)
         {
-            var mailManager = MailManager.Create(TestAccount, TestPassword);
+            var mailManager = MailManager.Create(username, password);
             var list = mailManager.GetAppointMentsAsync();
             return list;
         }

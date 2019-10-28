@@ -33,61 +33,51 @@ namespace ExchangeSync.Controllers
         /// 获取本用户的邮件
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         public async Task<IActionResult> GetAsync(string type)
         {
-            await Task.Delay(TimeSpan.FromSeconds(0.5));
+            var number = this.GetNumber();
             if (string.IsNullOrEmpty(type))
-                return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
+                return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync(number)));
             if (type == "index")
-                return Json(await this._mailService.GetIndexMailAsync(""));
+                return Json(await this._mailService.GetIndexMailAsync(number));
 
             if (type == "draft")
-                return await Task.FromResult(Json(await this._mailService.GetDraftMailAsync("")));
+                return await Task.FromResult(Json(await this._mailService.GetDraftMailAsync(number)));
             if (type == "sended")
-                return await Task.FromResult(Json(await this._mailService.GetSendedMailAsync("")));
-            return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync("")));
-        }
-
-        /// <summary>
-        /// 获取邮件
-        /// </summary>
-        /// <returns></returns>
-        private async Task<List<MailInfo>> GetInbox()
-        {
-            var mailManager = MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000");
-            var result = await mailManager.GetInBoxMessageAsync();
-            return result;
+                return await Task.FromResult(Json(await this._mailService.GetSendedMailAsync(number)));
+            return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync(number)));
         }
 
         [Authorize]
         public async Task<IActionResult> GetMail(string mailId)
         {
-            var userName = this.GetUserName();
-            var item = await this._mailService.GetMailAsync(userName, mailId);
+            var number = this.GetNumber();
+            var item = await this._mailService.GetMailAsync(number, mailId);
             return Json(item);
         }
 
         [Authorize]
         public async Task<IActionResult> SetUnReade(string mailId)
         {
-            var userName = this.GetUserName();
-            await this._mailService.SetUnReade(userName, mailId);
+            var number = this.GetNumber();
+            await this._mailService.SetUnReade(number, mailId);
             return Json(new { success = true });
         }
 
         [Authorize]
         public async Task<IActionResult> Delete(string mailId)
         {
-            var userName = this.GetUserName();
-            await this._mailService.Delete(userName, mailId);
+            var number = this.GetNumber();
+            await this._mailService.Delete(number, mailId);
             return Json(new { success = true });
         }
 
         [Authorize]
         public async Task<IActionResult> DownloadAttachment(string mailId, string attachmentId, string attachmentName)
         {
-            var userName = this.GetUserName();
-            var stream = await this._mailService.Download(userName, mailId, attachmentId);
+            var number = this.GetNumber();
+            var stream = await this._mailService.Download(number, mailId, attachmentId);
             stream.Position = 0;
             return File(stream, "application/octet-stream", attachmentName);
         }
@@ -123,7 +113,7 @@ namespace ExchangeSync.Controllers
         [Authorize]
         public async Task<IActionResult> Reply([FromForm]ReplyMailInput input)
         {
-            var userName = this.GetUserName();
+            var number = this.GetNumber();
             this.ConvertImage(input);
             if (input.Attachment != null)
             {
@@ -148,12 +138,12 @@ namespace ExchangeSync.Controllers
                 input.Attachments = new List<AttachmentInput>();
             if (!string.IsNullOrEmpty(input.MailId))
             {
-                await this._mailService.ReplyAsync(userName, input.MailId, input.Content, input.CopyTo, input.Attachments);
+                await this._mailService.ReplyAsync(number, input.MailId, input.Content, input.CopyTo, input.Attachments);
                 return Json(new { success = true });
             }
             else
             {
-                await this._mailService.Send(userName, input.Title, input.Content, input.Reciver, input.CopyTo, input.Attachments);
+                await this._mailService.Send(number, input.Title, input.Content, input.Reciver, input.CopyTo, input.Attachments);
                 return Json(new { success = true });
             }
 

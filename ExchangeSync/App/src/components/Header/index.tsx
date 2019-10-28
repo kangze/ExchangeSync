@@ -7,6 +7,8 @@ import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 require("./index.css");
 import Empty from "../_shared/Empty";
 
+declare var window:any;
+
 const styles = {
     root: {
         height: 48,
@@ -92,7 +94,8 @@ export default class Header extends React.Component<any, any> {
 
     public render() {
         let userName = "";
-        if (window) userName = (window as any).user.userName + "@scrbg.com";
+        // if (window)
+        //     userName = (window as any).user.userName + "@scrbg.com";
         return (
             <div style={styles.root}>
                 <div style={styles.appsdiv}>

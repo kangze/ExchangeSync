@@ -6,11 +6,13 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using ExchangeSync.Exchange.Model;
 using ExchangeSync.Extension;
+using ExchangeSync.Model;
 using Microsoft.AspNetCore.Mvc;
 using ExchangeSync.Models;
 using ExchangeSync.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.NodeServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExchangeSync.Controllers
 {
@@ -19,12 +21,14 @@ namespace ExchangeSync.Controllers
         private readonly IServerRenderService _serverRenderService;
         private readonly IMailService _mailService;
         private readonly ICalendarService _calendarService;
+        private readonly ServiceDbContext _db;
 
-        public HomeController(IServerRenderService serverRenderService, IMailService mailService, ICalendarService calendarService)
+        public HomeController(IServerRenderService serverRenderService, IMailService mailService, ICalendarService calendarService, ServiceDbContext db)
         {
             this._serverRenderService = serverRenderService;
             this._mailService = mailService;
             _calendarService = calendarService;
+            _db = db;
         }
 
         [Authorize]
@@ -32,27 +36,32 @@ namespace ExchangeSync.Controllers
         {
             var path = Request.Path.ToString();
             //get userName
+            var number = this.GetNumber();
             var userName = this.GetUserName();
             var name = this.GetName();
             var user = new { userName = userName, name = name };
+            var auth = await this._db.EmployeeAuths.FirstOrDefaultAsync(u => u.Number == number);
+            if (auth == null) return Content("身份验证失败");
+            var employee = await this._db.Employees.FirstOrDefaultAsync(u => u.Number == number);
+            if (employee == null) return Content("身份验证失败");
             object data = null;
             if (path == "" || path == "/")
-                data = await this._mailService.GetIndexMailAsync(userName);
+                data = await this._mailService.GetIndexMailAsync(number);
             else if (path.Contains("sended"))
-                data = await this._mailService.GetSendedMailAsync(userName);
+                data = await this._mailService.GetSendedMailAsync(number);
             else if (path.Contains("draft"))
-                data = await this._mailService.GetDraftMailAsync(userName);
+                data = await this._mailService.GetDraftMailAsync(number);
             else if (path.Contains("detail"))
             {
                 var split = path.Split('/');
                 if (split.Length != 3)
                     return Redirect("/");
                 var mailId = split[2];
-                data = await this._mailService.GetMailAsync(userName, mailId);
+                data = await this._mailService.GetMailAsync(number, mailId);
             }
             else if (path.Contains("calendar"))
             {
-                data = await this._calendarService.GetMyAppointmentsAsync();
+                data = await this._calendarService.GetMyAppointmentsAsync(employee.UserName + "@scrbg.com", employee.Password.DecodeBase64());
                 data = this._calendarService.GroupedCalendarAppointments(data as List<AppointMentDto>);
             }
             else if (path.Contains("reply"))
@@ -61,7 +70,7 @@ namespace ExchangeSync.Controllers
                 if (split.Length != 3)
                     return Redirect("/");
                 var mailId = split[2];
-                data = await this._mailService.GetMailAsync(userName, mailId);
+                data = await this._mailService.GetMailAsync(number, mailId);
             }
 
             var html = this._serverRenderService.Render(Request.Path, data, user);

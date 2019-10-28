@@ -8,6 +8,6 @@ namespace ExchangeSync.Skype
 {
     public interface IMeetingService
     {
-        Task<CreateMeetingResult> CreateOnlineMeetingAsync(string subject, string description);
+        Task<CreateMeetingResult> CreateOnlineMeetingAsync(string subject, string description, string account, string password);
     }
 }

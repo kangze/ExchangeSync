@@ -21,9 +21,9 @@ namespace ExchangeSync.Skype
             _httpClient = httpClient;
         }
 
-        public async Task<CreateMeetingResult> CreateOnlineMeetingAsync(string subject, string description)
+        public async Task<CreateMeetingResult> CreateOnlineMeetingAsync(string subject, string description, string account, string password)
         {
-            await this._bootstraper.StartAsync("wangyue@scrbg.com", "111111");
+            await this._bootstraper.StartAsync(account, password);
 
             var content = new StringContent(JsonConvert.SerializeObject(new
             {
