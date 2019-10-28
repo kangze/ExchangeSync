@@ -6,20 +6,24 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using ExchangeSync.Model;
 using ExchangeSync.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExchangeSync.Controllers
 {
     public class ValidateController : Controller
     {
         private readonly IIdentityService _identityService;
+        private readonly ServiceDbContext _db;
 
-        public ValidateController(IIdentityService identityService)
+        public ValidateController(IIdentityService identityService, ServiceDbContext db)
         {
             _identityService = identityService;
+            _db = db;
         }
 
         [HttpGet]
@@ -47,11 +51,21 @@ namespace ExchangeSync.Controllers
         /// </summary>
         /// <param name="a"></param>
         /// <param name="p"></param>
+        /// <param name="openId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> AuthticationCallback(string a, string p)
+        public async Task<IActionResult> AuthticationCallback(string a, string p, string openId)
         {
-            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(p))
+            if ((string.IsNullOrEmpty(a) || string.IsNullOrEmpty(p)) && string.IsNullOrEmpty(openId))
                 return BadRequest("空的用户账户信息!");
+            if (!string.IsNullOrEmpty(openId))
+            {
+                openId = openId.ToLower();
+                var auth = await this._db.EmployeeAuths.FirstOrDefaultAsync(u => u.OpenId == openId);
+                if (auth == null)
+                    return BadRequest("空的用户账户信息!");
+                p = auth.Password.Trim();
+                a = auth.Number.Trim();
+            }
             var accessToken = await this._identityService.GetUserAccessTokenAsync(a.Trim(), p.Trim());
             var claims = await this._identityService.GetUserInfoAsync(accessToken);
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
