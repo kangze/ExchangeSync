@@ -206,11 +206,11 @@ namespace ExchangeSync.Services
 
         public async Task<MailManager> GetMailManager(string identity)
         {
-            var auth = await this._dbContext.EmployeeAuths.FirstOrDefaultAsync(u => u.Number == identity);
-            if (auth == null)
-                return null;
-            return MailManager.Create(identity, auth.Password.DecodeBase64());
-            //return await Task.FromResult(MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000"));
+            //var auth = await this._dbContext.EmployeeAuths.FirstOrDefaultAsync(u => u.Number == identity);
+            //if (auth == null)
+            //    return null;
+            //return MailManager.Create(identity, auth.Password.DecodeBase64());
+            return await Task.FromResult(MailManager.Create("v-ms-kz@scrbg.com", "tfs4418000"));
 
         }
 

@@ -139,6 +139,26 @@ namespace ExchangeSync.Model.Migrations
                     b.ToTable("EmployeePositions");
                 });
 
+            modelBuilder.Entity("ExchangeSync.Model.EnterpiseContactModel.NewMailEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("DateTime");
+
+                    b.Property<string>("NewMailId");
+
+                    b.Property<bool>("Notify");
+
+                    b.Property<string>("TextBody");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewMailEvents");
+                });
+
             modelBuilder.Entity("ExchangeSync.Model.EnterpiseContactModel.Position", b =>
                 {
                     b.Property<Guid>("Id")

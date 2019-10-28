@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExchangeSync.Model.Migrations
 {
     [DbContext(typeof(ServiceDbContext))]
-    [Migration("20191024090012_init")]
-    partial class init
+    [Migration("20191028031347_addnewMailEvents")]
+    partial class addnewMailEvents
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -139,6 +139,26 @@ namespace ExchangeSync.Model.Migrations
                     b.HasIndex("PositionId");
 
                     b.ToTable("EmployeePositions");
+                });
+
+            modelBuilder.Entity("ExchangeSync.Model.EnterpiseContactModel.NewMailEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("DateTime");
+
+                    b.Property<string>("NewMailId");
+
+                    b.Property<bool>("Notify");
+
+                    b.Property<string>("TextBody");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewMailEvents");
                 });
 
             modelBuilder.Entity("ExchangeSync.Model.EnterpiseContactModel.Position", b =>

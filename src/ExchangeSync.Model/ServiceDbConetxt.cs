@@ -23,7 +23,7 @@ namespace ExchangeSync.Model
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseSqlServer(@"Server=db-01.server.scrbg.com,1433;Database=ITSCRBG_Contact;User Id=base;Password=MS@scrbg2016;MultipleActiveResultSets=true");
+                optionsBuilder.UseSqlServer(@"Data Source=(local)\SQLEXPRESS;Initial Catalog=ITSCRBG_Contact;Integrated Security=True;MultipleActiveResultSets=true");
         }
 
         public DbSet<Department> Departments { get; set; }
@@ -35,6 +35,8 @@ namespace ExchangeSync.Model
         public DbSet<EmployeePosition> EmployeePositions { get; set; }
 
         public DbSet<EmployeeAuth> EmployeeAuths { get; set; }
+
+        public DbSet<NewMailEvent> NewMailEvents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
