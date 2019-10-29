@@ -36,17 +36,23 @@ namespace ExchangeSync.Skype
 
         public async Task GetSkypeFrameUrlAsync()
         {
-            var response = await this._httpClient.GetAsync(_option.DiscoverServer);
-            if (!response.IsSuccessStatusCode)
-                throw new SkypeDiscoverException(response.ReasonPhrase);
-            var content = await response.Content.ReadAsStringAsync();
+            //var response = await this._httpClient.GetAsync(_option.DiscoverServer);
+            //if (!response.IsSuccessStatusCode)
+            //    throw new SkypeDiscoverException(response.ReasonPhrase);
+            //var content = await response.Content.ReadAsStringAsync();
 
-            var jObject = JObject.Parse(content);
+            //var jObject = JObject.Parse(content);
+            //var discover = new SkypeDiscoverLink()
+            //{
+            //    User = jObject["_links"]["user"]["href"].ToString(),
+            //    Self = jObject["_links"]["self"]["href"].ToString(),
+            //    XFrame = jObject["_links"]["xframe"]["href"].ToString(),
+            //};
             var discover = new SkypeDiscoverLink()
             {
-                User = jObject["_links"]["user"]["href"].ToString(),
-                Self = jObject["_links"]["self"]["href"].ToString(),
-                XFrame = jObject["_links"]["xframe"]["href"].ToString(),
+                User = "https://sfbpool.scrbg.com/Autodiscover/AutodiscoverService.svc/root/oauth/user?originalDomain=scrbg.com",
+                Self = "https://sfbpool.scrbg.com/Autodiscover/AutodiscoverService.svc/root?originalDomain=scrbg.com",
+                XFrame = "https://sfbpool.scrbg.com/Autodiscover/XFrame/XFrame.html",
             };
             this.SkypeDiscoverLink = discover;
             var uri = new Uri(discover.User);
@@ -62,13 +68,14 @@ namespace ExchangeSync.Skype
             var headerValue = response.Headers.WwwAuthenticate.FirstOrDefault(u => u.Scheme == "MsRtcOAuth");
             if (headerValue == null) return;
             //href="https://sfbpool.scrbg.com/WebTicket/oauthtoken",grant_type="urn:microsoft.rtc:windows,urn:microsoft.rtc:windows,urn:microsoft.rtc:anonmeeting,password"
-            foreach (var item in headerValue.Parameter.Split(','))
-            {
-                if (item.Contains("http"))
-                {
-                    this.AuthenticateAddress = item.Replace("\"", "").Split('=')[1];
-                }
-            }
+            //foreach (var item in headerValue.Parameter.Split(','))
+            //{
+            //    if (item.Contains("http"))
+            //    {
+            //        this.AuthenticateAddress = item.Replace("\"", "").Split('=')[1];
+            //    }
+            //}
+            this.AuthenticateAddress = "https://sfbpool.scrbg.com/WebTicket/oauthtoken";
         }
 
         public async Task GetUserOAuthTokenAsync(string userName, string password)

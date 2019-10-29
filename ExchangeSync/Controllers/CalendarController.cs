@@ -71,6 +71,8 @@ namespace ExchangeSync.Controllers
                 if (result.Count(u => u.Start.Year == start.Year && u.Start.Month == start.Month && u.Start.Day == start.Day) == 0)
                     forbiddenDays.Add(start);
             }
+            forbiddenDays.RemoveAll(u => u.Year == DateTime.Now.Year && u.Month == DateTime.Now.Month && u.Day == DateTime.Now.Day);
+
             return Json(forbiddenDays);
         }
 
@@ -128,13 +130,13 @@ namespace ExchangeSync.Controllers
             }
             if (input.AddToSkype)
             {
-                var skypeResult = await this._meetingService.CreateOnlineMeetingAsync(input.Title, input.Body,userName,password);
+                var skypeResult = await this._meetingService.CreateOnlineMeetingAsync(input.Title, input.Body, userName, password);
                 var joinhttp = skypeResult.JoinUrl;
                 //var joinhttp = "https://meet.scrbg.com/v-ms-kz/HDED4XL3";
                 var joinUrl = "<a target=\"blank\" href =\"" + joinhttp + "\">点击参加Skype会议</a>";
                 input.Body += joinUrl;
             }
-            await this._calendarService.CreateAppointMentAsync(input,userName,password);
+            await this._calendarService.CreateAppointMentAsync(input, userName, password);
             return Json(new { success = true });
         }
     }

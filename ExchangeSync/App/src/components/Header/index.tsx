@@ -4,6 +4,7 @@ import { IconButton } from 'office-ui-fabric-react/lib/Button';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
+import { Text } from 'office-ui-fabric-react/lib/Text';
 require("./index.css");
 import Empty from "../_shared/Empty";
 

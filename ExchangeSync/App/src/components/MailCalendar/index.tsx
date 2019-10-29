@@ -1,12 +1,14 @@
 import * as React from 'react';
 
 import { Text } from 'office-ui-fabric-react/lib/Text';
+import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import axios from "axios";
 import { IconButton } from 'office-ui-fabric-react/lib/Button';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
-import { ActivityItem, IActivityItemProps, Link, mergeStyleSets } from 'office-ui-fabric-react';
+import { ActivityItem, IActivityItemProps, Link, mergeStyleSets, PersonaSize } from 'office-ui-fabric-react';
 
-import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
+import { Link as ALink } from 'react-router-dom';
+
 import { Calendar, DateRangeType } from 'office-ui-fabric-react/lib/Calendar';
 import Empty from "../_shared/Empty";
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react';
@@ -52,34 +54,44 @@ export default class CalendarItem extends React.Component<any, any>{
         super(props);
         if (props.staticContext && props.staticContext.data) {
             let data = props.staticContext.data;
-            let user=props.staticContext.user;
+            let user = props.staticContext.user;
             this.state = {
                 groups: data,
-                loading: false,
+                loading: true,
                 firstDayOfWeek: DayOfWeek.Monday,
-                user:user
+                user: user,
+                date: new Date(),
             }
         } else if ((window as any).data) {
             let data1 = (window as any).data;
-            let user=(window as any).user;
+            let user = (window as any).user;
             delete (window as any).data;
             this.state = {
                 groups: data1,
-                loading: false,
+                loading: true,
                 firstDayOfWeek: DayOfWeek.Monday,
-                user:user
+                user: user,
+                date: new Date(),
             }
         } else {
             let user = (window as any).user;
-            this.state = {user:user, loading: true, firstDayOfWeek: DayOfWeek.Monday, groups: [] };
+            this.state = { date: new Date(), user: user, loading: false, firstDayOfWeek: DayOfWeek.Monday, groups: [] };
         }
     }
 
     componentDidMount() {
-        if (!this.state.loading)
+        if (this.state.loading)
             return;
         var day2 = new Date();
         this._onSelectDate(day2, null);
+    }
+
+    public ToDetail(data: any) {
+        let self = this;
+        axios.get("/mail/GetMailByAppointmentId?appointmentId=" + data.id).then((response) => {
+            var data = response.data;
+            self.props.history.push("/detail/" + data.id);
+        })
     }
 
     public createItem(data: any) {
@@ -93,15 +105,23 @@ export default class CalendarItem extends React.Component<any, any>{
                     className={classNames.nameText}
                 >
                     {this.state.user.name}
-              </Link>,
+                </Link>,
                 <span key={2}> 创建了 </span>,
-                <span key={3} className={classNames.nameText}>
+                <Link
+                    key={1}
+                    className={classNames.nameText}
+                    onClick={() => {
+                        // var func = this.ToDetail.bind(this, data);
+                        // func();
+                    }}
+                >
                     {data.title}
-                </span>
+                </Link>
             ],
-            activityPersonas: [{ imageUrl: "TestImages.personaMale" }],
+            activityPersonas: [{ size: PersonaSize.size100, imageInitials: this.state.user.name[0] }],
             comments: data.body,
             timeStamp: "开始时间: " + dateStr,
+            onClick: () => alert('1'),
         }
         return item;
     }
@@ -139,21 +159,23 @@ export default class CalendarItem extends React.Component<any, any>{
 
     public _onSelectDate(date: Date, selectedDateRangeArray?: Date[]) {
         let self = this;
+        self.setState({ date: date });
+        self.setState({
+            loading: true,
+        })
         axios.get("/Calendar/GetForbidden?year=" + date.getFullYear() + "&month=" + (date.getMonth() + 1) + "&day=" + (date.getDate())).then(response => {
             var forbidenDates = response.data;
             let dates = forbidenDates.map((u: string) => new Date(u));
             self.setState({ forbiddenDate: dates });
-        });
-        self.setState({
-            loading: true,
-        })
-        axios.get("/Calendar/MyAppointMents?year=" + date.getFullYear() + "&month=" + (date.getMonth() + 1) + "&day=" + (date.getDate())).then(response => {
-            let data = response.data;
-            self.setState({
-                groups: data,
-                loading: false,
+            axios.get("/Calendar/MyAppointMents?year=" + date.getFullYear() + "&month=" + (date.getMonth() + 1) + "&day=" + (date.getDate())).then(response => {
+                let data = response.data;
+                self.setState({
+                    groups: data,
+                    loading: false,
+                })
             })
-        })
+        });
+
     }
 
     private _reander_month(year: number, month: number, data: any) {
@@ -203,7 +225,7 @@ export default class CalendarItem extends React.Component<any, any>{
                     autoNavigateOnSelection={this.props.autoNavigateOnSelection}
                     showGoToToday={true}
                     value={this.state.selectedDate!}
-                    firstDayOfWeek={this.props.firstDayOfWeek ? this.props.firstDayOfWeek : DayOfWeek.Sunday}
+                    firstDayOfWeek={DayOfWeek.Monday}
                     strings={DayPickerStrings}
                     highlightCurrentMonth={true}
                     highlightSelectedMonth={true}
@@ -216,6 +238,15 @@ export default class CalendarItem extends React.Component<any, any>{
                     showSixWeeksByDefault={this.props.showSixWeeksByDefault}
                     workWeekDays={this.props.workWeekDays}
                 />
+
+                <hr style={{ width: "75%", border: "none", height: 1, margin: 0, backgroundColor: "#005bac" }} />
+
+                <div style={{ marginTop: 5, marginLeft: 10 }}>
+                    <Text key={"1"} variant={"large"} nowrap block>
+                        {this.state.date ? this.state.date.getFullYear() + "-" + (this.state.date.getMonth() + 1) + "-" + this.state.date.getDate() + " 日程安排" : "正在加载..."}
+                    </Text>
+                </div>
+
                 {this.state.loading ?
                     <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
                     :
