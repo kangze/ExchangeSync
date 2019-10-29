@@ -71,7 +71,7 @@ var doc = `
     <body>
           <div id="app-react">${html}</div>
           <script src="/js/zx-editor.min.js"></script>
-          <script src="http://localhost:18080/dist/client.js"></script>
+          <script src="/js/client.js"></script>
     </body>
     </html>
 `;

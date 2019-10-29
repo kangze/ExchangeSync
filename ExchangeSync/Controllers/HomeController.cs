@@ -61,7 +61,7 @@ namespace ExchangeSync.Controllers
             }
             else if (path.Contains("calendar"))
             {
-                data = await this._calendarService.GetMyAppointmentsAsync(employee.UserName + "@scrbg.com", employee.Password.DecodeBase64());
+                data = await this._calendarService.GetMyAppointmentsAsync(employee.UserName + "@scrbg.com", auth.Password.DecodeBase64());
                 //data = this._calendarService.GroupedCalendarAppointments(data as List<AppointMentDto>);
                 data = (data as List<AppointMentDto>).Where(u => u.Start.Year == DateTime.Now.Year && u.Start.Month == DateTime.Now.Month && u.Start.Day == DateTime.Now.Day).ToList();
             }
