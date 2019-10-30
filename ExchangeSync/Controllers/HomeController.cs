@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using ExchangeSync.Exchange.Model;
 using ExchangeSync.Extension;
@@ -10,6 +11,8 @@ using ExchangeSync.Model;
 using Microsoft.AspNetCore.Mvc;
 using ExchangeSync.Models;
 using ExchangeSync.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.NodeServices;
 using Microsoft.EntityFrameworkCore;
@@ -22,18 +25,29 @@ namespace ExchangeSync.Controllers
         private readonly IMailService _mailService;
         private readonly ICalendarService _calendarService;
         private readonly ServiceDbContext _db;
+        private readonly IIdentityService _identityService;
 
-        public HomeController(IServerRenderService serverRenderService, IMailService mailService, ICalendarService calendarService, ServiceDbContext db)
+        public HomeController(IServerRenderService serverRenderService, IMailService mailService, ICalendarService calendarService, ServiceDbContext db, IIdentityService identityService)
         {
             this._serverRenderService = serverRenderService;
             this._mailService = mailService;
             _calendarService = calendarService;
             _db = db;
+            _identityService = identityService;
         }
 
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> Index()
         {
+            if (!this.User.Identity.IsAuthenticated)
+            {
+                var accessToken = await this._identityService.GetUserAccessTokenAsync("scbzzx", "a123456");
+                var claims = await this._identityService.GetUserInfoAsync(accessToken);
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                claimsIdentity.AddClaim(new Claim("access_token", accessToken));
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+                return Redirect("~/");
+            }
             var path = Request.Path.ToString();
             //get userName
             var number = this.GetNumber();

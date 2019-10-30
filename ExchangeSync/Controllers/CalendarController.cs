@@ -20,13 +20,15 @@ namespace ExchangeSync.Controllers
     {
         private readonly ICalendarService _calendarService;
         private readonly IMeetingService _meetingService;
+        private readonly IOaSystemOperationService _oaSystemOprationService;
         private readonly ServiceDbContext _db;
 
-        public CalendarController(ICalendarService calendarService, IMeetingService meetingService, ServiceDbContext db)
+        public CalendarController(ICalendarService calendarService, IMeetingService meetingService, ServiceDbContext db, IOaSystemOperationService oaSystemOprationService)
         {
             _calendarService = calendarService;
             _meetingService = meetingService;
             _db = db;
+            _oaSystemOprationService = oaSystemOprationService;
         }
 
         private async Task<(string, string)> GetAccountAndPassword()
@@ -136,6 +138,12 @@ namespace ExchangeSync.Controllers
                 var joinUrl = "<a target=\"blank\" href =\"" + joinhttp + "\">点击参加Skype会议</a>";
                 input.Body += joinUrl;
             }
+
+            foreach (var inputAttendee in input.Attendees)
+            {
+                var userName
+            }
+            
             await this._calendarService.CreateAppointMentAsync(input, userName, password);
             return Json(new { success = true });
         }
