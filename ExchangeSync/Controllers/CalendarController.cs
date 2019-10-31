@@ -22,13 +22,11 @@ namespace ExchangeSync.Controllers
         private readonly ICalendarService _calendarService;
         private readonly IMeetingService _meetingService;
         private readonly IOaSystemOperationService _oaSystemOprationService;
-        private readonly ServiceDbContext _db;
         private readonly IEmployeeService _employeeService;
 
         public CalendarController(
             ICalendarService calendarService,
             IMeetingService meetingService,
-            ServiceDbContext db,
             IOaSystemOperationService oaSystemOprationService,
             IEmployeeService employeeService
             )
@@ -36,7 +34,6 @@ namespace ExchangeSync.Controllers
             _employeeService = employeeService;
             _calendarService = calendarService;
             _meetingService = meetingService;
-            _db = db;
             _oaSystemOprationService = oaSystemOprationService;
         }
 
@@ -138,7 +135,7 @@ namespace ExchangeSync.Controllers
             }
             if (input.AddToSkype)
             {
-                var skypeResult = await this._meetingService.CreateOnlineMeetingAsync(input.Title, input.Body, userName, password);
+                var skypeResult = await this._meetingService.CreateOnlineMeetingAsync(input.Title, input.Body, employee.Account, employee.Password);
                 var joinhttp = skypeResult.JoinUrl;
                 var joinUrl = "<a target=\"blank\" href =\"" + joinhttp + "\">点击参加Skype会议</a>";
                 input.Body += joinUrl;
@@ -148,16 +145,16 @@ namespace ExchangeSync.Controllers
             //send to oa
             foreach (var item in attendEmployees)
             {
-                await this._oaSystemOprationService.CreateAppointmentAsync(new Services.Dtos.OAAppoinmentInputDto()
-                {
-                    First = input.Title,
-                    MeetId = Guid.NewGuid().ToString(),
-                    UserNum = item.Number,
+                //await this._oaSystemOprationService.CreateAppointmentAsync(new Services.Dtos.OAAppoinmentInputDto()
+                //{
+                //    First = input.Title,
+                //    MeetId = Guid.NewGuid().ToString(),
+                //    UserNum = item.Number,
 
-                });
+                //});
             }
 
-            await this._calendarService.CreateAppointMentAsync(input, userName, password);
+            await this._calendarService.CreateAppointMentAsync(input, employee.Account, employee.Password);
             return Json(new { success = true });
         }
     }

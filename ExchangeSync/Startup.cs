@@ -8,6 +8,7 @@ using AutoMapper;
 using ExchangeSync.Extension;
 using ExchangeSync.Model;
 using ExchangeSync.Model.Consumers;
+using ExchangeSync.Model.Services;
 using ExchangeSync.Services;
 using ExchangeSync.Skype;
 using MassTransit;
@@ -59,8 +60,10 @@ namespace ExchangeSync
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server.js"));
             services.AddScoped<IMailService, MailService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<ICalendarService, CalendarService>();
             services.AddScoped<IMeetingService, MeetingService>();
+            services.AddScoped<IOaSystemOperationService, OaSystemOperationService>();
             services.AddHttpClient<IMeetingService, MeetingService>();
             services.AddScoped<SkypeBootstraper>(u => new SkypeBootstraper(new HttpClient(), new SkypeOption()
             {

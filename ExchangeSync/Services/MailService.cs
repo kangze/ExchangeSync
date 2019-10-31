@@ -8,6 +8,7 @@ using ExchangeSync.Exchange.Internal;
 using ExchangeSync.Helper;
 using ExchangeSync.Model;
 using ExchangeSync.Model.ExchangeModel;
+using ExchangeSync.Model.Services;
 using ExchangeSync.Models;
 using ExchangeSync.Models.Inputs;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,13 @@ namespace ExchangeSync.Services
     public class MailService : IMailService
     {
         private readonly IMapper _mapper;
-        private readonly ServiceDbContext _dbContext;
+        private readonly IEmployeeService _employeeService;
 
-        public MailService(IMapper mapper, ServiceDbContext dbContext)
+        public MailService(IMapper mapper,
+            IEmployeeService employeeService)
         {
             _mapper = mapper;
-            _dbContext = dbContext;
+            _employeeService = employeeService;
         }
 
         /// <summary>
@@ -206,12 +208,10 @@ namespace ExchangeSync.Services
 
         public async Task<MailManager> GetMailManager(string identity)
         {
-            var auth = await this._dbContext.EmployeeAuths.FirstOrDefaultAsync(u => u.Number == identity);
-            if (auth == null) return null;
-            var employee = await this._dbContext.Employees.FirstOrDefaultAsync(u => u.Number == identity);
-            if (employee == null) return null;
-
-            return MailManager.Create(employee.UserName + "@scrbg.com", auth.Password.DecodeBase64());
+            var employee = await this._employeeService.FindByUserNameAsync(identity);
+            if (employee == null)
+                return null;
+            return MailManager.Create(employee.Account, employee.Password);
         }
 
         public static string ConverToHtml(string content)

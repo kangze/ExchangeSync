@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ExchangeSync.Exchange.Model;
 using ExchangeSync.Extension;
 using ExchangeSync.Model;
+using ExchangeSync.Model.Services;
 using Microsoft.AspNetCore.Mvc;
 using ExchangeSync.Models;
 using ExchangeSync.Services;
@@ -26,14 +27,16 @@ namespace ExchangeSync.Controllers
         private readonly ICalendarService _calendarService;
         private readonly ServiceDbContext _db;
         private readonly IIdentityService _identityService;
+        private readonly IEmployeeService _employeeService;
 
-        public HomeController(IServerRenderService serverRenderService, IMailService mailService, ICalendarService calendarService, ServiceDbContext db, IIdentityService identityService)
+        public HomeController(IServerRenderService serverRenderService, IMailService mailService, ICalendarService calendarService, ServiceDbContext db, IIdentityService identityService, IEmployeeService employeeService)
         {
             this._serverRenderService = serverRenderService;
             this._mailService = mailService;
             _calendarService = calendarService;
             _db = db;
             _identityService = identityService;
+            _employeeService = employeeService;
         }
 
         //[Authorize]
@@ -53,11 +56,10 @@ namespace ExchangeSync.Controllers
             var number = this.GetNumber();
             var userName = this.GetUserName();
             var name = this.GetName();
+            var employee = await this._employeeService.FindByUserNameAsync(userName);
+            if (employee == null)
+                return BadRequest();
             var user = new { userName = userName, name = name };
-            var auth = await this._db.EmployeeAuths.FirstOrDefaultAsync(u => u.Number == number);
-            if (auth == null) return Content("身份验证失败");
-            var employee = await this._db.Employees.FirstOrDefaultAsync(u => u.Number == number);
-            if (employee == null) return Content("身份验证失败");
             object data = null;
             if (path == "" || path == "/")
                 data = await this._mailService.GetIndexMailAsync(number);
@@ -75,7 +77,7 @@ namespace ExchangeSync.Controllers
             }
             else if (path.Contains("calendar"))
             {
-                data = await this._calendarService.GetMyAppointmentsAsync(employee.UserName + "@scrbg.com", auth.Password.DecodeBase64());
+                data = await this._calendarService.GetMyAppointmentsAsync(employee.Account, employee.Password);
                 //data = this._calendarService.GroupedCalendarAppointments(data as List<AppointMentDto>);
                 data = (data as List<AppointMentDto>).Where(u => u.Start.Year == DateTime.Now.Year && u.Start.Month == DateTime.Now.Month && u.Start.Day == DateTime.Now.Day).ToList();
             }

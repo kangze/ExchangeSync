@@ -18,7 +18,11 @@ namespace ExchangeSync.Model.Services
         public EmployeeService(DbContextOptions<ServiceDbContext> dbOption)
         {
             _dbOption = dbOption;
-
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<MappingProfile>();
+            });
+            this._mapper = config.CreateMapper();
         }
 
 

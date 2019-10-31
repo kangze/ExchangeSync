@@ -36,48 +36,47 @@ namespace ExchangeSync.Controllers
         [Authorize]
         public async Task<IActionResult> GetAsync(string type)
         {
-            var number = this.GetNumber();
+            var userName = this.GetUserName();
             if (string.IsNullOrEmpty(type))
-                return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync(number)));
+                return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync(userName)));
             if (type == "index")
-                return Json(await this._mailService.GetIndexMailAsync(number));
-
+                return Json(await this._mailService.GetIndexMailAsync(userName));
             if (type == "draft")
-                return await Task.FromResult(Json(await this._mailService.GetDraftMailAsync(number)));
+                return await Task.FromResult(Json(await this._mailService.GetDraftMailAsync(userName)));
             if (type == "sended")
-                return await Task.FromResult(Json(await this._mailService.GetSendedMailAsync(number)));
-            return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync(number)));
+                return await Task.FromResult(Json(await this._mailService.GetSendedMailAsync(userName)));
+            return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync(userName)));
         }
 
         [Authorize]
         public async Task<IActionResult> GetMail(string mailId)
         {
-            var number = this.GetNumber();
-            var item = await this._mailService.GetMailAsync(number, mailId);
+            var userName = this.GetUserName();
+            var item = await this._mailService.GetMailAsync(userName, mailId);
             return Json(item);
         }
 
         [Authorize]
         public async Task<IActionResult> SetUnReade(string mailId)
         {
-            var number = this.GetNumber();
-            await this._mailService.SetUnReade(number, mailId);
+            var userName = this.GetUserName();
+            await this._mailService.SetUnReade(userName, mailId);
             return Json(new { success = true });
         }
 
         [Authorize]
         public async Task<IActionResult> Delete(string mailId)
         {
-            var number = this.GetNumber();
-            await this._mailService.Delete(number, mailId);
+            var userName = this.GetUserName();
+            await this._mailService.Delete(userName, mailId);
             return Json(new { success = true });
         }
 
         [Authorize]
         public async Task<IActionResult> DownloadAttachment(string mailId, string attachmentId, string attachmentName)
         {
-            var number = this.GetNumber();
-            var stream = await this._mailService.Download(number, mailId, attachmentId);
+            var userName = this.GetUserName();
+            var stream = await this._mailService.Download(userName, mailId, attachmentId);
             stream.Position = 0;
             return File(stream, "application/octet-stream", attachmentName);
         }
@@ -113,7 +112,7 @@ namespace ExchangeSync.Controllers
         [Authorize]
         public async Task<IActionResult> Reply([FromForm]ReplyMailInput input)
         {
-            var number = this.GetNumber();
+            var userName = this.GetUserName();
             this.ConvertImage(input);
             if (input.Attachment != null)
             {
@@ -138,12 +137,12 @@ namespace ExchangeSync.Controllers
                 input.Attachments = new List<AttachmentInput>();
             if (!string.IsNullOrEmpty(input.MailId))
             {
-                await this._mailService.ReplyAsync(number, input.MailId, input.Content, input.CopyTo, input.Attachments);
+                await this._mailService.ReplyAsync(userName, input.MailId, input.Content, input.CopyTo, input.Attachments);
                 return Json(new { success = true });
             }
             else
             {
-                await this._mailService.Send(number, input.Title, input.Content, input.Reciver, input.CopyTo, input.Attachments);
+                await this._mailService.Send(userName, input.Title, input.Content, input.Reciver, input.CopyTo, input.Attachments);
                 return Json(new { success = true });
             }
 

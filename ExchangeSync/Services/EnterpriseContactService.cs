@@ -47,6 +47,8 @@ namespace ExchangeSync.Services
             var employees = await this._db.Employees
                 //.Include(u => u.EmployeeEmail)
                 .Where(u => (u.Name.Contains(keyword) || u.Number.Contains(keyword) || u.UserName.Contains(keyword)) && !string.IsNullOrEmpty(u.UserName))
+                .OrderBy(u => u.Number)
+                .Take(6)
                 .ToListAsync();
             foreach (var employee in employees)
             {
