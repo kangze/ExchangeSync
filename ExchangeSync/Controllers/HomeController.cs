@@ -53,7 +53,6 @@ namespace ExchangeSync.Controllers
             }
             var path = Request.Path.ToString();
             //get userName
-            var number = this.GetNumber();
             var userName = this.GetUserName();
             var name = this.GetName();
             var employee = await this._employeeService.FindByUserNameAsync(userName);
@@ -62,18 +61,18 @@ namespace ExchangeSync.Controllers
             var user = new { userName = userName, name = name };
             object data = null;
             if (path == "" || path == "/")
-                data = await this._mailService.GetIndexMailAsync(number);
+                data = await this._mailService.GetIndexMailAsync(userName);
             else if (path.Contains("sended"))
-                data = await this._mailService.GetSendedMailAsync(number);
+                data = await this._mailService.GetSendedMailAsync(userName);
             else if (path.Contains("draft"))
-                data = await this._mailService.GetDraftMailAsync(number);
+                data = await this._mailService.GetDraftMailAsync(userName);
             else if (path.Contains("detail"))
             {
                 var split = path.Split('/');
                 if (split.Length != 3)
                     return Redirect("/");
                 var mailId = split[2];
-                data = await this._mailService.GetMailAsync(number, mailId);
+                data = await this._mailService.GetMailAsync(userName, mailId);
             }
             else if (path.Contains("calendar"))
             {
@@ -87,7 +86,7 @@ namespace ExchangeSync.Controllers
                 if (split.Length != 3)
                     return Redirect("/");
                 var mailId = split[2];
-                data = await this._mailService.GetMailAsync(number, mailId);
+                data = await this._mailService.GetMailAsync(userName, mailId);
             }
 
             var html = this._serverRenderService.Render(Request.Path, data, user);

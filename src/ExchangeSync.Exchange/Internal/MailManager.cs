@@ -10,6 +10,7 @@ using Task = System.Threading.Tasks.Task;
 using System.Web;
 using AutoMapper;
 using System.IO;
+using ExchangeSync.Exchange.Model;
 
 namespace ExchangeSync.Exchange.Internal
 {
@@ -329,6 +330,47 @@ namespace ExchangeSync.Exchange.Internal
             reply.CcRecipients.AddRange(Cc);
             await reply.Update(ConflictResolutionMode.AutoResolve);
             await reply.SendAndSaveCopy();
+        }
+
+        public async Task<List<AppointMentDto>> GetMailReqeust()
+        {
+            Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, new PropertySet(ItemSchema.Id, MeetingMessageSchema.AssociatedAppointmentId));
+            Folder sentFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.SentItems, new PropertySet(ItemSchema.Id, MeetingMessageSchema.AssociatedAppointmentId));
+            var inboxReqeuest = await rootFolder.FindItems(new ItemView(100));
+            var requestReqeuest = await sentFolder.FindItems(new ItemView(100));
+            var list = new List<AppointMentDto>();
+            foreach (var findItemsResult in inboxReqeuest)
+            {
+                var requet = findItemsResult as MeetingRequest;
+                if(requet==null)
+                    continue;
+                await requet.Load(new PropertySet(ItemSchema.Id, MeetingMessageSchema.AssociatedAppointmentId));
+                if (requet.AssociatedAppointmentId == null)
+                    continue;
+                var item = new AppointMentDto()
+                {
+                    MailId = requet.Id.UniqueId,
+                    Id = requet.AssociatedAppointmentId.UniqueId,
+                };
+                list.Add(item);
+            }
+
+            foreach (var findItemsResult in requestReqeuest)
+            {
+                var requet = findItemsResult as MeetingRequest;
+                if (requet == null)
+                    continue;
+                await requet.Load(new PropertySet(ItemSchema.Id, MeetingMessageSchema.AssociatedAppointmentId));
+                if (requet.AssociatedAppointmentId == null)
+                    continue;
+                var item = new AppointMentDto()
+                {
+                    MailId = findItemsResult.Id.UniqueId,
+                    Id = requet.AssociatedAppointmentId.UniqueId,
+                };
+                list.Add(item);
+            }
+            return list;
         }
 
         private static bool RedirectionUrlValidationCallback(string redirectionUrl)

@@ -9,11 +9,17 @@ namespace ExchangeSync.Exchange.Model
 {
     public class AppointMentDto
     {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
         /// <summary>
         /// 会议/约会 的主题
         /// </summary>
         [JsonProperty("title")]
         public string Subject { get; set; }
+
+        [JsonProperty("mailId")]
+        public string MailId { get; set; }
 
         /// <summary>
         /// 内容信息

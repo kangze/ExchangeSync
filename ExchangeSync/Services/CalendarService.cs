@@ -38,10 +38,17 @@ namespace ExchangeSync.Services
             await mailManager.CreateAppointMentAsync(dto);
         }
 
-        public Task<List<AppointMentDto>> GetMyAppointmentsAsync(string username, string password)
+        public async Task<List<AppointMentDto>> GetMyAppointmentsAsync(string username, string password)
         {
             var mailManager = MailManager.Create(username, password);
-            var list = mailManager.GetAppointMentsAsync();
+            var list = await mailManager.GetAppointMentsAsync();
+            var mailList = await mailManager.GetMailReqeust();
+            foreach (var item in list)
+            {
+                var mail = mailList.FirstOrDefault(u => u.Id == item.Id);
+                if (mail != null)
+                    item.MailId = mail.MailId;
+            }
             return list;
         }
     }

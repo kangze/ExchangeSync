@@ -10,9 +10,11 @@ using ExchangeSync.Model;
 using ExchangeSync.Model.Consumers;
 using ExchangeSync.Model.Services;
 using ExchangeSync.Services;
+using ExchangeSync.Services.Dtos;
 using ExchangeSync.Skype;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -64,6 +66,7 @@ namespace ExchangeSync
             services.AddScoped<ICalendarService, CalendarService>();
             services.AddScoped<IMeetingService, MeetingService>();
             services.AddScoped<IOaSystemOperationService, OaSystemOperationService>();
+            services.AddHttpClient<IOaSystemOperationService, OaSystemOperationService>();
             services.AddHttpClient<IMeetingService, MeetingService>();
             services.AddScoped<SkypeBootstraper>(u => new SkypeBootstraper(new HttpClient(), new SkypeOption()
             {
@@ -80,20 +83,24 @@ namespace ExchangeSync
             });
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
-            var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
-             {
-                 var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>
-                 {
-                     h.Username(mdmBusSection.GetValue<string>("UserName"));
-                     h.Password(mdmBusSection.GetValue<string>("Password"));
-                 });
-                 cfg.ReceiveEndpoint(host, "ITSCRBG_Contact", c =>
-                 {
-                     c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
-                     c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
-                 });
-             });
-            bus.Start();
+            services.AddSingleton(new OaApiOption()
+            {
+                CreateAppointment = "",
+            });
+            //var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
+            // {
+            //     var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>
+            //     {
+            //         h.Username(mdmBusSection.GetValue<string>("UserName"));
+            //         h.Password(mdmBusSection.GetValue<string>("Password"));
+            //     });
+            //     cfg.ReceiveEndpoint(host, "ITSCRBG_Contact", c =>
+            //     {
+            //         c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
+            //         c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
+            //     });
+            // });
+            //bus.Start();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

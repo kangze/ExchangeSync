@@ -53,6 +53,7 @@ namespace ExchangeSync.Exchange.Internal
             var calendarFolder = await CalendarFolder.Bind(this._exchangeService, WellKnownFolderName.Calendar, new PropertySet());
             var cView = new CalendarView(startDate, endDate, int.MaxValue);
             cView.PropertySet = new PropertySet(
+                ItemSchema.Id,
                 ItemSchema.Subject,
                 AppointmentSchema.Start,
                 AppointmentSchema.End);
@@ -63,7 +64,9 @@ namespace ExchangeSync.Exchange.Internal
                 var listItem = new AppointMentDto();
                 await appointment.Load(new PropertySet(AppointmentSchema.TextBody, ItemSchema.Subject,
                 AppointmentSchema.Start,
+                ItemSchema.Id,
                 AppointmentSchema.End));
+                listItem.Id = appointment.Id.UniqueId;
                 listItem.Subject = appointment.Subject;
                 listItem.Start = appointment.Start;
                 listItem.End = appointment.End;
