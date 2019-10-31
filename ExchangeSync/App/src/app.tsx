@@ -10,6 +10,8 @@ import MailCreateHeader from "./components/Header/CreateMail";
 import MailCalendar from "./components/MailCalendar";
 import MailCalendarCreate from "./components/MailCalendar/CalendarCreate";
 
+declare var ZxEditor: any;
+
 export default class App extends React.Component<any, any> {
 
     constructor(props: any) {

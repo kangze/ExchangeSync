@@ -64,7 +64,6 @@ namespace ExchangeSync.Services
                 });
             }
             return ls;
-            return null;
         }
     }
 }

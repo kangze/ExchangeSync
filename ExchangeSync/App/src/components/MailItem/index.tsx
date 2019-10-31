@@ -224,7 +224,7 @@ export default class MailItem extends React.PureComponent<any, any> {
                         </div>
                     );
                 })}
-                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 56, right: 20, bottom: 20, paddingLeft: 8, paddingTop: 15, boxShadow: Depths.depth64 }}>
+                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 49, right: 20, bottom: 20, paddingLeft: 15, paddingTop: 15, boxShadow: Depths.depth64 }}>
                     <IconButton
                         iconProps={{
                             iconName: 'Edit', styles: {

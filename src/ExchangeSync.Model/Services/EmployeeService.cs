@@ -28,8 +28,16 @@ namespace ExchangeSync.Model.Services
 
         public async Task<List<EmployeeDto>> FindByUserNamesAsync(string[] userNames)
         {
+            //return new List<EmployeeDto>()
+            //{
+            //    new EmployeeDto()
+            //    {
+            //        UserName="scbzzx",
+            //        Account="scbzzx@scrbg.com",
+            //        Password="a123456"
+            //    }
+            //};
             Check.NotNull(userNames);
-
             var emptyEmployees = new List<EmployeeDto>();
             if (userNames.Length == 0)
                 return emptyEmployees;

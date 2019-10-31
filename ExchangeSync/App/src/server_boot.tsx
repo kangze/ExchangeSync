@@ -43,6 +43,7 @@ var doc = `
       window.user=${JSON.stringify(user)};
     </script>
     <link rel="stylesheet" href="/css/zx-editor.min.css">
+    <link rel="stylesheet" href="/js/styles.css">
     <style>
         * {
             margin: 0;

@@ -11,6 +11,9 @@ import { TagPicker, IBasePicker, ITag } from 'office-ui-fabric-react/lib/Pickers
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { Dropdown, DropdownMenuItemType, IDropdownStyles, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 
+import Editor from "../_shared/Editor";
+import TextInput from "../_shared/TextInput";
+
 const DayPickerStrings: IDatePickerStrings = {
     months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
 
@@ -92,15 +95,6 @@ export default class CalendarCreate extends React.Component<any, any>{
     componentDidMount() {
         let self = this;
         delete (window as any).content;
-        var zxEditor = new ZxEditor('#e', {
-            fixed: true,
-            placeholder: "点击编辑..."
-        });
-        zxEditor.on('change', function () {
-            var content = self.state.zxEditor.getContent();
-            self.setState({ content });
-        })
-        self.setState({ zxEditor });
     }
 
     private _formatDate(date?: Date): string {
@@ -144,20 +138,20 @@ export default class CalendarCreate extends React.Component<any, any>{
         return (
             <Stack tokens={{ childrenGap: 20 }} styles={{ root: { width: "100%" } }}>
                 <br />
-                <TextField iconProps={{
+                <TextInput iconProps={{
                     iconName: 'LocationDot', styles: {
                         root: {
                             fontSize: 16,
                         }
                     }
-                }} value={this.state.title} onChange={this._handleInputChange.bind(this, "title")} label="主题：" underlined />
-                <TextField iconProps={{
+                }} onChange={this._handleInputChange.bind(this, "title")} label="主题：" />
+                <TextInput iconProps={{
                     iconName: 'Location', styles: {
                         root: {
                             fontSize: 16,
                         }
                     }
-                }} value={this.state.location} onChange={this._handleInputChange.bind(this, "location")} label="地点：" underlined />
+                }} onChange={this._handleInputChange.bind(this, "location")} label="地点：" />
                 <Checkbox styles={{ root: { marginLeft: 10 } }} label="在线会议(Skype)" checked={this.state.AddToSkype} onChange={this._handleInputChange.bind(this, "AddToSkype")} />
                 <Checkbox styles={{ root: { marginLeft: 10 } }} label="全天事件" checked={this.state.FullDay} onChange={this._handleInputChange.bind(this, "FullDay")} />
 
@@ -177,7 +171,7 @@ export default class CalendarCreate extends React.Component<any, any>{
                 }
 
 
-                <TextField id="attachmentCanlendar" multiple label="附件:" underlined type="file" />
+                <TextInput id="attachmentCanlendar" multiple={true} label="附件:" underlined type="file" />
                 <Label><Icon iconName="ConnectContacts" styles={{ root: { fontSize: 25 } }} /><Text variant="medium" style={{ fontWeight: 700 }}>参会人员:</Text></Label>
                 <TagPicker
                     styles={{ root: { marginTop: "0px !important" }, text: { borderTopStyle: "none", borderRightStyle: "none", borderLeftStyle: "none" } }}
@@ -191,7 +185,7 @@ export default class CalendarCreate extends React.Component<any, any>{
                     onChange={this._handleChange.bind(this, "attendees")}
                 />
                 <Label>&nbsp;&nbsp;&nbsp;内容:</Label>
-                <div id="e"></div>
+                <Editor />
             </Stack>
         );
     }

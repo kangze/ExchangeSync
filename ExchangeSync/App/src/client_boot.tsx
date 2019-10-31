@@ -10,9 +10,10 @@ import { hot } from 'react-hot-loader';
 
 initializeIcons("/fonts/");
 
+declare var ZxEditor: any;
 ReactDOM.render(
     <Router>
-        <Fabric styles={{root:{fontFamily:"微软雅黑"}}}>
+        <Fabric styles={{ root: { fontFamily: "微软雅黑" } }}>
             <App />
         </Fabric>
     </Router>

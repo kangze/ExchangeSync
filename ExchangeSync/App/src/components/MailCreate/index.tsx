@@ -1,11 +1,14 @@
 import * as React from 'react';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Stack, IStackProps } from 'office-ui-fabric-react/lib/Stack';
-import { PrimaryButton, Label,DefaultButton } from 'office-ui-fabric-react';
+import { PrimaryButton, Label, DefaultButton } from 'office-ui-fabric-react';
 import axios from "axios";
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 
 import { TagPicker, IBasePicker, ITag } from 'office-ui-fabric-react/lib/Pickers';
+
+import Editor from "../_shared/Editor";
+import TextInput from "../_shared/TextInput";
 
 declare var ZxEditor: any;
 
@@ -21,6 +24,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
         var cporps = props as any;
         if (cporps.staticContext && cporps.staticContext.data) { //服务器渲染(用于回复其他人的邮件)
             let data = cporps.staticContext.data;
+            let user = cporps.staticContext.user;
             this.state = {
                 mailId: data.mailId,
                 reply: true,
@@ -30,9 +34,20 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                 reciver: data.sender.address,
                 reciverName: data.sender.name,
                 copyto: "",
+                user: user,
             }
-        } else if ((window as any).data) {         //客户端二次渲染(用于回复其他人的邮件)
+        } else if (cporps.staticContext &&cporps.staticContext.user) {
+            let user = cporps.staticContext.user;
+            this.state = {
+                mailId: null,
+                reply: false,
+                replyloading: false,
+                user: user,
+            };
+        }
+        else if ((window as any).data) {         //客户端二次渲染(用于回复其他人的邮件)
             let data = (window as any).data;
+            let user = (window as any).user;
             delete (window as any).data;
             this.state = {
                 mailId: data.mailId,
@@ -43,12 +58,15 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                 reciver: data.sender.address,
                 reciverName: data.sender.name,
                 copyto: "",
+                user: user,
             }
         } else {                                    //客户端无状态渲染,表示从别的路由过来的
+            let user = (window as any).user;
             this.state = {
                 mailId: (this.props as any).match.params.mailId,
                 reply: (this.props as any).match.params.mailId ? true : false,
                 replyloading: (this.props as any).match.params.mailId ? true : false,
+                user: user,
             };
         }
     }
@@ -73,7 +91,6 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
 
     private _handleChange(name: string, items: ITag[]) {
         this.setState({ [name]: items.map(u => u.key) });
-        console.log(this);
     }
 
     private _handleInputChange(name: string, e: any) {
@@ -89,17 +106,6 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
     componentDidMount() {
         let self = this;
         (window as any).content = true;
-        if (!this.state.reply) {
-            var zxEditor = new ZxEditor('#e', {
-                fixed: true,
-                placeholder: "点击编辑..."
-            });
-            zxEditor.on('change', function () {
-                var content = self.state.zxEditor.getContent();
-                self.setState({ content });
-            });
-            self.setState({ zxEditor });
-        }
         if (this.state.reply) {
             let self = this;
             axios.get("/mail/GetMail?mailId=" + this.state.mailId).then(response => {
@@ -113,15 +119,6 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                     reciverName: data.sender.name,
                     copyto: "",
                 });
-                var zxEditor = new ZxEditor('#e', {
-                    fixed: true,
-                    placeholder: "点击编辑..."
-                });
-                zxEditor.on('change', function () {
-                    var content = self.state.zxEditor.getContent();
-                    self.setState({ content });
-                })
-                self.setState({ zxEditor });
             });
         }
     }
@@ -161,16 +158,10 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                     itemLimit={100}
                     onChange={this._handleChange.bind(this, "copyto")}
                 />
-                <TextField iconProps={{
-                    iconName: 'LocationDot', styles: {
-                        root: {
-                            fontSize: 16,
-                        }
-                    }
-                }} label="主题:" underlined value={this.state.title} onChange={this._handleInputChange.bind(this, "title")} />
-                <TextField id="attachmentMail" multiple label="附件:" underlined  type="file"/>
+                <TextInput type="text" label={"主题"} onChange={this._handleInputChange.bind(this, "title")} />
+                <TextInput id="attachmentMail" multiple={true} label="附件:" type="file" />
                 <Label>&nbsp;&nbsp;&nbsp;邮件内容:</Label>
-                <div id="e" ref="e"></div>
+                <Editor />
             </Stack>
         );
     }

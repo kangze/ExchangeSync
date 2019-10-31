@@ -65,8 +65,8 @@ namespace ExchangeSync.Controllers
                 return BadRequest();
             var result = await this._calendarService.GetMyAppointmentsAsync(employee.Account, employee.Password);
             var nowDate = new DateTime(year, month, day);
-            var beforeDate = nowDate.AddMonths(-1);
-            var afterDate = nowDate.AddMonths(1);
+            var beforeDate = nowDate.AddMonths(-3);
+            var afterDate = nowDate.AddMonths(3);
 
             //计算区间
             var forbiddenDays = new List<DateTime>();

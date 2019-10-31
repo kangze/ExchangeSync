@@ -56,26 +56,28 @@ export default class CalendarItem extends React.Component<any, any>{
             let data = props.staticContext.data;
             let user = props.staticContext.user;
             this.state = {
-                groups: data,
-                loading: true,
+                groups: data.myAppointments,
+                loading: false,
                 firstDayOfWeek: DayOfWeek.Monday,
                 user: user,
                 date: new Date(),
+                forbiddenDate: data.forbiddenDays.map((u: string) => new Date(u))
             }
         } else if ((window as any).data) {
             let data1 = (window as any).data;
             let user = (window as any).user;
             delete (window as any).data;
             this.state = {
-                groups: data1,
-                loading: true,
+                groups: data1.myAppointments,
+                loading: false,
                 firstDayOfWeek: DayOfWeek.Monday,
                 user: user,
                 date: new Date(),
+                forbiddenDate: data1.forbiddenDays.map((u: string) => new Date(u))
             }
         } else {
             let user = (window as any).user;
-            this.state = { date: new Date(), user: user, loading: false, firstDayOfWeek: DayOfWeek.Monday, groups: [] };
+            this.state = { date: new Date(), user: user, loading: false, firstDayOfWeek: DayOfWeek.Monday, groups: [], forbiddenDate: [] };
         }
     }
 
@@ -113,6 +115,7 @@ export default class CalendarItem extends React.Component<any, any>{
                     onClick={() => {
                         // var func = this.ToDetail.bind(this, data);
                         // func();
+                        this.props.history.push("/detail/" + encodeURIComponent(data.mailId))
                     }}
                 >
                     {data.title}
@@ -173,7 +176,11 @@ export default class CalendarItem extends React.Component<any, any>{
                     groups: data,
                     loading: false,
                 })
+            }).catch(u => {
+                alert("Exchange服务器错误,请重新尝试!");
             })
+        }).catch(u => {
+            alert("Exchange服务器错误,请重新尝试!");
         });
 
     }
@@ -258,7 +265,7 @@ export default class CalendarItem extends React.Component<any, any>{
 
 
 
-                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 47, width: 56, right: 20, bottom: 20, paddingLeft: 8, paddingTop: 17, boxShadow: Depths.depth64 }}>
+                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 47, width: 51, right: 20, bottom: 20, paddingLeft: 15, paddingTop: 17, boxShadow: Depths.depth64 }}>
                     <IconButton
                         iconProps={{
                             iconName: 'CalendarSettings', styles: {

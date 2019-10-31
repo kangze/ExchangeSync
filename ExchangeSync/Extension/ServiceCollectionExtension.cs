@@ -20,14 +20,14 @@ namespace ExchangeSync.Extension
             {
                 while (true)
                 {
-                    using (var db = new ServiceDbContext(dbOption))
-                    {
-                        var notifies = db.NewMailEvents.Where(u => !u.Notify).ToList();
-                        if (notifies.Count != 0)
-                        {
-                            //Notify to Wechat!
-                        }
-                    }
+                    //using (var db = new ServiceDbContext(dbOption))
+                    //{
+                    //    var notifies = db.NewMailEvents.Where(u => !u.Notify).ToList();
+                    //    if (notifies.Count != 0)
+                    //    {
+                    //        //Notify to Wechat!
+                    //    }
+                    //}
                     Thread.Sleep(5000);
                 }
             });

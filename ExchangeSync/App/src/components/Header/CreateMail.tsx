@@ -14,7 +14,20 @@ const styles = {
 }
 
 export default class CreateMail extends React.Component<any, any>{
-
+    constructor(props: any) {
+        super(props);
+        if (props.staticContext && props.staticContext.user) {
+            let user = props.staticContext.user;
+            this.state = {
+                user: user
+            }
+        } else if ((window as any).user) {
+            let user = (window as any).user;
+            this.state = {
+                user: user
+            }
+        }
+    }
     private _handleCancel(e: any) {
         e.preventDefault();
         (this.props as any).history.goBack();
@@ -56,8 +69,8 @@ export default class CreateMail extends React.Component<any, any>{
             alert("请输入会议参与人员");
             return;
         }
-        var content = state.zxEditor.getHtml();
-        var s = state.zxEditor.getHtml(false);
+        var content = (window as any).zxEditor.getHtml();
+        var s = (window as any).zxEditor.getHtml(false);
         if (!s) {
             alert("请输输入会议内容");
             return;
@@ -114,8 +127,8 @@ export default class CreateMail extends React.Component<any, any>{
 
     private _handleMailCreateSend() {
         let state = (window as any).content;
-        state["content"] = state.zxEditor.getHtml();
-        var s = state.zxEditor.getHtml(false);
+        state["content"] = (window as any).zxEditor.getHtml();
+        var s = (window as any).zxEditor.getHtml(false);
         if (!s) {
             alert("请输入邮件内容");
             return;
@@ -164,8 +177,7 @@ export default class CreateMail extends React.Component<any, any>{
     }
 
     public render() {
-        let userName = "";
-        if (window) userName = (window as any).user.userName + "@scrbg.com";
+        let userName = this.state.user.userName + "@scrbg.com";
         return (
             <div style={styles.root}>
                 <div style={{ float: "left" }}>

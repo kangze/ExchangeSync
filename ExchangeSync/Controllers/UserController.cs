@@ -21,6 +21,7 @@ namespace ExchangeSync.Controllers
         public async Task<IActionResult> GetUser(string keyword)
         {
             var ls = new List<object>();
+            ls.Add(new { key = keyword, name = keyword });
             try
             {
                 var employees = await this._enterpriseContactService.SearchEmployeeBaseInfoByKeyword(keyword);
@@ -31,7 +32,6 @@ namespace ExchangeSync.Controllers
             {
 
             }
-            ls.Add(new { key = keyword, name = keyword });
 
             return Json(ls);
         }

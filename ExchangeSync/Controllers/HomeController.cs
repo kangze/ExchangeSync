@@ -76,9 +76,21 @@ namespace ExchangeSync.Controllers
             }
             else if (path.Contains("calendar"))
             {
-                data = await this._calendarService.GetMyAppointmentsAsync(employee.Account, employee.Password);
-                //data = this._calendarService.GroupedCalendarAppointments(data as List<AppointMentDto>);
-                data = (data as List<AppointMentDto>).Where(u => u.Start.Year == DateTime.Now.Year && u.Start.Month == DateTime.Now.Month && u.Start.Day == DateTime.Now.Day).ToList();
+                var myAppointments = await this._calendarService.GetMyAppointmentsAsync(employee.Account, employee.Password);
+                myAppointments = (myAppointments as List<AppointMentDto>).Where(u => u.Start.Year == DateTime.Now.Year && u.Start.Month == DateTime.Now.Month && u.Start.Day == DateTime.Now.Day).ToList();
+                var nowDate = DateTime.Now;
+                var beforeDate = nowDate.AddMonths(-3);
+                var afterDate = nowDate.AddMonths(3);
+
+                //计算区间
+                var forbiddenDays = new List<DateTime>();
+                for (var start = beforeDate; start < afterDate; start = start.AddDays(1))
+                {
+                    if (myAppointments.Count(u => u.Start.Year == start.Year && u.Start.Month == start.Month && u.Start.Day == start.Day) == 0)
+                        forbiddenDays.Add(start);
+                }
+                forbiddenDays.RemoveAll(u => u.Year == DateTime.Now.Year && u.Month == DateTime.Now.Month && u.Day == DateTime.Now.Day);
+                data = new { myAppointments = myAppointments, forbiddenDays = forbiddenDays };
             }
             else if (path.Contains("reply"))
             {
