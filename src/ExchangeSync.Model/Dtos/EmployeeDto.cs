@@ -20,6 +20,8 @@ namespace ExchangeSync.Model.Dtos
 
         public string UserName { get; set; }
 
+        public string Account { get; set; }
+
         public string Number { get; set; }
 
         public string IdCardNo { get; set; }

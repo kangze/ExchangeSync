@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ExchangeSync.Extension;
 using ExchangeSync.Model;
+using ExchangeSync.Model.Services;
 using ExchangeSync.Models;
 using ExchangeSync.Models.Inputs;
 using ExchangeSync.Services;
@@ -22,23 +23,21 @@ namespace ExchangeSync.Controllers
         private readonly IMeetingService _meetingService;
         private readonly IOaSystemOperationService _oaSystemOprationService;
         private readonly ServiceDbContext _db;
+        private readonly IEmployeeService _employeeService;
 
-        public CalendarController(ICalendarService calendarService, IMeetingService meetingService, ServiceDbContext db, IOaSystemOperationService oaSystemOprationService)
+        public CalendarController(
+            ICalendarService calendarService,
+            IMeetingService meetingService,
+            ServiceDbContext db,
+            IOaSystemOperationService oaSystemOprationService,
+            IEmployeeService employeeService
+            )
         {
+            _employeeService = employeeService;
             _calendarService = calendarService;
             _meetingService = meetingService;
             _db = db;
             _oaSystemOprationService = oaSystemOprationService;
-        }
-
-        private async Task<(string, string)> GetAccountAndPassword()
-        {
-            var number = this.GetNumber();
-            var auth = await this._db.EmployeeAuths.FirstOrDefaultAsync(u => u.Number == number);
-            if (auth == null) return (null, null);
-            var employee = await this._db.Employees.FirstOrDefaultAsync(u => u.Number == number);
-            if (employee == null) return (null, null);
-            return (employee.UserName + "@scrbg.com", auth.Password.DecodeBase64());
         }
 
         /// <summary>
@@ -47,8 +46,11 @@ namespace ExchangeSync.Controllers
         /// <returns></returns>
         public async Task<IActionResult> MyAppointMents(int year, int month, int day)
         {
-            var (userName, password) = await GetAccountAndPassword();
-            var list = await this._calendarService.GetMyAppointmentsAsync(userName, password);
+            var userName = this.GetUserName();
+            var employee = await this._employeeService.FindByUserNameAsync(userName);
+            if (employee == null)
+                return BadRequest();
+            var list = await this._calendarService.GetMyAppointmentsAsync(employee.Account, employee.Password);
             var result = list.Where(u => u.Start.Year == year && u.Start.Month == month && u.Start.Day == day).ToList();
             return Json(result);
         }
@@ -60,8 +62,11 @@ namespace ExchangeSync.Controllers
         [Authorize]
         public async Task<IActionResult> GetForbidden(int year, int month, int day)
         {
-            var (userName, password) = await GetAccountAndPassword();
-            var result = await this._calendarService.GetMyAppointmentsAsync(userName, password);
+            var userName = this.GetUserName();
+            var employee = await this._employeeService.FindByUserNameAsync(userName);
+            if (employee == null)
+                return BadRequest();
+            var result = await this._calendarService.GetMyAppointmentsAsync(employee.Account, employee.Password);
             var nowDate = new DateTime(year, month, day);
             var beforeDate = nowDate.AddMonths(-1);
             var afterDate = nowDate.AddMonths(1);
@@ -109,9 +114,10 @@ namespace ExchangeSync.Controllers
         [Authorize]
         public async Task<IActionResult> CreateAppointMent([FromForm]AppointMenInput input)
         {
-            if (input == null)
-                return Json(new { success = false });
-            var (userName, password) = await GetAccountAndPassword();
+            var userName = this.GetUserName();
+            var employee = await this._employeeService.FindByUserNameAsync(userName);
+            if (employee == null)
+                return BadRequest();
             this.ConvertImage(input);
             if (input.Attachment != null)
             {
@@ -134,16 +140,23 @@ namespace ExchangeSync.Controllers
             {
                 var skypeResult = await this._meetingService.CreateOnlineMeetingAsync(input.Title, input.Body, userName, password);
                 var joinhttp = skypeResult.JoinUrl;
-                //var joinhttp = "https://meet.scrbg.com/v-ms-kz/HDED4XL3";
                 var joinUrl = "<a target=\"blank\" href =\"" + joinhttp + "\">点击参加Skype会议</a>";
                 input.Body += joinUrl;
             }
 
-            foreach (var inputAttendee in input.Attendees)
+            var attendEmployees = await this._employeeService.FindByUserNamesAsync(input.Attendees.ToArray());
+            //send to oa
+            foreach (var item in attendEmployees)
             {
-                var userName
+                await this._oaSystemOprationService.CreateAppointmentAsync(new Services.Dtos.OAAppoinmentInputDto()
+                {
+                    First = input.Title,
+                    MeetId = Guid.NewGuid().ToString(),
+                    UserNum = item.Number,
+
+                });
             }
-            
+
             await this._calendarService.CreateAppointMentAsync(input, userName, password);
             return Json(new { success = true });
         }
