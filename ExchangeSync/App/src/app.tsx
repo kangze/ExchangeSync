@@ -56,19 +56,19 @@ export default class App extends React.Component<any, any> {
                     </div>);
                 }} />
 
-                <Route exact path="/create" render={(param: any) => {
+                {/* <Route exact path="/create" render={(param: any) => {
                     return (<div>
                         <MailCreateHeader message={"发送成功"} title={"新建邮件"} {...param} />
                         <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />
                     </div>);
-                }} />
+                }} /> */}
 
-                <Route exact path="/reply/:mailId" render={(param: any) => {
+                {/* <Route exact path="/reply/:mailId" render={(param: any) => {
                     return (<div>
                         <MailCreateHeader message={"回复成功"} title={"回复"} {...param} />
                         <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />
                     </div>);
-                }} />
+                }} /> */}
 
                 <Route exact path="/calendar" render={(param: any) => {
                     return (<div>
@@ -77,12 +77,12 @@ export default class App extends React.Component<any, any> {
                     </div>);
                 }} />
 
-                <Route exact path="/createCalendar" render={(param: any) => {
+                {/* <Route exact path="/createCalendar" render={(param: any) => {
                     return (<div>
                         <MailCreateHeader message={"创建会议成功"} title={"创建会议"} {...param} />
                         <MailCalendarCreate changeTitle={this.changeTitle.bind(this)} {...param} />
                     </div>);
-                }} />
+                }} /> */}
             </Layout>
         );
     }

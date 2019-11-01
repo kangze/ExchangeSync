@@ -16,6 +16,13 @@ var detailBase64 = process.argv[3];
 var dataWarpper = JSON.parse(new Buffer(detailBase64, 'base64').toString());
 var data = dataWarpper.data;
 var user = dataWarpper.user;
+var wechat = dataWarpper.wechat;
+var script = "";
+if (wechat) {
+  script = "<script src=\"/js/client-wechat.js\"></script>";
+} else {
+  script = "<script src=\"/js/client.js\"></script>";
+}
 
 
 const context = { data: data, user: user } as any;
@@ -72,7 +79,7 @@ var doc = `
     <body>
           <div id="app-react">${html}</div>
           <script src="/js/zx-editor.min.js"></script>
-          <script src="/js/client.js"></script>
+          ${script}
     </body>
     </html>
 `;

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.NodeServices;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 
 namespace ExchangeSync.Controllers
 {
@@ -42,9 +43,10 @@ namespace ExchangeSync.Controllers
         //[Authorize]
         public async Task<IActionResult> Index()
         {
+
             if (!this.User.Identity.IsAuthenticated)
             {
-                var accessToken = await this._identityService.GetUserAccessTokenAsync("wangyue", "111111");
+                var accessToken = await this._identityService.GetUserAccessTokenAsync("scbzzx", "a123456");
                 var claims = await this._identityService.GetUserInfoAsync(accessToken);
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 claimsIdentity.AddClaim(new Claim("access_token", accessToken));
@@ -58,7 +60,12 @@ namespace ExchangeSync.Controllers
             var employee = await this._employeeService.FindByUserNameAsync(userName);
             if (employee == null)
                 return BadRequest();
-            var user = new { userName = userName, name = name };
+            var wechat = false;
+            var headersDictionary = Request.Headers;
+            var agent = headersDictionary[HeaderNames.UserAgent].ToString();
+            if (agent.ToLower().Contains("micromessenger"))
+                wechat = true;
+            var user = new { userName = userName, name = name, wechat = wechat };
             object data = null;
             if (path == "" || path == "/")
                 data = await this._mailService.GetIndexMailAsync(userName);

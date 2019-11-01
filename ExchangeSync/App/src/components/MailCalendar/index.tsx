@@ -270,7 +270,7 @@ export default class CalendarItem extends React.Component<any, any>{
 
 
 
-                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 47, width: 51, right: 20, bottom: 20, paddingLeft: 15, paddingTop: 17, boxShadow: Depths.depth64 }}>
+                {/* <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 47, width: 51, right: 20, bottom: 20, paddingLeft: 15, paddingTop: 17, boxShadow: Depths.depth64 }}>
                     <IconButton
                         iconProps={{
                             iconName: 'CalendarSettings', styles: {
@@ -285,7 +285,7 @@ export default class CalendarItem extends React.Component<any, any>{
                         ariaLabel="Add"
                         onClick={this._handleCreateCalendar.bind(this)}
                     />
-                </div>
+                </div> */}
             </div>
         );
     }
