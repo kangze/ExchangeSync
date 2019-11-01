@@ -125,6 +125,7 @@ export default class CalendarItem extends React.Component<any, any>{
             comments: data.body,
             timeStamp: "开始时间: " + dateStr,
             onClick: () => alert('1'),
+            mailId: encodeURIComponent(data.mailId)
         }
         return item;
     }
@@ -216,6 +217,10 @@ export default class CalendarItem extends React.Component<any, any>{
         );
     }
 
+    public handleToDetail(id: string) {
+        this.props.history.push("/detail/" + id);
+    }
+
     public render() {
         let self = this;
         const { firstDayOfWeek } = this.state;
@@ -260,7 +265,7 @@ export default class CalendarItem extends React.Component<any, any>{
                     groups.length == 0 ?
                         <Empty calendar={true} />
                         :
-                        groups.map((item: any) => <ActivityItem {...item} className={classNames.exampleRoot} />)
+                        groups.map((item: any) => <div onClick={this.handleToDetail.bind(this, item.mailId)}><ActivityItem {...item} className={classNames.exampleRoot} /></div>)
                 }
 
 

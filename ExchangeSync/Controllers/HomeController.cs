@@ -44,7 +44,7 @@ namespace ExchangeSync.Controllers
         {
             if (!this.User.Identity.IsAuthenticated)
             {
-                var accessToken = await this._identityService.GetUserAccessTokenAsync("scbzzx", "a123456");
+                var accessToken = await this._identityService.GetUserAccessTokenAsync("wangyue", "111111");
                 var claims = await this._identityService.GetUserInfoAsync(accessToken);
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 claimsIdentity.AddClaim(new Claim("access_token", accessToken));

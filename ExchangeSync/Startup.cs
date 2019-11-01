@@ -87,20 +87,20 @@ namespace ExchangeSync
             {
                 CreateAppointment = "",
             });
-            var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
-             {
-                 var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>
-                 {
-                     h.Username(mdmBusSection.GetValue<string>("UserName"));
-                     h.Password(mdmBusSection.GetValue<string>("Password"));
-                 });
-                 cfg.ReceiveEndpoint(host, "ITSCRBG_Contact", c =>
-                 {
-                     c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
-                     c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
-                 });
-             });
-            bus.Start();
+            //var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
+            // {
+            //     var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>
+            //     {
+            //         h.Username(mdmBusSection.GetValue<string>("UserName"));
+            //         h.Password(mdmBusSection.GetValue<string>("Password"));
+            //     });
+            //     cfg.ReceiveEndpoint(host, "ITSCRBG_Contact", c =>
+            //     {
+            //         c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
+            //         c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
+            //     });
+            // });
+            //bus.Start();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
