@@ -16,7 +16,7 @@ var detailBase64 = process.argv[3];
 var dataWarpper = JSON.parse(new Buffer(detailBase64, 'base64').toString());
 var data = dataWarpper.data;
 var user = dataWarpper.user;
-var wechat = dataWarpper.wechat;
+var wechat = dataWarpper.user.wechat;
 var script = "";
 if (wechat) {
   script = "<script src=\"/js/client-wechat.js\"></script>";
@@ -45,6 +45,11 @@ var doc = `
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="theme-color" content="#0078d4" />
     <link href="/css/fabric.min.css" rel="stylesheet" />
+    <script src="https://cdn.bootcss.com/vConsole/3.2.2/vconsole.min.js"></script>
+    <script>
+        var vConsole = new VConsole();
+        console.log('hello world')
+    </script>
     <script>
       window.data=${JSON.stringify(data)};
       window.user=${JSON.stringify(user)};
