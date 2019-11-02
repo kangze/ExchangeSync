@@ -63,14 +63,13 @@ const dropdownStyles: Partial<IDropdownStyles> = {
     root: { width: "49%", marginRight: "1%", marginLeft: 0 }
 };
 
-declare var ZxEditor: any;
-
 export default class CalendarCreate extends React.Component<any, any>{
 
     public constructor(props: any) {
         super(props);
         this.state = {
-            firstDayOfWeek: DayOfWeek.Monday
+            firstDayOfWeek: DayOfWeek.Monday,
+            FullDay: false
         };
     }
 
@@ -95,6 +94,7 @@ export default class CalendarCreate extends React.Component<any, any>{
     componentDidMount() {
         let self = this;
         delete (window as any).content;
+        (window as any).createMail = false;
     }
 
     private _formatDate(date?: Date): string {
@@ -125,7 +125,6 @@ export default class CalendarCreate extends React.Component<any, any>{
 
     private dropdownChange(name: string, e: any, option?: IDropdownOption, index?: number) {
         this.setState({ [name]: option.key });
-        console.log(option);
     }
 
     componentDidUpdate() {
@@ -135,6 +134,7 @@ export default class CalendarCreate extends React.Component<any, any>{
     public render() {
         const { firstDayOfWeek } = this.state;
         const stackTokens: IStackTokens = { childrenGap: 30 };
+        let fullDay = this.state.FullDay ? true : false;
         return (
             <Stack tokens={{ childrenGap: 20 }} styles={{ root: { width: "100%" } }}>
                 <br />
@@ -158,12 +158,12 @@ export default class CalendarCreate extends React.Component<any, any>{
                 <Stack horizontal tokens={stackTokens} verticalAlign="start">
                     <DatePicker style={{ width: "49%", marginLeft: "1%" }} value={this.state.start} onSelectDate={this.handleSelectDate.bind(this, "start")} formatDate={this._formatDate} firstDayOfWeek={firstDayOfWeek} strings={DayPickerStrings} placeholder="选择日期..." ariaLabel="选择日期..." label="起始时间：" />
                     {
-                        this.state["FullDay"] ? undefined :
+                        fullDay ? <div></div> :
                             <Dropdown onChange={this.dropdownChange.bind(this, "startTime")} selectedKey={this.state.startTime} placeholder="请选择时间点" label="时间点：" options={options} styles={dropdownStyles} />
                     }
                 </Stack>
                 {
-                    this.state["FullDay"] ? undefined :
+                    fullDay ? <div></div> :
                         <Stack horizontal tokens={stackTokens} verticalAlign="start">
                             <DatePicker style={{ width: "49%", marginLeft: "1%" }} value={this.state.start} onSelectDate={this.handleSelectDate.bind(this, "end")} formatDate={this._formatDate} firstDayOfWeek={firstDayOfWeek} strings={DayPickerStrings} placeholder="选择日期..." ariaLabel="选择日期..." label="结束时间：" />
                             <Dropdown onChange={this.dropdownChange.bind(this, "endTime")} selectedKey={this.state.endTime} placeholder="请选择时间点" label="时间点：" options={options} styles={dropdownStyles} />

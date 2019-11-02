@@ -36,7 +36,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                 copyto: "",
                 user: user,
             }
-        } else if (cporps.staticContext &&cporps.staticContext.user) {
+        } else if (cporps.staticContext && cporps.staticContext.user) {
             let user = cporps.staticContext.user;
             this.state = {
                 mailId: null,
@@ -90,6 +90,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
     }
 
     private _handleChange(name: string, items: ITag[]) {
+        console.log(items);
         this.setState({ [name]: items.map(u => u.key) });
     }
 
@@ -105,7 +106,8 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
 
     componentDidMount() {
         let self = this;
-        (window as any).content = true;
+        (window as any).content = {};
+        (window as any).createMail = true;
         if (this.state.reply) {
             let self = this;
             axios.get("/mail/GetMail?mailId=" + this.state.mailId).then(response => {
@@ -161,7 +163,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                 <TextInput type="text" label={"主题"} onChange={this._handleInputChange.bind(this, "title")} />
                 <TextInput id="attachmentMail" multiple={true} label="附件:" type="file" />
                 <Label>&nbsp;&nbsp;&nbsp;邮件内容:</Label>
-                <Editor />
+                {/* <Editor /> */}
             </Stack>
         );
     }

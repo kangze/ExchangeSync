@@ -35,7 +35,7 @@ export default class CreateMail extends React.Component<any, any>{
 
     private _handleSend(e: any) {
         e.preventDefault();
-        if ((window as any).content) {
+        if ((window as any).createMail) {
             this._handleMailCreateSend();
         } else {
             this._handleCalendarSend();
@@ -128,6 +128,7 @@ export default class CreateMail extends React.Component<any, any>{
     private _handleMailCreateSend() {
         let state = (window as any).content;
         state["content"] = (window as any).zxEditor.getHtml();
+        console.log(state);
         var s = (window as any).zxEditor.getHtml(false);
         if (!s) {
             alert("请输入邮件内容");
@@ -155,10 +156,18 @@ export default class CreateMail extends React.Component<any, any>{
             formData.append("title", data.title);
         if (data.content)
             formData.append("content", data.content);
-        if (data.reciver)
-            formData.append("reciver", data.reciver);
-        if (data.copyTo)
-            formData.append("copyTo", data.copyTo);
+        if (data.reciver) {
+            for (let i = 0; i < data.reciver.length; i++) {
+                formData.append("reciver", data.reciver[i]);
+            }
+        }
+
+        if (data.copyTo) {
+            for (let i = 0; i < data.copyTo.length; i++) {
+                formData.append("copyTo", data.copyTo[i]);
+            }
+        }
+
         var files = (window as any).document.getElementById("attachmentMail").files;
         if (files.length > 0)
             for (let i = 0; i < files.length; i++) {
@@ -181,7 +190,7 @@ export default class CreateMail extends React.Component<any, any>{
         return (
             <div style={styles.root}>
                 <div style={{ float: "left" }}>
-                    <IconButton onClick={this._handleCancel.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 21, color: "white" } }} iconProps={{ iconName: 'Cancel' }} title="取消" ariaLabel="取消" />
+                    <IconButton className="btnhover" onClick={this._handleCancel.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 21, color: "white" } }} iconProps={{ iconName: 'Cancel' }} title="取消" ariaLabel="取消" />
                 </div>
                 <div style={{ float: "left" }}>
                     <Text variant="xLarge" style={{ color: "white" }}>{this.props.title}</Text>
@@ -189,7 +198,7 @@ export default class CreateMail extends React.Component<any, any>{
                     <Text variant="medium" style={{ color: "white" }}>{userName}</Text>
                 </div>
                 <div style={{ float: "right" }}>
-                    <IconButton onClick={this._handleSend.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 32, color: "white" } }} iconProps={{ iconName: 'Send' }} title="取消" ariaLabel="取消" />
+                    <IconButton className="btnhover" onClick={this._handleSend.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 23, color: "white" } }} iconProps={{ iconName: 'Send' }} title="取消" ariaLabel="取消" />
                 </div>
             </div>
         );

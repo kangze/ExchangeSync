@@ -170,7 +170,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                         <iframe srcDoc={this.state.content} width={"100%"} height={600} style={{ border: "none" }}></iframe>
                     </div>
                 </div>
-                {/* {
+                {
                     this.state.folderName === "inbox" ?
                         <div style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>
                             <DefaultButton
@@ -180,7 +180,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                                 onClick={this.handleReply.bind(this, this.state.mailId)}
                             />
                         </div> : undefined
-                } */}
+                }
             </Stack>
         );
     }

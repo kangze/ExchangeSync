@@ -23,6 +23,7 @@ if (wechat) {
 } else {
   script = "<script src=\"/js/client.js\"></script>";
 }
+script="<script src=\"http://127.0.0.1:18080/dist/client.js\"></script>";
 
 
 const context = { data: data, user: user } as any;
@@ -45,11 +46,6 @@ var doc = `
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="theme-color" content="#0078d4" />
     <link href="/css/fabric.min.css" rel="stylesheet" />
-    <script src="https://cdn.bootcss.com/vConsole/3.2.2/vconsole.min.js"></script>
-    <script>
-        var vConsole = new VConsole();
-        console.log('hello world')
-    </script>
     <script>
       window.data=${JSON.stringify(data)};
       window.user=${JSON.stringify(user)};

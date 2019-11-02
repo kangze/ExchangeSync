@@ -129,3 +129,7 @@
     text-align: left;
     cursor: text;
 }
+
+.btnhover:hover{
+        background-color: #bec7cb6e !important;
+}
