@@ -163,7 +163,7 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
                 <TextInput type="text" label={"主题"} onChange={this._handleInputChange.bind(this, "title")} />
                 <TextInput id="attachmentMail" multiple={true} label="附件:" type="file" />
                 <Label>&nbsp;&nbsp;&nbsp;邮件内容:</Label>
-                {/* <Editor /> */}
+                <Editor />
             </Stack>
         );
     }

@@ -57,6 +57,14 @@ namespace ExchangeSync.Controllers
         }
 
         [Authorize]
+        public async Task<IActionResult> GetContent(string mailId)
+        {
+            var userName = this.GetUserName();
+            var item = await this._mailService.GetMailAsync(userName, mailId);
+            return Content(item.Content, "text/html");
+        }
+
+        [Authorize]
         public async Task<IActionResult> SetUnReade(string mailId)
         {
             var userName = this.GetUserName();

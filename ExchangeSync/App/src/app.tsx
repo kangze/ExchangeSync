@@ -33,7 +33,7 @@ export default class App extends React.Component<any, any> {
     public render() {
         return (
             <Layout>
-                <AnimatedRoute
+                <Route
                     atEnter={{ offset: -100 }}
                     atLeave={{ offset: 100 }}
                     atActive={{ offset: 0 }}
@@ -49,7 +49,7 @@ export default class App extends React.Component<any, any> {
                         </div>);
                     }} />
 
-                <AnimatedRoute
+                <Route
                     atEnter={{ offset: 100 }}
                     atLeave={{ offset: 100 }}
                     atActive={{ offset: 0 }}
