@@ -5,7 +5,7 @@ import { Text } from 'office-ui-fabric-react/lib/Text';
 export default class Empty extends React.Component<any, any>{
 
     public render() {
-        let styles:any = { textAlign: "center" };
+        let styles: any = { textAlign: "center", paddingLeft: "20%", paddingRight: "20%" };
         if (!this.props.calendar) {
             styles["marginTop"] = 64;
         }
