@@ -10,6 +10,7 @@ using ExchangeSync.Model.Services;
 using ExchangeSync.Models;
 using ExchangeSync.Models.Inputs;
 using ExchangeSync.Services;
+using ExchangeSync.Services.Dtos;
 using ExchangeSync.Skype;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +52,24 @@ namespace ExchangeSync.Controllers
             var result = list.Where(u => u.Start.Year == year && u.Start.Month == month && u.Start.Day == day).ToList();
             return Json(result);
         }
+
+
+        /// <summary>
+        /// 给协同办公的创建会议的接口
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Createmeeting([FromForm]CreateMeetingInput input)
+        {
+            return Json(new
+            {
+                success = true,
+                error = "",
+                onlinelink = "",
+                debug = input
+            });
+        }
+
 
         /// <summary>
         /// 获取我的会议
