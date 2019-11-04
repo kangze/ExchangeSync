@@ -217,7 +217,11 @@ export default class CalendarItem extends React.Component<any, any>{
         );
     }
 
-    public handleToDetail(id: string) {
+    public handleToDetail(id: any) {
+        if (!id || id == "null") {
+            alert("Exchange服务器异常,没有查询到对应的邮件！");
+            return;
+        }
         this.props.history.push("/detail/" + id);
     }
 
@@ -270,7 +274,7 @@ export default class CalendarItem extends React.Component<any, any>{
 
 
 
-                {/* <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 47, width: 51, right: 20, bottom: 20, paddingLeft: 15, paddingTop: 17, boxShadow: Depths.depth64 }}>
+                {/* <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 47, width: 57, right: 20, bottom: 20, paddingLeft: 9, paddingTop: 17, boxShadow: Depths.depth64 }}>
                     <IconButton
                         iconProps={{
                             iconName: 'CalendarSettings', styles: {

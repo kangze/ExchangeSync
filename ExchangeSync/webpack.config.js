@@ -10,7 +10,7 @@ module.exports = {
     },
     output: {
         filename: "[name].js",
-        publicPath: "http://localhost:18080/dist/",
+        publicPath: "http://192.168.101.105:18080/dist/",
         path: path.resolve(__dirname, './wwwroot/js/')
     },
     //devtool: "inline-source-map",
@@ -45,7 +45,7 @@ module.exports = {
             'Access-Control-Allow-Origin': '*' //配合服务端开发,需要跨域
         },
         port: 18080,
-        host: "localhost",
+        host: "192.168.101.105",
         hot: true
     },
 }
