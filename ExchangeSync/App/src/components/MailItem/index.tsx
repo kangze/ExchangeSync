@@ -224,7 +224,7 @@ export default class MailItem extends React.PureComponent<any, any> {
                         </div>
                     );
                 })}
-                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 54, right: 20, bottom: 20, paddingLeft: 10, paddingTop: 15, boxShadow: Depths.depth64 }}>
+                {/* <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 54, right: 20, bottom: 20, paddingLeft: 10, paddingTop: 15, boxShadow: Depths.depth64 }}>
                     <IconButton
                         className="btnhover"
                         iconProps={{
@@ -240,7 +240,7 @@ export default class MailItem extends React.PureComponent<any, any> {
                         ariaLabel="Add"
                         onClick={this.handleCreate.bind(this)}
                     />
-                </div>
+                </div> */}
             </Stack>
         );
     }

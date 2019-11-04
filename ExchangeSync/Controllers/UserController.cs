@@ -21,13 +21,12 @@ namespace ExchangeSync.Controllers
         public async Task<IActionResult> GetUser(string keyword)
         {
             var ls = new List<object>();
-            ls.Add(new { key = "374187303@qq.com", name = "康泽" });
             ls.Add(new { key = keyword, name = keyword });
             try
             {
-                //var employees = await this._enterpriseContactService.SearchEmployeeBaseInfoByKeyword(keyword);
-                //foreach (var infoDto in employees)
-                //    ls.Add(new { key = infoDto.EmailAddress, name = infoDto.Name + "_" + infoDto.Number });
+                var employees = await this._enterpriseContactService.SearchEmployeeBaseInfoByKeyword(keyword);
+                foreach (var infoDto in employees)
+                    ls.Add(new { key = infoDto.EmailAddress, name = infoDto.Name + "_" + infoDto.Number });
             }
             catch (Exception e)
             {
