@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -86,6 +87,14 @@ namespace ExchangeSync
             services.AddSingleton(new OaApiOption()
             {
                 CreateAppointment = "",
+            });
+            services.Configure<FormOptions>(options =>
+            {
+                options.ValueCountLimit = int.MaxValue;
+                options.ValueLengthLimit = int.MaxValue;
+                options.KeyLengthLimit = int.MaxValue;
+                options.MultipartBodyLengthLimit = int.MaxValue;
+                options.MultipartBoundaryLengthLimit = int.MaxValue;
             });
             //var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
             // {

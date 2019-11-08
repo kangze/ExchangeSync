@@ -21,7 +21,7 @@ namespace ExchangeSync.Exchange.Internal
             appointment.Body = dto.Body;
             appointment.Start = dto.Start;
             appointment.IsAllDayEvent = dto.FullDay;
-            appointment.ReminderDueBy
+            //appointment.ReminderDueBy
             if (!dto.FullDay)
                 appointment.End = dto.End;
             else
