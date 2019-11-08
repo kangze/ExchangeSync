@@ -159,18 +159,27 @@ namespace ExchangeSync.Controllers
                 var joinUrl = "<a target=\"blank\" href =\"" + joinhttp + "\">点击参加Skype会议</a>";
                 input.Body += joinUrl;
             }
-
-            var attendEmployees = await this._employeeService.FindByUserNamesAsync(input.Attendees.ToArray());
-            //send to oa
-            foreach (var item in attendEmployees)
+            try
             {
-                //await this._oaSystemOprationService.CreateAppointmentAsync(new Services.Dtos.OAAppoinmentInputDto()
-                //{
-                //    First = input.Title,
-                //    MeetId = Guid.NewGuid().ToString(),
-                //    UserNum = item.Number,
+                var attendEmployees = await this._employeeService.FindByUserNamesAsync(input.Attendees.ToArray());
+                //send to oa
+                foreach (var item in attendEmployees)
+                {
+                    await this._oaSystemOprationService.CreateAppointmentAsync(new Services.Dtos.OAAppoinmentInputDto()
+                    {
+                        Keyword1 = input.Title,
+                        First = "您有一条会议提醒",
+                        MeetId = Guid.NewGuid().ToString(),
+                        UserNum = item.Number,
+                        Keyword2 = DateTime.Parse(input.Start + " " + input.StartTime).ToString("yyyy-MM-dd"),
+                        Keyword3 = input.Location,
+                        Remark = "",
+                    }); ;
+                }
+            }
+            catch (Exception e)
+            {
 
-                //});
             }
 
             await this._calendarService.CreateAppointMentAsync(input, employee.Account, employee.Password);

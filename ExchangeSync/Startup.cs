@@ -86,7 +86,7 @@ namespace ExchangeSync
             services.AddSingleton(mapper);
             services.AddSingleton(new OaApiOption()
             {
-                CreateAppointment = "",
+                CreateAppointment = "https://newoa.scrbg.com/api/services/app/wxapi/SendMeetNoticeMsg",
             });
             services.Configure<FormOptions>(options =>
             {

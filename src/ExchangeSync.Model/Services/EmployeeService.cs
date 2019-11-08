@@ -34,7 +34,8 @@ namespace ExchangeSync.Model.Services
                 {
                     UserName="scbzzx",
                     Account="scbzzx@scrbg.com",
-                    Password="a123456"
+                    Password="a123456",
+                    Number="000075"
                 }
             };
             Check.NotNull(userNames);

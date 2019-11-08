@@ -17,12 +17,24 @@ namespace ExchangeSync.Services.Dtos
         /// </summary>
         public string First { get; set; }
 
+        /// <summary>
+        /// 会议主题
+        /// </summary>
         public string Keyword1 { get; set; }
 
+        /// <summary>
+        /// 会议时间
+        /// </summary>
         public string Keyword2 { get; set; }
 
+        /// <summary>
+        /// 会议地点
+        /// </summary>
         public string Keyword3 { get; set; }
 
+        /// <summary>
+        /// 备注
+        /// </summary>
         public string Remark { get; set; }
 
         /// <summary>
