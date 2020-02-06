@@ -19,7 +19,7 @@ namespace ExchangeSync.Exchange.Internal
         private readonly string _userName;
         private readonly string _password;
 
-        private readonly ExchangeService _exchangeService;
+        public readonly ExchangeService _exchangeService;
         private readonly IMapper _mapper;
 
         private MailManager(string userName, string password)

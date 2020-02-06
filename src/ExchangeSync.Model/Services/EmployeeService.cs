@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ExchangeSync.Common.Tools;
 using ExchangeSync.Model.Dtos;
+using ExchangeSync.Model.EnterpiseContactModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExchangeSync.Model.Services
@@ -28,16 +29,6 @@ namespace ExchangeSync.Model.Services
 
         public async Task<List<EmployeeDto>> FindByUserNamesAsync(string[] userNames)
         {
-            return new List<EmployeeDto>()
-            {
-                new EmployeeDto()
-                {
-                    UserName="scbzzx",
-                    Account="scbzzx@scrbg.com",
-                    Password="a123456",
-                    Number="000075"
-                }
-            };
             Check.NotNull(userNames);
             var emptyEmployees = new List<EmployeeDto>();
             if (userNames.Length == 0)
@@ -69,6 +60,18 @@ namespace ExchangeSync.Model.Services
             if (employees.Count == 0)
                 return null;
             return employees[0];
+        }
+
+        public async Task<EmployeeDto> FindByUserNumberAsync(string userNumber)
+        {
+            Employee employee = null;
+            using (var db = new ServiceDbContext(this._dbOption))
+            {
+                employee = await db.Employees.FirstOrDefaultAsync(u => u.Number == userNumber);
+                if (employee == null) return null;
+            }
+
+            return await this.FindByUserNameAsync(employee.UserName);
         }
 
         private List<string> ProcessUserNameIfContainsAt(string[] userNames)

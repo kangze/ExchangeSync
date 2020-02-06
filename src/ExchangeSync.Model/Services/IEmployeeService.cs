@@ -17,5 +17,7 @@ namespace ExchangeSync.Model.Services
         Task<List<EmployeeDto>> FindByUserNamesAsync(string[] userNames);
 
         Task<EmployeeDto> FindByUserNameAsync(string userName);
+
+        Task<EmployeeDto> FindByUserNumberAsync(string userNumber);
     }
 }

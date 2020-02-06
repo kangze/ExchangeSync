@@ -145,7 +145,7 @@ namespace ExchangeSync.Services
 
             if (mails.Count != 0)
             {
-                for (var i = lastMonth - 1; i <= 1; i--)
+                for (var i = lastMonth - 1; i <= 1 && i != 0; i--)
                 {
                     var items = mails.Where(u => u.RecivedTime.Month == i).ToList();
                     ls.Add(new MailGroupViewModel()
