@@ -22,7 +22,7 @@ namespace ExchangeSync.Exchange.Internal
         public readonly ExchangeService _exchangeService;
         private readonly IMapper _mapper;
 
-        private MailManager(string userName, string password)
+        public MailManager(string userName, string password)
         {
             this._userName = userName;
             this._password = password;
@@ -47,10 +47,10 @@ namespace ExchangeSync.Exchange.Internal
             ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2013);
             service.Credentials = new WebCredentials(this._userName, this._password);
             service.UseDefaultCredentials = false;
-#if DEBUG
+//#if DEBUG
             service.TraceEnabled = true;
             service.TraceFlags = TraceFlags.All;
-#endif
+//#endif
             service.AutodiscoverUrl(this._userName, RedirectionUrlValidationCallback);
             return service;
         }

@@ -212,6 +212,7 @@ namespace ExchangeSync.Services
             if (employee == null)
                 return null;
             return MailManager.Create(employee.Account, employee.Password);
+            //return MailManager.Create("scbzzx@scrbg.com", "a123456");
         }
 
         public static string ConverToHtml(string content)

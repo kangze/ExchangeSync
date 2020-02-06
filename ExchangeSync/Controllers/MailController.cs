@@ -48,7 +48,7 @@ namespace ExchangeSync.Controllers
             return await Task.FromResult(Json(await this._mailService.GetIndexMailAsync(userName)));
         }
 
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetMail(string mailId)
         {
             var userName = this.GetUserName();

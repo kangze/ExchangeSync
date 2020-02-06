@@ -71,7 +71,7 @@ namespace ExchangeSync.Controllers
                 wechat = true;
             var user = new { userName = userName, name = name, wechat = wechat };
 
-            var data =await this.GetMailDataAsync(userName, employee);
+            var data = await this.GetMailDataAsync(userName, employee);
             var html = this._serverRenderService.Render(Request.Path, data, user);
             return Content(html, "text/html; charset=utf-8");
         }
@@ -122,16 +122,16 @@ namespace ExchangeSync.Controllers
         //[HttpGet("mailIndex")]
         public async Task<IActionResult> Index(string number)
         {
-            if (this.User.Identity.IsAuthenticated)
-            {
-                var userName = this.GetUserName();
-                var name = this.GetName();
-                var employee_logined =await this._employeeService.FindByUserNameAsync(userName);
-                var mailData =await this.GetMailDataAsync(userName, employee_logined);
-                var user = new { userName = userName, name = name, wechat = true };
-                var html = this._serverRenderService.Render(Request.Path, mailData, user);
-                return Content(html, "text/html; charset=utf-8");
-            }
+            //if (this.User.Identity.IsAuthenticated)
+            //{
+            //    var userName = this.GetUserName();
+            //    var name = this.GetName();
+            //    var employee_logined =await this._employeeService.FindByUserNameAsync(userName);
+            //    var mailData =await this.GetMailDataAsync(userName, employee_logined);
+            //    var user = new { userName = userName, name = name, wechat = true };
+            //    var html = this._serverRenderService.Render(Request.Path, mailData, user);
+            //    return Content(html, "text/html; charset=utf-8");
+            //}
 
             if (string.IsNullOrWhiteSpace(number)) return Content("加密内容不能为空!");
             var user_number = this.OpenS(number);
@@ -145,10 +145,13 @@ namespace ExchangeSync.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             claimsIdentity.AddClaim(new Claim("access_token", accessToken));
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-            return Redirect("/");
+            var mailData = await this.GetMailDataAsync(employee.UserName, employee);
+            var user = new { userName = employee.UserName, name = employee.Name, wechat = true };
+            var html = this._serverRenderService.Render(Request.Path, mailData, user);
+            return Content(html, "text/html; charset=utf-8");
         }
 
-        private async Task<object> GetMailDataAsync(string userName,EmployeeDto employee)
+        private async Task<object> GetMailDataAsync(string userName, EmployeeDto employee)
         {
             object data = null;
             var path = Request.Path.ToString();
@@ -194,6 +197,11 @@ namespace ExchangeSync.Controllers
             }
 
             return data;
+        }
+
+        public IActionResult Max()
+        {
+            return Content(NotiMax.Current.ToString() + "---" + NotiMax.UserMax.ToString() + "----" + NotiMax.SubScriptionMax + "__----------" + NotiMax.MailManagerMax.Count);
         }
     }
 }

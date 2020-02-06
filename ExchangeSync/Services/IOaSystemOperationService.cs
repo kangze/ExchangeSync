@@ -10,5 +10,7 @@ namespace ExchangeSync.Services
     public interface IOaSystemOperationService
     {
         Task<bool> CreateAppointmentAsync(OAAppoinmentInputDto input);
+
+        Task<string> SendNewMailSync(string mailId, string subject, string number);
     }
 }

@@ -6,8 +6,10 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using ExchangeSync.Services;
+using ExchangeSync.Services.Dtos;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -44,8 +46,17 @@ namespace ExchangeSyncTest.ServicesTest
         [TestMethod]
         public void TestUserNumber()
         {
-            var number = this.OpenS("9gsaQOytp11mcDxAC6TgyYdM45ubvqQy");
-            Assert.IsTrue(number== "000078");
+            var list = new List<int>();
+            for (var i = 0; i < 2; i++)
+            {
+                list.Add(100);
+            }
+
+            var result = Parallel.ForEach(list,  u =>
+            {
+                Thread.Sleep(5000);
+            });
+            var s22 = 10;
         }
 
         public string OpenS(string str)
