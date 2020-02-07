@@ -47,10 +47,10 @@ namespace ExchangeSync.Exchange.Internal
             ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2013);
             service.Credentials = new WebCredentials(this._userName, this._password);
             service.UseDefaultCredentials = false;
-//#if DEBUG
+            //#if DEBUG
             service.TraceEnabled = true;
             service.TraceFlags = TraceFlags.All;
-//#endif
+            //#endif
             service.AutodiscoverUrl(this._userName, RedirectionUrlValidationCallback);
             return service;
         }
@@ -94,6 +94,10 @@ namespace ExchangeSync.Exchange.Internal
                 ItemSchema.TextBody,
                 ItemSchema.DisplayCc,
                 ItemSchema.DisplayTo,
+
+                AppointmentSchema.IsMeeting,
+                AppointmentSchema.IsOnlineMeeting,
+                MeetingMessageSchema.AssociatedAppointmentId,
             });
             Folder rootFolder = await Folder.Bind(this._exchangeService, name, propSet);
             //TODO:先设计成获取前200封邮件
@@ -142,7 +146,11 @@ namespace ExchangeSync.Exchange.Internal
                 ItemSchema.HasAttachments,
                 EmailMessageSchema.IsRead,
                 ItemSchema.DisplayCc,
-                ItemSchema.DisplayTo
+                ItemSchema.DisplayTo,
+
+                AppointmentSchema.IsMeeting,
+                AppointmentSchema.IsOnlineMeeting,
+                MeetingMessageSchema.AssociatedAppointmentId,
             });
             Folder rootFolder = await Folder.Bind(this._exchangeService, WellKnownFolderName.Inbox, propSet);
             var searchFilter = new SearchFilter.IsEqualTo(ItemSchema.Id, mailId);
@@ -240,6 +248,30 @@ namespace ExchangeSync.Exchange.Internal
                     mail.SenderName = message.Sender.Name;
                 }
             }
+            //AppointmentSchema.IsMeeting,
+            //AppointmentSchema.IsOnlineMeeting,
+            //MeetingMessageSchema.AssociatedAppointmentId,
+            if (sets.Contains(AppointmentSchema.IsMeeting))
+            {
+                var request = message as MeetingRequest;
+                if (request != null)
+                    mail.IsMeeting = request.IsMeeting;
+            }
+
+            if (sets.Contains(AppointmentSchema.IsOnlineMeeting))
+            {
+                var request = message as MeetingRequest;
+                if (request != null)
+                    mail.IsOnlineMeeting = request.IsOnlineMeeting;
+            }
+
+            if (sets.Contains(MeetingMessageSchema.AssociatedAppointmentId))
+            {
+                var request = message as MeetingRequest;
+                if (request != null && mail.IsOnlineMeeting)
+                    mail.AppointMeetingId = request.AssociatedAppointmentId.UniqueId;
+            }
+
             if (sets.Contains(ItemSchema.HasAttachments)) mail.HasAttachments = message.HasAttachments;
             if (sets.Contains(ItemSchema.Attachments))
             {
@@ -342,7 +374,7 @@ namespace ExchangeSync.Exchange.Internal
             foreach (var findItemsResult in inboxReqeuest)
             {
                 var requet = findItemsResult as MeetingRequest;
-                if(requet==null)
+                if (requet == null)
                     continue;
                 await requet.Load(new PropertySet(ItemSchema.Id, MeetingMessageSchema.AssociatedAppointmentId));
                 if (requet.AssociatedAppointmentId == null)

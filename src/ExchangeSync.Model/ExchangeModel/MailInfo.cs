@@ -55,6 +55,12 @@ namespace ExchangeSync.Model.ExchangeModel
         public bool HasAttachments { get; set; }
 
         public string FolderName { get; set; }
+
+        public bool IsMeeting { get; set; }
+
+        public bool IsOnlineMeeting { get; set; }
+
+        public string AppointMeetingId { get; set; }
     }
 
     public class AttachmentInfo

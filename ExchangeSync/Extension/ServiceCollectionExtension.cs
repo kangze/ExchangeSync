@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +11,7 @@ using ExchangeSync.Exchange.Internal;
 using ExchangeSync.Model;
 using ExchangeSync.Model.EnterpiseContactModel;
 using ExchangeSync.Services;
+using ExchangeSync.Services.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Exchange.WebServices.Data;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,47 +74,77 @@ namespace ExchangeSync.Extension
 
                 while (true)
                 {
-                    Parallel.ForEach(subScriptions, async subScription =>
+                    try
                     {
-                        var events = subScription.Pull.GetEvents().GetAwaiter().GetResult();
-                        IEnumerable<ItemEvent> itemEvents = events.ItemEvents;
-                        foreach (ItemEvent itemEvent in itemEvents)
+                        Parallel.ForEach(subScriptions, async subScription =>
                         {
-                            if (itemEvent.EventType == EventType.NewMail)
+                            try
                             {
-                                //发送新的到OA系统
-                                EmailMessage emailMessage = await EmailMessage.Bind(subScription.MailManager._exchangeService, itemEvent.ItemId.UniqueId);
-                                var mailId = itemEvent.ItemId.UniqueId;
-                                var subject = emailMessage.Subject;
-                                var number = subScription.Number;
 
-                                var logStr = "mailId:" + mailId + "-subject:" + subject + "-number" + number;
-                                try
-                                {
-                                    var result = await oaService.SendNewMailSync(mailId, subject, number);
-                                    logStr += result;
-                                }
-                                catch (Exception e)
-                                {
-                                    logStr += e.ToString();
-                                }
 
-                                using (var db = new ServiceDbContext(Test))
+                                var events = subScription.Pull.GetEvents().GetAwaiter().GetResult();
+                                IEnumerable<ItemEvent> itemEvents = events.ItemEvents;
+                                foreach (ItemEvent itemEvent in itemEvents)
                                 {
-                                    db.NewMailEvents.Add(new NewMailEvent()
+                                    if (itemEvent.EventType == EventType.NewMail)
                                     {
-                                        NewMailId = "14342",
-                                        Notify = false,
-                                        Title = number,
-                                        TextBody = logStr,
-                                        DateTime = DateTime.Now
-                                    });
-                                    db.SaveChanges();
+                                        //发送新的到OA系统
+                                        var mail = await subScription.MailManager.GetMailAsync(itemEvent.ItemId.UniqueId);
+                                        var mailId = itemEvent.ItemId.UniqueId;
+                                        var subject = mail.Subject;
+                                        var number = subScription.Number;
+                                        var url = "";
+                                        var first = "你有一条新邮件提醒";
+                                        var remark = "邮件";
+                                        if (mail.IsOnlineMeeting)
+                                        {
+                                            url = await subScription.MailManager.GetAppointMentUrl(mail.AppointMeetingId);
+                                            first = "你有一条新会议提醒";
+                                            remark = "会议";
+                                        }
+
+                                        if (string.IsNullOrWhiteSpace(url))
+                                        {
+                                            url = "http://appmail.scrbg.com/" + "?number=" + openskype(number).EncodeBase64();
+                                        }
+                                        var logStr = "url:" + url + "mailId:" + mailId + "-subject:" + subject + "-number" + number;
+                                        try
+                                        {
+                                            oaService = new OaSystemOperationService(new OaApiOption(), new HttpClient());
+                                            var result = await oaService.SendNewMailSync(url, mailId, subject, number,first,remark);
+                                            logStr += result;
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            logStr += e.ToString();
+                                        }
+
+                                        using (var db = new ServiceDbContext(Test))
+                                        {
+                                            db.NewMailEvents.Add(new NewMailEvent()
+                                            {
+                                                NewMailId = "14342",
+                                                Notify = false,
+                                                Title = number,
+                                                TextBody = logStr,
+                                                DateTime = DateTime.Now
+                                            });
+                                            db.SaveChanges();
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    });
-                    Thread.Sleep(5000);
+                            catch (Exception e)
+                            {
+
+                            }
+                        });
+                        Thread.Sleep(5000);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
                 }
             });
 
@@ -198,7 +232,7 @@ namespace ExchangeSync.Extension
                 {
                     if (string.IsNullOrEmpty(user.UserName) || result.ContainsKey(user.UserName)) continue;
                     result.Add(user.UserName, user.Password.DecodeBase64());
-                    users.Add(new UserProfile()
+                    users1.Add(new UserProfile()
                     {
                         Number = user.Number,
                         UserName = user.UserName,
@@ -208,6 +242,34 @@ namespace ExchangeSync.Extension
 
                 return users1;
             }
+        }
+
+        public static string openskype(string userNum)
+        {
+            try
+            {
+                byte[] key = Encoding.Unicode.GetBytes("sclq");//密钥
+                byte[] data = Encoding.Unicode.GetBytes(userNum);//待加密字符串
+
+                DESCryptoServiceProvider descsp = new DESCryptoServiceProvider();//加密、解密对象
+                MemoryStream MStream = new MemoryStream();//内存流对象
+
+                //用内存流实例化加密流对象
+                CryptoStream CStream = new CryptoStream(MStream, descsp.CreateEncryptor(key, key), CryptoStreamMode.Write);
+                CStream.Write(data, 0, data.Length);//向加密流中写入数据
+                CStream.FlushFinalBlock();//将数据压入基础流
+                byte[] temp = MStream.ToArray();//从内存流中获取字节序列
+                CStream.Close();//关闭加密流
+                MStream.Close();//关闭内存流
+
+                return Convert.ToBase64String(temp);//返回加密后的字符串
+            }
+            catch
+            {
+                return "-1";
+            }
+
+
         }
     }
 

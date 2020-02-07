@@ -129,7 +129,6 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
 
     public render(): JSX.Element {
         //let id=(this.props as any).match.params.mailId; 获取到的I
-        var canReply = (window as any).location.pathname == "/";
         if (this.state.loading)
             return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
         let mailid = this.state.mailId;

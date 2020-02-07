@@ -12,5 +12,6 @@ namespace ExchangeSync.Exchange.Internal
         void SendMail(CreateMailModel model);
 
         Task<List<MailInfo>> GetMailMessageAsync();
+
     }
 }

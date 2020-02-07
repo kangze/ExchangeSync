@@ -77,5 +77,29 @@ namespace ExchangeSync.Exchange.Internal
 
             return list;
         }
+
+        public async Task<string> GetAppointMentUrl(string id)
+        {
+            try
+            {
+
+
+                var calendarFolder = await CalendarFolder.Bind(this._exchangeService, WellKnownFolderName.Calendar,
+                    new PropertySet());
+                var searchFilter = new SearchFilter.IsEqualTo(ItemSchema.Id, id);
+                var appointments = await calendarFolder.FindItems(searchFilter, new ItemView(1));
+                var list = new List<AppointMentDto>();
+                var appointment = appointments.First() as Appointment;
+                if (appointment == null) return "";
+                await appointment.Load(new PropertySet(
+                    ItemSchema.Id,
+                    AppointmentSchema.JoinOnlineMeetingUrl));
+                return appointment.JoinOnlineMeetingUrl;
+            }
+            catch (Exception e)
+            {
+                return "";
+            }
+        }
     }
 }

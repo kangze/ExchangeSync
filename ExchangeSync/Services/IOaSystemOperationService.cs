@@ -11,6 +11,6 @@ namespace ExchangeSync.Services
     {
         Task<bool> CreateAppointmentAsync(OAAppoinmentInputDto input);
 
-        Task<string> SendNewMailSync(string mailId, string subject, string number);
+        Task<string> SendNewMailSync(string url,string mailId, string subject, string number,string first,string remark);
     }
 }

@@ -37,6 +37,11 @@ namespace ExchangeSync.Services
         {
             var mailManager = await GetMailManager(identity);
             var drafts = await mailManager.GetDraftMailAsync();
+            foreach (var info in drafts)
+            {
+                if (string.IsNullOrWhiteSpace(info.Description)) continue;
+                if (info.Description.Length > 62) info.Description = info.Description.Substring(0, 60);
+            }
             var result = this.GroupMail(drafts);
             foreach (var item in result.SelectMany(u => u.Items))
             {
@@ -59,6 +64,11 @@ namespace ExchangeSync.Services
 
             var mailManager = await GetMailManager(identity);
             var indexs = await mailManager.GetInBoxMessageAsync();
+            foreach (var info in indexs)
+            {
+                if (string.IsNullOrWhiteSpace(info.Description)) continue;
+                if (info.Description.Length > 62) info.Description = info.Description.Substring(0, 60);
+            }
             var mails = this.GroupMail(indexs);
             return mails;
         }
@@ -84,6 +94,11 @@ namespace ExchangeSync.Services
         {
             var mailManager = await GetMailManager(identity);
             var sents = await mailManager.GetSentMailMessageAsync();
+            foreach (var info in sents)
+            {
+                if (string.IsNullOrWhiteSpace(info.Description)) continue;
+                if (info.Description.Length > 62) info.Description = info.Description.Substring(0, 60);
+            }
             var mails = this.GroupMail(sents);
             return mails;
         }
@@ -212,7 +227,7 @@ namespace ExchangeSync.Services
             if (employee == null)
                 return null;
             return MailManager.Create(employee.Account, employee.Password);
-            //return MailManager.Create("scbzzx@scrbg.com", "a123456");
+            //return MailManager.Create("srbg3139@scrbg.com", "a123456");
         }
 
         public static string ConverToHtml(string content)

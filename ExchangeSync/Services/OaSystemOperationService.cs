@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using ExchangeSync.Extension;
@@ -34,21 +36,20 @@ namespace ExchangeSync.Services
             }
         }
 
-        public async Task<string> SendNewMailSync(string mailId, string subject, string number)
+        public async Task<string> SendNewMailSync(string url, string mailId, string subject, string number,string first,string remark)
         {
             using (var httpClient = new HttpClient())
             {
-                var url = "https://appmail.scrbg.com/detail/" + mailId;
                 var body = new
                 {
                     url = url,
                     meetid = "abc",
                     userNum = number,
-                    first = "您有一条新邮件提醒",
+                    first = first,
                     keyword1 = subject,
                     keyword2 = "",
                     keyword3 = "",
-                    remark = "新邮件",
+                    remark = remark,
                     templateIdS = "jkeuA_9dC5TU0kri2Heh8v3egIXz6gEDgDCSpwzdiXg",
                 };
                 var content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
@@ -59,5 +60,9 @@ namespace ExchangeSync.Services
                 return result;
             }
         }
+
+        
     }
+
+    
 }

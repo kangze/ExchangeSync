@@ -96,24 +96,41 @@ namespace ExchangeSync.Controllers
         {
             try
             {
-                byte[] key = Encoding.Unicode.GetBytes("sclq");//密钥
-                byte[] data = Convert.FromBase64String(str);//待解密字符串
+                byte[] bytes = Convert.FromBase64String(str);
+                var decode = Encoding.GetEncoding("utf-8").GetString(bytes);
+                DESCryptoServiceProvider descsp = new DESCryptoServiceProvider();   //实例化加/解密类对象   
 
-                DESCryptoServiceProvider descsp = new DESCryptoServiceProvider();//加密、解密对象
-                MemoryStream MStream = new MemoryStream();//内存流对象
+                byte[] key = Encoding.Unicode.GetBytes("sclq"); //定义字节数组，用来存储密钥   
 
-                //用内存流实例化解密流对象
+                byte[] data = Convert.FromBase64String(decode);//定义字节数组，用来存储要解密的字符串 
+
+                MemoryStream MStream = new MemoryStream(); //实例化内存流对象     
+
+                //使用内存流实例化解密流对象      
                 CryptoStream CStream = new CryptoStream(MStream, descsp.CreateDecryptor(key, key), CryptoStreamMode.Write);
-                CStream.Write(data, 0, data.Length);//向加密流中写入数据
-                CStream.FlushFinalBlock();//将数据压入基础流
-                byte[] temp = MStream.ToArray();//从内存流中获取字节序列
-                CStream.Close();//关闭加密流
-                MStream.Close();//关闭内存流
 
-                var decodeStr = Encoding.Unicode.GetString(temp);
-                return decodeStr.Replace("\"", "").Replace("“", "");
+                CStream.Write(data, 0, data.Length);      //向解密流中写入数据    
+
+                CStream.FlushFinalBlock();               //释放解密流     
+
+                return Encoding.Unicode.GetString(MStream.ToArray());       //返回解密后的字符串 
+                //byte[] key = Encoding.Unicode.GetBytes("sclq");//密钥
+                //byte[] data = Convert.FromBase64String(str);//待解密字符串
+
+                //DESCryptoServiceProvider descsp = new DESCryptoServiceProvider();//加密、解密对象
+                //MemoryStream MStream = new MemoryStream();//内存流对象
+
+                ////用内存流实例化解密流对象
+                //CryptoStream CStream = new CryptoStream(MStream, descsp.CreateDecryptor(key, key), CryptoStreamMode.Write);
+                //CStream.Write(data, 0, data.Length);//向加密流中写入数据
+                //CStream.FlushFinalBlock();//将数据压入基础流
+                //byte[] temp = MStream.ToArray();//从内存流中获取字节序列
+                //CStream.Close();//关闭加密流
+                //MStream.Close();//关闭内存流
+
+                //return Encoding.Unicode.GetString(temp);//返回解密后的字符串
             }
-            catch
+            catch (Exception ex)
             {
                 return str;
             }
@@ -122,17 +139,33 @@ namespace ExchangeSync.Controllers
         //[HttpGet("mailIndex")]
         public async Task<IActionResult> Index(string number)
         {
-            //if (this.User.Identity.IsAuthenticated)
-            //{
-            //    var userName = this.GetUserName();
-            //    var name = this.GetName();
-            //    var employee_logined =await this._employeeService.FindByUserNameAsync(userName);
-            //    var mailData =await this.GetMailDataAsync(userName, employee_logined);
-            //    var user = new { userName = userName, name = name, wechat = true };
-            //    var html = this._serverRenderService.Render(Request.Path, mailData, user);
-            //    return Content(html, "text/html; charset=utf-8");
-            //}
+            if (this.User.Identity.IsAuthenticated)
+            {
+                var willNumber = this.GetNumber();
+                if (!string.IsNullOrWhiteSpace(number))
+                {
+                    var s_number = this.OpenS(number);
+                    if (!string.IsNullOrWhiteSpace(s_number) && s_number != willNumber)
+                    {
+                        willNumber = s_number;
+                        var employeeKK = await this._employeeService.FindByUserNumberAsync(willNumber);
+                        var accessToken22 = await this._identityService.GetUserAccessTokenAsync(employeeKK.UserName, employeeKK.Password);
+                        var claims22 = await this._identityService.GetUserInfoAsync(accessToken22);
+                        var claimsIdentity22 = new ClaimsIdentity(claims22, CookieAuthenticationDefaults.AuthenticationScheme);
+                        claimsIdentity22.AddClaim(new Claim("access_token", accessToken22));
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity22));
+                    }
+                }
 
+                if (string.IsNullOrWhiteSpace(willNumber)) willNumber = this.GetNumber();
+
+
+                var employee_logined = await this._employeeService.FindByUserNumberAsync(willNumber);
+                var mailData1 = await this.GetMailDataAsync(employee_logined.UserName, employee_logined);
+                var user1 = new { userName = employee_logined.UserName, name = employee_logined.Name, wechat = true };
+                var html1 = this._serverRenderService.Render(Request.Path, mailData1, user1);
+                return Content(html1, "text/html; charset=utf-8");
+            }
             if (string.IsNullOrWhiteSpace(number)) return Content("加密内容不能为空!");
             var user_number = this.OpenS(number);
             if (string.IsNullOrWhiteSpace(user_number)) return Content("解密后内容不合法!");
