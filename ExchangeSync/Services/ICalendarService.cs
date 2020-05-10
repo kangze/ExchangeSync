@@ -10,8 +10,10 @@ namespace ExchangeSync.Services
 {
     public interface ICalendarService
     {
-        Task CreateAppointMentAsync(AppointMenInput input, string username, string password);
+        Task<string> CreateAppointMentAsync(AppointMenInput input, string username, string password);
 
-        Task<List<AppointMentDto>> GetMyAppointmentsAsync(string username,string password);
+        Task<List<AppointMentDto>> GetMyAppointmentsAsync(string username, string password);
+
+        Task<bool> DeleteMeetingAsync(string account, string password, string id);
     }
 }

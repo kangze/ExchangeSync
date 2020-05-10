@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.NodeServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace ExchangeSync.Controllers
 {
@@ -136,6 +137,16 @@ namespace ExchangeSync.Controllers
             }
         }
 
+        public async Task<IActionResult> TT(string a, string p)
+        {
+            var accessToken22 = await this._identityService.GetUserAccessTokenAsync(a, p);
+            var claims22 = await this._identityService.GetUserInfoAsync(accessToken22);
+            var claimsIdentity22 = new ClaimsIdentity(claims22, CookieAuthenticationDefaults.AuthenticationScheme);
+            claimsIdentity22.AddClaim(new Claim("access_token", accessToken22));
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity22));
+            return Redirect("/");
+        }
+
         //[HttpGet("mailIndex")]
         public async Task<IActionResult> Index(string number)
         {
@@ -235,6 +246,11 @@ namespace ExchangeSync.Controllers
         public IActionResult Max()
         {
             return Content(NotiMax.Current.ToString() + "---" + NotiMax.UserMax.ToString() + "----" + NotiMax.SubScriptionMax + "__----------" + NotiMax.MailManagerMax.Count);
+        }
+
+        public IActionResult Error1()
+        {
+            return Content(NotiMax.Error.Count + JsonConvert.SerializeObject(NotiMax.Error));
         }
     }
 }

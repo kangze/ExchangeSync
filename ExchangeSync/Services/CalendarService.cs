@@ -19,7 +19,7 @@ namespace ExchangeSync.Services
             _mapper = mapper;
         }
 
-        public async Task CreateAppointMentAsync(AppointMenInput input, string username, string password)
+        public async Task<string> CreateAppointMentAsync(AppointMenInput input, string username, string password)
         {
             var mailManager = MailManager.Create(username, password);
             input.Body = MailService.ConverToHtml(input.Body);
@@ -35,7 +35,8 @@ namespace ExchangeSync.Services
                     IsPackage = item.IsPackage
                 });
             }
-            await mailManager.CreateAppointMentAsync(dto);
+            var id = await mailManager.CreateAppointMentAsync(dto);
+            return id;
         }
 
         public async Task<List<AppointMentDto>> GetMyAppointmentsAsync(string username, string password)
@@ -50,6 +51,13 @@ namespace ExchangeSync.Services
                     item.MailId = mail.MailId;
             }
             return list;
+        }
+
+        public async Task<bool> DeleteMeetingAsync(string account, string password, string id)
+        {
+            var mailManager = MailManager.Create(account, password);
+            var result = await mailManager.DeleteMeetAsyun(id);
+            return result;
         }
     }
 }

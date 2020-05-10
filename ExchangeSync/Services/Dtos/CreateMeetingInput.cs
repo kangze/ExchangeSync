@@ -7,6 +7,13 @@ using Microsoft.AspNetCore.Http;
 
 namespace ExchangeSync.Services.Dtos
 {
+    public class DeleteMeeetingInput
+    {
+        public string Number { get; set; }
+
+        public string Id { get; set; }
+    }
+
     public class CreateMeetingInput
     {
         public string Title { get; set; }
@@ -26,6 +33,11 @@ namespace ExchangeSync.Services.Dtos
         public string ReminderDueBy { get; set; }
 
         public string[] Attendees { get; set; }
+
+        /// <summary>
+        /// 会议的发起人
+        /// </summary>
+        public string Creator { get; set; }
 
         public IList<IFormFile> Attachments { get; set; }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ExchangeSync.Exchange.Model;
 using ExchangeSync.Extension;
 using ExchangeSync.Model;
 using ExchangeSync.Model.Services;
@@ -13,6 +14,7 @@ using ExchangeSync.Services;
 using ExchangeSync.Services.Dtos;
 using ExchangeSync.Skype;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,6 +55,39 @@ namespace ExchangeSync.Controllers
             return Json(result);
         }
 
+        public async Task<IActionResult> DeleteMeeting([FromForm] DeleteMeeetingInput input)
+        {
+            if (input == null || string.IsNullOrWhiteSpace(input.Number) || string.IsNullOrWhiteSpace(input.Id))
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = "参数不能为空",
+                    debug = input
+                });
+            }
+
+            var employee = await this._employeeService.FindByUserNumberAsync(input.Number);
+            if (employee == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = "没有找到用户",
+                    debug = input
+                });
+            }
+
+            var result = await this._calendarService.DeleteMeetingAsync(employee.Account, employee.Password, input.Id);
+            return Json(
+                new
+                {
+                    success = true,
+                    error = "",
+                    debug = input
+                }
+            );
+        }
 
         /// <summary>
         /// 给协同办公的创建会议的接口
@@ -61,13 +96,78 @@ namespace ExchangeSync.Controllers
         [HttpPost]
         public async Task<IActionResult> Createmeeting([FromForm]CreateMeetingInput input)
         {
-            return Json(new
+            if (input == null || string.IsNullOrWhiteSpace(input.Creator))
+                return Json(new
+                {
+                    success = false,
+                    error = "参数或者会议发起人不能为空",
+                    onlinelink = "",
+                    debug = input
+                });
+            var employee = await this._employeeService.FindByUserNumberAsync(input.Creator.Trim());
+            if (employee == null)
+                return Json(new
+                {
+                    id="",
+                    success = false,
+                    error = "没有找到会议发起人",
+                    onlinelink = "",
+                    debug = input
+                });
+            try
             {
-                success = true,
-                error = "",
-                onlinelink = "",
-                debug = input
-            });
+
+
+                var online = "";
+                if (input.OnLine)
+                {
+                    var skypeResult = await this._meetingService.CreateOnlineMeetingAsync(input.Title, input.Body,
+                        employee.Account, employee.Password);
+                    var joinhttp = skypeResult.JoinUrl;
+                    online = joinhttp;
+                    var joinUrl = "<a target=\"blank\" href =\"" + joinhttp + "\">点击参加Skype会议</a>";
+                    input.Body += joinUrl;
+                }
+
+                var attendEmployees = await this._employeeService.FindByUserNumbersAsync(input.Attendees.ToArray());
+
+                var id = await this._calendarService.CreateAppointMentAsync(new AppointMenInput()
+                {
+                    AddToSkype = input.OnLine,
+                    Attachment = new List<IFormFile>(),
+                    Attachments = new List<AttachmentInput>(),
+                    Attendees = attendEmployees.Select(u => u.Account).ToList(),
+                    Body = input.Body,
+                    Title = input.Title,
+                    Start = DateTime.Parse(input.Start).Date.ToString("yyyy-MM-dd"),
+                    StartTime = DateTime.Parse(input.Start).Date.ToString("HH:mm:ss"),
+                    End = DateTime.Parse(input.End).Date.ToString("yyyy-MM-dd"),
+                    EndTime = DateTime.Parse(input.End).Date.ToString("HH:mm:ss"),
+                    FullDay = false,
+                    Location = input.Location,
+                    Type = AppointMentType.Talk,
+                }, employee.Account, employee.Password);
+
+                return Json(new
+                {
+                    success = true,
+                    id = id,
+                    error = "",
+                    onlinelink = online,
+                    debug = input
+                });
+            }
+            catch (Exception e)
+            {
+                return Json(new
+                {
+                    success = true,
+                    id = "",
+                    error = e.ToString(),
+                    onlinelink = "",
+                    debug = input
+                });
+            }
         }
 
 

@@ -46,9 +46,8 @@ namespace ExchangeSyncTest.ServicesTest
         [TestMethod]
         public void TestUserNumber()
         {
-            var str = "003139";
-            var s = "123456789".Substring(0, 3);
-            var s1= "123456789".sub (0, 113);
+            var sssss = openskype("023707").EncodeBase64();
+
         }
 
         public string OpenS(string str)

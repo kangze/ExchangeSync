@@ -74,6 +74,16 @@ namespace ExchangeSync.Model.Services
             return await this.FindByUserNameAsync(employee.UserName);
         }
 
+        public async Task<List<EmployeeDto>> FindByUserNumbersAsync(string[] numbers)
+        {
+            List<Employee> employees = null;
+            using (var db = new ServiceDbContext(this._dbOption))
+            {
+                employees =await db.Employees.Where(u => numbers.Contains(u.Number)).ToListAsync();
+            }
+            return await this.FindByUserNamesAsync(employees.Select(u => u.UserName).ToArray());
+        }
+
         private List<string> ProcessUserNameIfContainsAt(string[] userNames)
         {
             var names = new List<string>();

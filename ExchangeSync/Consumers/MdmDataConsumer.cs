@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Base.Mdm.Org.MsgContracts;
+using EFCore.BulkExtensions;
 using ExchangeSync.Model;
+using ExchangeSync.Model.EnterpiseContactModel;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,12 +26,31 @@ namespace ExchangeSync.Consumers
             var message = context.Message;
             if (message.Contacts == null || message.Contacts.Count == 0) return;
 
-            var users = ConvertToDbConnect(message.Contacts);
+            ConvertToDbConnect(message.Contacts);
         }
 
-        private object ConvertToDbConnect(List<ContactEntityMsg> contacts)
+        private void ConvertToDbConnect(List<ContactEntityMsg> contacts)
         {
-            throw new NotImplementedException();
+            var employees = new List<Employee>();
+            foreach (var contact in contacts)
+            {
+                var employee = new Employee()
+                {
+                    Id = contact.ContactId,
+                    UserName = contact.UserName,
+                    UserId = contact.UserId,
+                    Name = contact.Name,
+                    Number = contact.Number,
+                    IdCardNo = contact.IdCardNo,
+                    Gender = contact.Gender,
+                };
+                employees.Add(employee);
+            }
+
+            using (var db = new ServiceDbContext(_dbOptions))
+            {
+                db.BulkInsertOrUpdateOrDelete(employees);
+            }
         }
     }
 }

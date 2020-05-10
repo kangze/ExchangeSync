@@ -78,6 +78,22 @@ namespace ExchangeSync.Exchange.Internal
             return list;
         }
 
+        public async Task<bool> DeleteMeetAsyun(string id)
+        {
+            try
+            {
+                Appointment appointment = await Appointment.Bind(this._exchangeService, id, new PropertySet());
+                await appointment.Delete(DeleteMode.MoveToDeletedItems);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+
+        }
+
         public async Task<string> GetAppointMentUrl(string id)
         {
             try

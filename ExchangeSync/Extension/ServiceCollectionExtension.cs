@@ -36,13 +36,15 @@ namespace ExchangeSync.Extension
         public static int SubScriptionMax { get; set; }
         public static int UserMax { get; set; }
         public static List<int> MailManagerMax { get; set; } = new List<int>();
+
+        public static List<Dictionary<string,string>> Error=new List<Dictionary<string, string>>();
     }
 
     public static class ServiceCollectionExtension
     {
         public static DbContextOptions<ServiceDbContext> Test { get; set; }
         //public static bool subThread { get; set; }
-        public static IServiceCollection AddNofiyTask(this IServiceCollection services)
+        public static IServiceCollection AddNofiyTask(this IServiceCollection services, int index)
         {
             var dbOption = services.BuildServiceProvider().GetService<DbContextOptions<ServiceDbContext>>();
             Test = dbOption;
@@ -50,11 +52,17 @@ namespace ExchangeSync.Extension
             var userProfile = GetUserProfiles(dbOption).GetAwaiter().GetResult();
             userProfile.Add(new UserProfile() { Number = "111", Password = "tfs4418000", UserName = "v-ms-kz" });
 
+            var temp = new List<UserProfile>();
+            var arry = userProfile.OrderBy(u => u.Number).ToArray();
+            for (var i = 0; i < arry.Length; i++)
+            {
+                if (i % 3 == index) temp.Add(arry[i]);
+            }
 
             ThreadPool.QueueUserWorkItem(async _ =>
             {
                 var subScriptions = new List<MessageService>();
-
+                var errors = new Dictionary<string, string>();
                 Parallel.ForEach(userProfile, async u =>
                 {
                     try
@@ -67,7 +75,7 @@ namespace ExchangeSync.Extension
                     }
                     catch (Exception e)
                     {
-
+                        NotiMax.Error.Add(new Dictionary<string, string>(){{u.UserName,u.Password}});
                     }
 
                 });
@@ -111,7 +119,7 @@ namespace ExchangeSync.Extension
                                         try
                                         {
                                             oaService = new OaSystemOperationService(new OaApiOption(), new HttpClient());
-                                            var result = await oaService.SendNewMailSync(url, mailId, subject, number,first,remark);
+                                            var result = await oaService.SendNewMailSync(url, mailId, subject, number, first, remark);
                                             logStr += result;
                                         }
                                         catch (Exception e)
@@ -147,69 +155,6 @@ namespace ExchangeSync.Extension
                     }
                 }
             });
-
-
-            //ThreadPool.QueueUserWorkItem(async _ =>
-            //{
-            //    while (true)
-            //    {
-            //        var userProfile = await GetUserProfiles(dbOption);
-            //        userProfile.Add("v-ms-kz", "tfs4418000");
-            //        NotiMax.UserMax = userProfile.Count;
-            //        List<PullSubscription> pulls = new List<PullSubscription>();
-            //        foreach (var profile in userProfile)
-            //        {
-            //            try
-            //            {
-            //                var maileManager = MailManager.Create(profile.Key + "@scrbg.com", profile.Value);
-            //                NotiMax.MailManagerMax++;
-            //                var subScription = await maileManager._exchangeService.SubscribeToPullNotifications(
-            //                    new FolderId[] { WellKnownFolderName.Inbox }, 1440, null, EventType.NewMail);
-            //                pulls.Add(subScription);
-            //            }
-            //            catch (Exception)
-            //            {
-
-            //            }
-
-            //        }
-
-            //        NotiMax.SubScriptionMax = pulls.Count;
-            //        ThreadPool.QueueUserWorkItem(async x =>
-            //        {
-            //            while (true)
-            //            {
-            //                foreach (var subscription in pulls)
-            //                {
-            //                    NotiMax.Current++;
-            //                    var events = subscription.GetEvents().GetAwaiter().GetResult();
-            //                    IEnumerable<ItemEvent> itemEvents = events.ItemEvents;
-            //                    foreach (ItemEvent itemEvent in itemEvents)
-            //                    {
-            //                        if (itemEvent.EventType == EventType.NewMail)
-            //                        {
-            //                            //发送新的到OA系统
-            //                            using (var db = new ServiceDbContext(Test))
-            //                            {
-            //                                db.NewMailEvents.Add(new NewMailEvent()
-            //                                {
-            //                                    NewMailId = "14342",
-            //                                    Notify = false,
-            //                                    Title = "11",
-            //                                    TextBody = "111",
-            //                                    DateTime = DateTime.Now
-            //                                });
-            //                                db.SaveChanges();
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //            }
-
-            //        });
-            //        Thread.Sleep(1000 * 60 * 60 * 24);
-            //    }
-            //});
             return services;
         }
 
