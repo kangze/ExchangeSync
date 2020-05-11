@@ -18,12 +18,12 @@ var data = dataWarpper.data;
 var user = dataWarpper.user;
 var wechat = dataWarpper.user.wechat;
 var script = "";
-if (wechat) {
-  script = "<script src=\"/js/client-wechat.js\"></script>";
-} else {
-  script = "<script src=\"/js/client.js\"></script>";
-}
-//script = "<script src=\"http://192.168.101.105:18080/dist/client.js\"></script>";
+// if (wechat) {
+//   script = "<script src=\"/js/client-wechat.js\"></script>";
+// } else {
+//   script = "<script src=\"/js/client.js\"></script>";
+// }
+script = "<script src=\"http://localhost:18080/dist/client.js\"></script>";
 
 
 const context = { data: data, user: user } as any;

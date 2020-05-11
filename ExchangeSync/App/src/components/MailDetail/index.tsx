@@ -5,7 +5,7 @@ import { IPersonaSharedProps, Persona, PersonaInitialsColor, PersonaSize } from 
 import { TooltipHost, DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 import { CommandBarButton } from 'office-ui-fabric-react/lib/Button';
 import { IOverflowSetItemProps, OverflowSet } from 'office-ui-fabric-react/lib/OverflowSet';
-import { DefaultButton, IContextualMenuProps,PrimaryButton } from 'office-ui-fabric-react';
+import { DefaultButton, IContextualMenuProps, PrimaryButton } from 'office-ui-fabric-react';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import axios from "axios";
 
@@ -31,13 +31,13 @@ const menuProps: IContextualMenuProps = {
     ]
 };
 
-function GetMenus(mailId: string, attachmentid: string, name: string): IContextualMenuProps {
+function GetMenus(mailId: string, attachmentid: string, name: string, number: string): IContextualMenuProps {
     var items = [];
     items.push({
         key: 'emailMessage',
         text: '下载',
         iconProps: { iconName: 'Mail' },
-        href: "/mail/DownloadAttachment?mailId=" + encodeURIComponent(mailId) + "&attachmentid=" + encodeURIComponent(attachmentid) + "&attachmentName=" + name
+        href: "/mail/DownloadAttachment?mailId=" + encodeURIComponent(mailId) + "&attachmentid=" + encodeURIComponent(attachmentid) + "&attachmentName=" + name + "&userName=" + number
     })
     return { items };
 }
@@ -132,6 +132,9 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
         if (this.state.loading)
             return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
         let mailid = this.state.mailId;
+        let userName = "";
+        if (window)
+            userName = (window as any).user.userName;
         return (
             <Stack tokens={stackTokens}>
                 <div style={{ padding: 10, backgroundColor: "#eaeaea" }}>
@@ -160,7 +163,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                                     split
                                     splitButtonAriaLabel="See 2 options"
                                     aria-roledescription="split button"
-                                    menuProps={GetMenus(mailid, attach.id, attach.name)}
+                                    menuProps={GetMenus(mailid, attach.id, attach.name, userName)}
                                 />
                             )
                         }

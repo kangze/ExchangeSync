@@ -173,7 +173,7 @@ namespace ExchangeSync.Controllers
 
                 var employee_logined = await this._employeeService.FindByUserNumberAsync(willNumber);
                 var mailData1 = await this.GetMailDataAsync(employee_logined.UserName, employee_logined);
-                var user1 = new { userName = employee_logined.UserName, name = employee_logined.Name, wechat = true };
+                var user1 = new { userName = employee_logined.UserName, number = employee_logined.Number, name = employee_logined.Name, wechat = true };
                 var html1 = this._serverRenderService.Render(Request.Path, mailData1, user1);
                 return Content(html1, "text/html; charset=utf-8");
             }
@@ -190,7 +190,7 @@ namespace ExchangeSync.Controllers
             claimsIdentity.AddClaim(new Claim("access_token", accessToken));
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
             var mailData = await this.GetMailDataAsync(employee.UserName, employee);
-            var user = new { userName = employee.UserName, name = employee.Name, wechat = true };
+            var user = new { userName = employee.UserName, number = employee.Number, name = employee.Name, wechat = true };
             var html = this._serverRenderService.Render(Request.Path, mailData, user);
             return Content(html, "text/html; charset=utf-8");
         }

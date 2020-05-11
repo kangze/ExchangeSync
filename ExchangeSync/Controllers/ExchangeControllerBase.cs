@@ -12,7 +12,7 @@ namespace ExchangeSync.Controllers
         public string GetUserName()
         {
             var username_cliam = User.Claims.FirstOrDefault(u => u.Type == "preferred_username");
-            var userName = username_cliam.Value;
+            var userName = username_cliam?.Value;
             return userName;
         }
 

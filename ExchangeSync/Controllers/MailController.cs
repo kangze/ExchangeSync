@@ -80,11 +80,13 @@ namespace ExchangeSync.Controllers
             return Json(new { success = true });
         }
 
-        [Authorize]
-        public async Task<IActionResult> DownloadAttachment(string mailId, string attachmentId, string attachmentName)
+        //[Authorize]
+        public async Task<IActionResult> DownloadAttachment(string mailId, string attachmentId, string attachmentName, string userName)
         {
-            var userName = this.GetUserName();
-            var stream = await this._mailService.Download(userName, mailId, attachmentId);
+            var _userName = userName;
+            if (string.IsNullOrEmpty(_userName))
+                _userName = this.GetUserName(); ;
+            var stream = await this._mailService.Download(_userName, mailId, attachmentId);
             stream.Position = 0;
             return File(stream, "application/octet-stream", attachmentName);
         }
