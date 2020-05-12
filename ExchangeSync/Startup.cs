@@ -59,7 +59,7 @@ namespace ExchangeSync
             {
                 option.UseSqlServer(databseSection.GetValue<string>("ConnectString"));
             });
-            //services.AddNofiyTask(serverConfig.GetValue<int>("Index"));
+            services.AddNofiyTask(serverConfig.GetValue<int>("Index"));
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server.js"));
