@@ -10,6 +10,8 @@ import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import Empty from "../_shared/Empty";
 
+import MailDetail from "../MailDetail";
+
 const examplePersona: IPersonaSharedProps = {
     imageInitials: "M",
     size: PersonaSize.size48,
@@ -105,7 +107,8 @@ export default class MailItem extends React.PureComponent<any, any> {
             let user = props.staticContext.user;
             this.state = {
                 groups: data as IMailItemGroupedProps[],
-                user: user
+                user: user,
+                mailId: "un"
             }
         } else if ((window as any).data) {
             let data = (window as any).data;
@@ -113,13 +116,15 @@ export default class MailItem extends React.PureComponent<any, any> {
             let user = (window as any).user;
             this.state = {
                 groups: data as IMailItemGroupedProps[],
-                user: user
+                user: user,
+                mailId: "un"
             }
         } else {
             let user = (window as any).user;
             this.state = {
                 loading: true,
-                user: user
+                user: user,
+                mailId: "un"
             }
         }
     }
@@ -149,7 +154,10 @@ export default class MailItem extends React.PureComponent<any, any> {
 
 
     public handleClick(item: IMailItemProps) {
-        (this.props as any).history.push("/detail/" + encodeURIComponent(item.mailId));
+        if (this.state.user.tt)
+            this.setState({ mailId: encodeURIComponent(item.mailId) });
+        else
+            (this.props as any).history.push("/detail/" + encodeURIComponent(item.mailId));
     }
 
     handleCreate() {
@@ -199,6 +207,7 @@ export default class MailItem extends React.PureComponent<any, any> {
     }
 
     public render(): JSX.Element {
+        let wechat = this.state.user.wechat;
         if (this.state.loading) {
             return (
                 <div style={{ marginLeft: 15, marginTop: 10 }}>
@@ -212,6 +221,48 @@ export default class MailItem extends React.PureComponent<any, any> {
         }
         if ((this.state as any).groups.length == 0)
             return <Empty />
+        if (this.state.user.tt)
+            return (
+                <div>
+                    <div style={{ float: "left", width: "30%" }}>
+                        <Stack tokens={{ childrenGap: 10 }}>
+                            {(this.state as any).groups.map((group: any) => {
+                                return (
+                                    <div>
+                                        <div style={{ marginLeft: 15, marginTop: 10 }}>
+                                            <Text key={"group1"} variant="medium" nowrap block>{group.groupTitle}</Text>
+                                        </div>
+                                        {this.renderItem(group.items as any)}
+                                    </div>
+                                );
+                            })}
+                            {!wechat ?
+                                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 54, right: 20, bottom: 20, paddingLeft: 10, paddingTop: 15, boxShadow: Depths.depth64 }}>
+                                    <IconButton
+                                        className="btnhover"
+                                        iconProps={{
+                                            iconName: 'Edit', styles: {
+                                                root: {
+                                                    color: "white",
+                                                    fontSize: 32,
+                                                    left: 10
+                                                },
+                                            }
+                                        }}
+                                        title="Add"
+                                        ariaLabel="Add"
+                                        onClick={this.handleCreate.bind(this)}
+                                    />
+                                </div>
+                                : undefined}
+                        </Stack>
+                    </div>
+                    <div style={{ float: "left", width: "70%" }}>
+                        <MailDetail mailId={this.state.mailId} />
+                    </div>
+                </div>
+
+            );
         return (
             <Stack tokens={{ childrenGap: 10 }}>
                 {(this.state as any).groups.map((group: any) => {
@@ -224,23 +275,25 @@ export default class MailItem extends React.PureComponent<any, any> {
                         </div>
                     );
                 })}
-                {/* <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 54, right: 20, bottom: 20, paddingLeft: 10, paddingTop: 15, boxShadow: Depths.depth64 }}>
-                    <IconButton
-                        className="btnhover"
-                        iconProps={{
-                            iconName: 'Edit', styles: {
-                                root: {
-                                    color: "white",
-                                    fontSize: 32,
-                                    left: 10
-                                },
-                            }
-                        }}
-                        title="Add"
-                        ariaLabel="Add"
-                        onClick={this.handleCreate.bind(this)}
-                    />
-                </div> */}
+                {!wechat ?
+                    <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 54, right: 20, bottom: 20, paddingLeft: 10, paddingTop: 15, boxShadow: Depths.depth64 }}>
+                        <IconButton
+                            className="btnhover"
+                            iconProps={{
+                                iconName: 'Edit', styles: {
+                                    root: {
+                                        color: "white",
+                                        fontSize: 32,
+                                        left: 10
+                                    },
+                                }
+                            }}
+                            title="Add"
+                            ariaLabel="Add"
+                            onClick={this.handleCreate.bind(this)}
+                        />
+                    </div>
+                    : undefined}
             </Stack>
         );
     }

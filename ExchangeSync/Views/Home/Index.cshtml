@@ -1,17 +1,59 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model Object
+@{
     Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>我的Exchage邮箱-四川路桥</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#0078d4" />
+    <link href="/css/fabric.min.css" rel="stylesheet" />
+    <script>
+        window.user = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    </script>
+    <link rel="stylesheet" href="/css/zx-editor.min.css">
+    <link rel="stylesheet" href="/js/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
 
-@*<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx932d9b5eb387da28&redirect_uri=http://94ckmc.natappfree.cc/home/privacy&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect">
-        微信网页授权(需要手动授权)
-    </a>
-    <br />
-    <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx932d9b5eb387da28&redirect_uri=http://94ckmc.natappfree.cc/home/privacy&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect">
-        微信网页授权(直接获取,已经关注了的)
-    </a>
+        body {
+            background-color: white;
+        }
 
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>*@
+        .kz .ms-DatePicker-table {
+            width: 100%;
+        }
+
+        .kz .ms-DatePicker-weekday {
+            width: 12%;
+        }
+
+        .kz .ms-DatePicker-holder {
+            width: 98%;
+        }
+
+        .kz .ms-DatePicker-optionGrid {
+            width: 100%
+        }
+
+        .kz .ms-DatePicker-monthPicker {
+            width: 100%
+        }
+
+        .kz .ms-DatePicker-monthOption {
+            width: 16%
+        }
+    </style>
+</head>
+<body>
+    <div id="app-react"></div>
+    <script src="/js/zx-editor.min.js"></script>
+    <script src="http://localhost:18080/dist/client.js"></script>
+</body>
+</html>

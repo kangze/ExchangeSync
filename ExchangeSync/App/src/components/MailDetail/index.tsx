@@ -87,8 +87,26 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
         if (!this.state.loading)
             return;
         //这里开始加载具体的邮件内容
+        let mailId = "";
+        if (this.props.mailId)
+            mailId = this.props.mailId;
+        else
+            mailId = this.props.match.params.mailId;
+        this.getDetail(mailId);
+    }
+
+    componentWillReceiveProps(nextProps: any) {
+        let mailId = "";
+        if (nextProps.mailId)
+            mailId = nextProps.mailId;
+        else
+            mailId = nextProps.match.params.mailId;
+        this.getDetail(mailId);
+    }
+
+    getDetail(mailId: any) {
         let self = this;
-        let mailId = this.props.match.params.mailId;
+
         axios.get("/mail/GetMail?mailId=" + mailId).then(response => {
             let data = response.data;
             self.setState({
@@ -174,15 +192,15 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                     </div>
                 </div>
                 {
-                    // this.state.folderName === "inbox" ?
-                    //     <div style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>
-                    //         <PrimaryButton
-                    //             text="回复"
-                    //             allowDisabledFocus
-                    //             styles={{ root: { width: "100%" } }}
-                    //             onClick={this.handleReply.bind(this, this.state.mailId)}
-                    //         />
-                    //     </div> : undefined
+                    this.state.folderName === "inbox" ?
+                        <div style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>
+                            <PrimaryButton
+                                text="回复"
+                                allowDisabledFocus
+                                styles={{ root: { width: "100%" } }}
+                                onClick={this.handleReply.bind(this, this.state.mailId)}
+                            />
+                        </div> : undefined
                 }
             </Stack>
         );

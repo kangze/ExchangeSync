@@ -301,24 +301,40 @@ namespace ExchangeSync.Exchange.Internal
                 mail.Readed = message.IsRead;
             if (sets.Contains(ItemSchema.DisplayTo))
             {
-                var to = message.DisplayTo.Split(";", StringSplitOptions.RemoveEmptyEntries);
-                mail.Recivers = to.Select(u =>
+                if (message.DisplayTo == null)
                 {
-                    if (true) //是一个人的名字
-                        return new EmailContact() { Name = u, Address = "" };
-                    return new EmailContact() { Name = "", Address = u };
-                }).ToList();
+                    mail.Recivers = new List<EmailContact>();
+                }
+                else
+                {
+                    var to = message.DisplayTo.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                    mail.Recivers = to.Select(u =>
+                    {
+                        if (true) //是一个人的名字
+                            return new EmailContact() { Name = u, Address = "" };
+                        return new EmailContact() { Name = "", Address = u };
+                    }).ToList();
+                }
             }
 
             if (sets.Contains(ItemSchema.DisplayCc))
             {
-                var cc = message.DisplayTo.Split(";", StringSplitOptions.RemoveEmptyEntries);
-                mail.Cc = cc.Select(u =>
+                if (message.DisplayTo == null)
                 {
-                    if (true) //是一个人的名字
-                        return new EmailContact() { Name = u, Address = "" };
-                    return new EmailContact() { Name = "", Address = u };
-                }).ToList();
+                    mail.Cc = new List<EmailContact>();
+                }
+                else
+                {
+
+
+                    var cc = message.DisplayTo.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                    mail.Cc = cc.Select(u =>
+                    {
+                        if (true) //是一个人的名字
+                            return new EmailContact() { Name = u, Address = "" };
+                        return new EmailContact() { Name = "", Address = u };
+                    }).ToList();
+                }
             }
 
             //开始设置内敛属性

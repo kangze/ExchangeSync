@@ -143,6 +143,7 @@ namespace ExchangeSync.Controllers
             var claims22 = await this._identityService.GetUserInfoAsync(accessToken22);
             var claimsIdentity22 = new ClaimsIdentity(claims22, CookieAuthenticationDefaults.AuthenticationScheme);
             claimsIdentity22.AddClaim(new Claim("access_token", accessToken22));
+            claimsIdentity22.AddClaim(new Claim("tt", "true"));
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity22));
             return Redirect("/");
         }
@@ -150,6 +151,21 @@ namespace ExchangeSync.Controllers
         //[HttpGet("mailIndex")]
         public async Task<IActionResult> Index(string number)
         {
+            var wechat = false;
+            try
+            {
+                var userAgent = ((Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpRequestHeaders)this.Request.Headers).HeaderUserAgent;
+                if (userAgent.ToString().ToLower().Contains("micromessenger"))
+                    wechat = true;
+            }
+            catch (Exception e)
+            {
+
+            }
+
+
+
+
             if (this.User.Identity.IsAuthenticated)
             {
                 var willNumber = this.GetNumber();
@@ -172,10 +188,14 @@ namespace ExchangeSync.Controllers
 
 
                 var employee_logined = await this._employeeService.FindByUserNumberAsync(willNumber);
-                var mailData1 = await this.GetMailDataAsync(employee_logined.UserName, employee_logined);
-                var user1 = new { userName = employee_logined.UserName, number = employee_logined.Number, name = employee_logined.Name, wechat = true };
-                var html1 = this._serverRenderService.Render(Request.Path, mailData1, user1);
-                return Content(html1, "text/html; charset=utf-8");
+                //var mailData1 = await this.GetMailDataAsync(employee_logined.UserName, employee_logined);
+                var tt = false;
+                var ttClaim = User.Claims.FirstOrDefault(u => u.Type == "tt");
+                if (ttClaim != null)
+                    tt = true;
+                var user1 = new { userName = employee_logined.UserName, number = employee_logined.Number, name = employee_logined.Name, wechat = wechat, tt = tt };
+                //var html1 = this._serverRenderService.Render(Request.Path, mailData1, user1);
+                return View(user1);
             }
             if (string.IsNullOrWhiteSpace(number)) return Content("加密内容不能为空!");
             var user_number = this.OpenS(number);
@@ -189,10 +209,10 @@ namespace ExchangeSync.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             claimsIdentity.AddClaim(new Claim("access_token", accessToken));
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-            var mailData = await this.GetMailDataAsync(employee.UserName, employee);
-            var user = new { userName = employee.UserName, number = employee.Number, name = employee.Name, wechat = true };
-            var html = this._serverRenderService.Render(Request.Path, mailData, user);
-            return Content(html, "text/html; charset=utf-8");
+            //var mailData = await this.GetMailDataAsync(employee.UserName, employee);
+            var user = new { userName = employee.UserName, number = employee.Number, name = employee.Name, wechat = wechat };
+            //var html = this._serverRenderService.Render(Request.Path, mailData, user);
+            return View(user);
         }
 
         private async Task<object> GetMailDataAsync(string userName, EmployeeDto employee)

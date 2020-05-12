@@ -49,7 +49,7 @@ export default class App extends React.Component<any, any> {
                         </div>);
                     }} />
 
-                {/* <Route
+                <Route
                     atEnter={{ offset: 100 }}
                     atLeave={{ offset: 100 }}
                     atActive={{ offset: 0 }}
@@ -63,7 +63,7 @@ export default class App extends React.Component<any, any> {
                             <MailCreateHeader message={"发送成功"} title={"新建邮件"} {...param} />
                             <MailCreate changeTitle={this.changeTitle.bind(this)} {...param} />
                         </div>);
-                    }} /> */}
+                    }} />
 
 
                 <Route exact path="/sended" render={(param: any) => {
@@ -101,12 +101,12 @@ export default class App extends React.Component<any, any> {
                     </div>);
                 }} />
 
-                {/* <Route exact path="/createCalendar" render={(param: any) => {
+                <Route exact path="/createCalendar" render={(param: any) => {
                     return (<div>
                         <MailCreateHeader message={"创建会议成功"} title={"创建会议"} {...param} />
                         <MailCalendarCreate changeTitle={this.changeTitle.bind(this)} {...param} />
                     </div>);
-                }} /> */}
+                }} />
             </Layout>
         );
     }
