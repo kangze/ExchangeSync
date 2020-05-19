@@ -5,6 +5,7 @@ import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react';
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { Text } from 'office-ui-fabric-react/lib/Text';
+import { ProgressIndicator } from 'office-ui-fabric-react/lib/ProgressIndicator';
 
 const styles = {
     root: {
@@ -174,31 +175,41 @@ export default class CreateMail extends React.Component<any, any>{
                 formData.append("attachment", files[i]);
             }
         var self = this;
+        this.setState({sendding:true})
         axios.post("/mail/reply", formData).then(reponse => {
             if (reponse.data.success) {
                 alert(self.props.message);
+                self.setState({sendding:false})
                 delete (window as any).content;
                 (self.props as any).history.push("/sended");
             }
         }).catch(error => {
             alert("请稍后重新尝试!");
+            self.setState({sendding:false})
         })
     }
 
     public render() {
         let userName = this.state.user.userName + "@scrbg.com";
         return (
-            <div style={styles.root}>
-                <div style={{ float: "left" }}>
-                    <IconButton className="btnhover" onClick={this._handleCancel.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 21, color: "white" } }} iconProps={{ iconName: 'Cancel' }} title="取消" ariaLabel="取消" />
-                </div>
-                <div style={{ float: "left" }}>
-                    <Text variant="xLarge" style={{ color: "white" }}>{this.props.title}</Text>
-                    <br />
-                    <Text variant="medium" style={{ color: "white" }}>{userName}</Text>
-                </div>
-                <div style={{ float: "right" }}>
-                    <IconButton className="btnhover" onClick={this._handleSend.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 23, color: "white" } }} iconProps={{ iconName: 'Send' }} title="取消" ariaLabel="取消" />
+            <div>
+                {this.state.sendding ?
+                    <ProgressIndicator label="正在发送..." /> :
+                    <div></div>
+                }
+
+                <div style={styles.root}>
+                    <div style={{ float: "left" }}>
+                        <IconButton className="btnhover" onClick={this._handleCancel.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 21, color: "white" } }} iconProps={{ iconName: 'Cancel' }} title="取消" ariaLabel="取消" />
+                    </div>
+                    <div style={{ float: "left" }}>
+                        <Text variant="xLarge" style={{ color: "white" }}>{this.props.title}</Text>
+                        <br />
+                        <Text variant="medium" style={{ color: "white" }}>{userName}</Text>
+                    </div>
+                    <div style={{ float: "right" }}>
+                        <IconButton className="btnhover" onClick={this._handleSend.bind(this)} styles={{ root: { height: 48, width: 64 }, icon: { fontSize: 23, color: "white" } }} iconProps={{ iconName: 'Send' }} title="取消" ariaLabel="取消" />
+                    </div>
                 </div>
             </div>
         );

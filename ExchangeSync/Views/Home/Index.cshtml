@@ -15,7 +15,8 @@
         window.user = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
     </script>
     <link rel="stylesheet" href="/css/zx-editor.min.css">
-    <link rel="stylesheet" href="/js/styles.css">
+    @*<link rel="stylesheet" href="/js/styles.css">*@
+    <link rel="stylesheet" href="http://localhost:18080/dist/styles.css">
     <style>
         * {
             margin: 0;
@@ -54,6 +55,7 @@
 <body>
     <div id="app-react"></div>
     <script src="/js/zx-editor.min.js"></script>
-    <script src="/js/client.js"></script>
+    @*<script src="/js/client.js"></script>*@
+    <script src="http://localhost:18080/dist/client.js"></script>
 </body>
 </html>

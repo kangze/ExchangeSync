@@ -9,6 +9,7 @@ import axios from "axios";
 import { Depths } from '@uifabric/fluent-theme/lib/fluent/FluentDepths';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import Empty from "../_shared/Empty";
+import { Nav, INavStyles, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 
 import MailDetail from "../MailDetail";
 
@@ -34,7 +35,7 @@ const styles = {
     root: {
         marginTop: 10,
         marginLeft: 10,
-        float: "left"
+        float: "left",
     },
     details: {
         //backgroundColor:"red",
@@ -153,26 +154,34 @@ export default class MailItem extends React.PureComponent<any, any> {
     }
 
 
-    public handleClick(item: IMailItemProps) {
-        if (this.state.user.tt)
+    public handleClick(item: IMailItemProps, pc: boolean) {
+        if (pc)
             this.setState({ mailId: encodeURIComponent(item.mailId) });
         else
             (this.props as any).history.push("/detail/" + encodeURIComponent(item.mailId));
+    }
+
+    public handle_nav_clikc() {
+        //alert('1');
     }
 
     handleCreate() {
         (this.props as any).history.push("/create");
     }
 
-    public renderItem(items: IMailItemProps[]) {
+    public renderItem(items: IMailItemProps[], pc: boolean) {
         return items.map(item => {
             let style = undefined;
+            let selectedColor = undefined;
+            if (pc && encodeURIComponent(item.mailId) == this.state.mailId) {
+                selectedColor = "#dcdee4"
+            }
             //没有读取的邮件，所有字体设置为粗体
             if (!item.readed) style = { fontWeight: "bold" } as React.CSSProperties;
             return (
-                <Stack style={{ marginTop: 5, marginBottom: 10 }}>
+                <Stack style={{ marginTop: 5, marginBottom: 10, backgroundColor: selectedColor }}>
                     <Persona
-                        onClick={this.handleClick.bind(this, item)}
+                        onClick={this.handleClick.bind(this, item, pc)}
                         imageInitials={item.sender.name[0]}
                         initialsColor={parseInt((10 * Math.random()).toString()) as PersonaInitialsColor}
                         size={PersonaSize.size40}
@@ -206,8 +215,46 @@ export default class MailItem extends React.PureComponent<any, any> {
         })
     }
 
+    public render_addButton() {
+        return (
+            <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 54, right: 20, bottom: 20, paddingLeft: 10, paddingTop: 15, boxShadow: Depths.depth64 }} className="ms-hiddenMdUp">
+                <IconButton
+                    className="btnhover"
+                    iconProps={{
+                        iconName: 'Edit', styles: {
+                            root: {
+                                color: "white",
+                                fontSize: 32,
+                                left: 10
+                            },
+                        }
+                    }}
+                    title="Add"
+                    ariaLabel="Add"
+                    onClick={this.handleCreate.bind(this)}
+                />
+            </div>
+        );
+    }
+
+    public render_itemList(pc: boolean) {
+        return (
+            (this.state as any).groups.map((group: any) => {
+                return (
+                    <div>
+                        <div style={{ marginLeft: 15, marginTop: 10 }}>
+                            <Text key={"group1"} variant="medium" nowrap block>{group.groupTitle}</Text>
+                        </div>
+                        {this.renderItem(group.items as any, pc)}
+                    </div>
+                );
+            })
+        );
+    }
+
     public render(): JSX.Element {
         let wechat = this.state.user.wechat;
+        let name = this.state.user.name;
         if (this.state.loading) {
             return (
                 <div style={{ marginLeft: 15, marginTop: 10 }}>
@@ -219,82 +266,110 @@ export default class MailItem extends React.PureComponent<any, any> {
                 </div>
             );
         }
+        let empty = false;
         if ((this.state as any).groups.length == 0)
-            return <Empty />
-        if (this.state.user.tt)
-            return (
-                <div>
-                    <div style={{ float: "left", width: "30%" }}>
+            empty = true;
+
+        // if ((this.state as any).groups.length == 0)
+        //     return <Empty />
+
+        // if (this.state.user.tt)
+        //     return (
+        //         <div>
+        //             <div style={{ float: "left", width: "30%" }}>
+        //                 <Stack tokens={{ childrenGap: 10 }}>
+        //                     {this.render_itemList()}
+        //                     {!wechat ?
+        //                         this.render_addButton()
+        //                         : undefined}
+        //                 </Stack>
+        //             </div>
+        //             <div style={{ float: "left", width: "70%" }}>
+        //                 <MailDetail mailId={this.state.mailId} />
+        //             </div>
+        //         </div>
+
+        //     );
+        // return (
+        //     <Stack tokens={{ childrenGap: 10 }}>
+        //         {this.render_itemList()}
+        //         {!wechat ?
+        //             this.render_addButton()
+        //             : undefined}
+        //     </Stack>
+        // );
+
+        return (
+            <div>
+                {/* 展示移动端的页面 */}
+                <div className="ms-hiddenMdUp">
+                    {empty ? <Empty /> :
                         <Stack tokens={{ childrenGap: 10 }}>
-                            {(this.state as any).groups.map((group: any) => {
-                                return (
-                                    <div>
-                                        <div style={{ marginLeft: 15, marginTop: 10 }}>
-                                            <Text key={"group1"} variant="medium" nowrap block>{group.groupTitle}</Text>
-                                        </div>
-                                        {this.renderItem(group.items as any)}
-                                    </div>
-                                );
-                            })}
+                            {this.render_itemList(false)}
                             {!wechat ?
-                                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 54, right: 20, bottom: 20, paddingLeft: 10, paddingTop: 15, boxShadow: Depths.depth64 }}>
-                                    <IconButton
-                                        className="btnhover"
-                                        iconProps={{
-                                            iconName: 'Edit', styles: {
-                                                root: {
-                                                    color: "white",
-                                                    fontSize: 32,
-                                                    left: 10
-                                                },
-                                            }
-                                        }}
-                                        title="Add"
-                                        ariaLabel="Add"
-                                        onClick={this.handleCreate.bind(this)}
-                                    />
-                                </div>
+                                this.render_addButton()
                                 : undefined}
                         </Stack>
-                    </div>
-                    <div style={{ float: "left", width: "70%" }}>
-                        <MailDetail mailId={this.state.mailId} />
-                    </div>
+                    }
+
                 </div>
 
-            );
-        return (
-            <Stack tokens={{ childrenGap: 10 }}>
-                {(this.state as any).groups.map((group: any) => {
-                    return (
-                        <div>
-                            <div style={{ marginLeft: 15, marginTop: 10 }}>
-                                <Text key={"group1"} variant="medium" nowrap block>{group.groupTitle}</Text>
-                            </div>
-                            {this.renderItem(group.items as any)}
-                        </div>
-                    );
-                })}
-                {!wechat ?
-                    <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 49, width: 54, right: 20, bottom: 20, paddingLeft: 10, paddingTop: 15, boxShadow: Depths.depth64 }}>
-                        <IconButton
-                            className="btnhover"
-                            iconProps={{
-                                iconName: 'Edit', styles: {
+                {/* 展示pc端的页面 */}
+                <div className="ms-hiddenSm">
+                    <div>
+                        <div style={{ position: "absolute", left: 0, top: 48, bottom: 0, width: "10%" }}>
+                            <Nav
+                                styles={{
                                     root: {
-                                        color: "white",
-                                        fontSize: 32,
-                                        left: 10
-                                    },
-                                }
-                            }}
-                            title="Add"
-                            ariaLabel="Add"
-                            onClick={this.handleCreate.bind(this)}
-                        />
+                                        //backgroundColor: "red"
+                                    }
+                                }}
+                                onLinkClick={this.handle_nav_clikc.bind(this)}
+                                groups={[
+                                    {
+                                        name: name,
+                                        links: [
+                                            {
+                                                key: "recived",
+                                                name: "收件箱",
+                                                url: "/",
+                                            },
+                                            {
+                                                key: "sended",
+                                                name: "已经发送",
+                                                url: "/sended",
+                                            },
+                                            {
+                                                key: "draft",
+                                                name: "草稿",
+                                                url: "/draft",
+                                            },
+                                            {
+                                                key: "calendar",
+                                                name: "日历",
+                                                url: "/calendar",
+                                            },
+                                        ]
+                                    }
+                                ]}
+                            />
+                        </div>
+                        {empty ? <Empty /> :
+                            <div style={{ position: "absolute", left: "10%", top: 48, bottom: 0, width: "20%", borderLeftStyle: "solid", borderLeftWidth: 1, overflowY: "auto", borderLeftColor: "#dce1de" }}>
+                                <Stack tokens={{ childrenGap: 10 }}>
+                                    {this.render_itemList(true)}
+                                    {!wechat ?
+                                        this.render_addButton()
+                                        : undefined}
+                                </Stack>
+                            </div>
+                        }
+                        <div style={{ position: "absolute", left: "30%", top: 48, bottom: 0, width: "70%", borderLeftStyle: "solid", borderLeftWidth: 1, borderLeftColor: "#dce1de" }}>
+                            <MailDetail mailId={this.state.mailId} {...this.props} />
+                        </div>
                     </div>
-                    : undefined}
-            </Stack>
+                </div>
+            </div>
         );
     }
 

@@ -5,6 +5,7 @@ import { PrimaryButton, Label, DefaultButton } from 'office-ui-fabric-react';
 import axios from "axios";
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 
+
 import { TagPicker, IBasePicker, ITag } from 'office-ui-fabric-react/lib/Pickers';
 
 import Editor from "../_shared/Editor";
@@ -90,7 +91,6 @@ export default class MailCreate extends React.Component<IMailCreateProps, any> {
     }
 
     private _handleChange(name: string, items: ITag[]) {
-        console.log(items);
         this.setState({ [name]: items.map(u => u.key) });
     }
 

@@ -8,6 +8,7 @@ import { IOverflowSetItemProps, OverflowSet } from 'office-ui-fabric-react/lib/O
 import { DefaultButton, IContextualMenuProps, PrimaryButton } from 'office-ui-fabric-react';
 import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import axios from "axios";
+import { CommandBar, ICommandBarItemProps } from 'office-ui-fabric-react/lib/CommandBar';
 
 import { ActionMenus, Styles, InBoxMenu, SentMenu, DraftMenu } from "./action";
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
@@ -83,6 +84,10 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
         (this.props as any).history.push("/reply/" + encodeURIComponent(mailId));
     }
 
+    handle_Reply() {
+        (this.props as any).history.push("/reply/" + this.props.mailId);
+    }
+
     componentDidMount() {
         if (!this.state.loading)
             return;
@@ -123,6 +128,10 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
         })
     }
 
+    handle_load() {
+        (this.refs.iframeContent as any).height = 1000;
+    }
+
     public getMenu(name: string, mailId: string) {
         if (name == "inbox") {
             let menu = InBoxMenu.map(u => {
@@ -145,8 +154,36 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
         }
     }
 
+    handleCreate() {
+        (this.props as any).history.push("/create");
+    }
+
+    handle_delete() {
+        axios.post("/mail/Delete?mailid=" + this.props.mailId).then(response => {
+            if (response.data.success) {
+                alert("删除成功!");
+                (window as any).location.reload();
+            }
+        }).catch(u => {
+            alert("请稍后重新尝试");
+        })
+    }
+
+    handle_setRead() {
+        axios.post("/mail/setunreade?mailid=" + this.props.mailId).then(response => {
+            if (response.data.success) {
+                alert("已经标记为未读!");
+            }
+        }).catch(u => {
+            alert("请稍后重新尝试");
+        })
+    }
+
     public render(): JSX.Element {
         //let id=(this.props as any).match.params.mailId; 获取到的I
+        if (this.props.mailId == "un") {
+            return <div></div>
+        }
         if (this.state.loading)
             return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
         let mailid = this.state.mailId;
@@ -155,6 +192,63 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
             userName = (window as any).user.userName;
         return (
             <Stack tokens={stackTokens}>
+                <div className="ms-hiddenSm">
+                    <CommandBar
+                        styles={{
+                            root: {
+                                backgroundColor: "#c9d7e6",
+                                padding: 0
+                            }
+                        }}
+                        items={[
+                            {
+                                key: 'up',
+                                text: '新建',
+                                iconProps: { iconName: 'Add' },
+                                onClick: this.handleCreate.bind(this),
+                                buttonStyles: {
+                                    root: {
+                                        backgroundColor: "#c9d7e6"
+                                    }
+                                }
+                            },
+                            {
+                                key: 'share',
+                                text: '删除',
+                                iconProps: { iconName: 'Delete' },
+                                buttonStyles: {
+                                    root: {
+                                        backgroundColor: "#c9d7e6"
+                                    }
+                                },
+                                onClick: this.handle_delete.bind(this),
+                            },
+                            {
+                                key: 'share1',
+                                text: '设置为未读',
+                                iconProps: { iconName: 'Read' },
+                                buttonStyles: {
+                                    root: {
+                                        backgroundColor: "#c9d7e6"
+                                    }
+                                },
+                                onClick: this.handle_setRead.bind(this),
+                            },
+                            {
+                                key: 'reply',
+                                text: '回复',
+                                iconProps: { iconName: 'Reply' },
+                                buttonStyles: {
+                                    root: {
+                                        backgroundColor: "#c9d7e6"
+                                    }
+                                },
+                                onClick: this.handle_Reply.bind(this),
+                            },
+                        ]}
+                    />
+
+                </div>
                 <div style={{ padding: 10, backgroundColor: "#eaeaea" }}>
                     <Text variant="large" >{this.state.title}</Text>
                 </div>
@@ -162,13 +256,15 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                     <Persona secondaryText={this.state.senderLink} text={this.state.sender} size={PersonaSize.size48} styles={Styles.persona} />
                     <div style={Styles.time}>
                         <Text variant="medium" >{this.state.date}</Text>
-                        <OverflowSet
-                            vertical
-                            overflowItems={this.getMenu(this.state.folderName, this.state.mailId)}
-                            onRenderOverflowButton={this._onRenderOverflowButton}
-                            onRenderItem={this._onRenderItem}
-                            styles={Styles.overflowItem}
-                        />
+                        <div className="ms-hiddenMdUp">
+                            <OverflowSet
+                                vertical
+                                overflowItems={this.getMenu(this.state.folderName, this.state.mailId)}
+                                onRenderOverflowButton={this._onRenderOverflowButton}
+                                onRenderItem={this._onRenderItem}
+                                styles={Styles.overflowItem}
+                            />
+                        </div>
                     </div>
                     <div style={{ clear: "both" }}></div>
                     <div>
@@ -188,12 +284,12 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                     </div>
                     <div>
 
-                        <iframe src={"/mail/getcontent?mailId=" + mailid} width={"100%"} height={600} style={{ border: "none" }}></iframe>
+                        <iframe ref="iframeContent" height={"700"} src={"/mail/getcontent?mailId=" + mailid} width={"100%"} style={{ border: "none" }}></iframe>
                     </div>
                 </div>
                 {
                     this.state.folderName === "inbox" ?
-                        <div style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>
+                        <div className="ms-hiddenMdUp" style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>
                             <PrimaryButton
                                 text="回复"
                                 allowDisabledFocus
@@ -202,7 +298,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                             />
                         </div> : undefined
                 }
-            </Stack>
+            </Stack >
         );
     }
 

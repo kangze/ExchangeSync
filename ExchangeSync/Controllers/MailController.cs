@@ -120,6 +120,7 @@ namespace ExchangeSync.Controllers
         }
 
         [Authorize]
+        [RequestSizeLimit(100_000_000)] //最大100m左右
         public async Task<IActionResult> Reply([FromForm]ReplyMailInput input)
         {
             var userName = this.GetUserName();
