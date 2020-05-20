@@ -37,7 +37,7 @@ namespace ExchangeSync.Extension
         public static int UserMax { get; set; }
         public static List<int> MailManagerMax { get; set; } = new List<int>();
 
-        public static List<Dictionary<string,string>> Error=new List<Dictionary<string, string>>();
+        public static List<Dictionary<string, string>> Error = new List<Dictionary<string, string>>();
     }
 
     public static class ServiceCollectionExtension
@@ -63,7 +63,7 @@ namespace ExchangeSync.Extension
             {
                 var subScriptions = new List<MessageService>();
                 var errors = new Dictionary<string, string>();
-                Parallel.ForEach(userProfile, async u =>
+                Parallel.ForEach(temp, async u =>
                 {
                     try
                     {
@@ -75,7 +75,7 @@ namespace ExchangeSync.Extension
                     }
                     catch (Exception e)
                     {
-                        NotiMax.Error.Add(new Dictionary<string, string>(){{u.UserName,u.Password}});
+                        NotiMax.Error.Add(new Dictionary<string, string>() { { u.UserName, u.Password } });
                     }
 
                 });

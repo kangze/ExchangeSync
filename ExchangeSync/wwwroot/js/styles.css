@@ -133,3 +133,8 @@
 .btnhover:hover{
         background-color: #bec7cb6e !important;
 }
+
+
+body,html,p,h1,h2,h3,h4,h5,h6,div,span,ul,li,img{
+    font-family: "Microsoft YaHei UI","Microsoft YaHei","微软雅黑",SimSun,"宋体", sans-serif !important;
+}

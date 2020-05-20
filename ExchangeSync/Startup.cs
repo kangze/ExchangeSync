@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -41,11 +42,19 @@ namespace ExchangeSync
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new System.IO.DirectoryInfo(@"C:\dataprotection\"))
+                .SetApplicationName("Mail")
+                .SetDefaultKeyLifetime(TimeSpan.FromDays(365));
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AutomaticAuthentication = false;
             });
             services.AddHttpClient<IIdentityService, IdentityService>();
             services.AddHttpContextAccessor();
@@ -59,7 +68,7 @@ namespace ExchangeSync
             {
                 option.UseSqlServer(databseSection.GetValue<string>("ConnectString"));
             });
-            //services.AddNofiyTask(serverConfig.GetValue<int>("Index"));
+            services.AddNofiyTask(serverConfig.GetValue<int>("Index"));
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server.js"));
@@ -97,20 +106,20 @@ namespace ExchangeSync
                 options.MultipartBodyLengthLimit = int.MaxValue;
                 options.MultipartBoundaryLengthLimit = int.MaxValue;
             });
-            //var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
-            // {
-            //     var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>
-            //     {
-            //         h.Username(mdmBusSection.GetValue<string>("UserName"));
-            //         h.Password(mdmBusSection.GetValue<string>("Password"));
-            //     });
-            //     cfg.ReceiveEndpoint(host, "ITSCRBG_Contact_Contact", c =>
-            //     {
-            //         c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
-            //         c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
-            //     });
-            // });
-            //bus.Start();
+            var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
+             {
+                 var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>
+                 {
+                     h.Username(mdmBusSection.GetValue<string>("UserName"));
+                     h.Password(mdmBusSection.GetValue<string>("Password"));
+                 });
+                 cfg.ReceiveEndpoint(host, "ITSCRBG_Contact_Contact_2", c =>
+                 {
+                     c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
+                     c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
+                 });
+             });
+            bus.Start();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
