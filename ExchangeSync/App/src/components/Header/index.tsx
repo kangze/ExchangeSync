@@ -14,7 +14,7 @@ declare var window: any;
 const styles = {
     root: {
         height: 48,
-        backgroundColor: "#F5F3F1",
+        backgroundColor: "#004b8b",
     } as React.CSSProperties,
     logodiv: {
         paddingTop: 6,
@@ -24,11 +24,12 @@ const styles = {
         width: "15%",
     } as React.CSSProperties,
     pc_logodiv: {
-        paddingTop: 6,
+        paddingTop: 8,
         textAlign: "left",
         fontSize: 15,
+        backgroundColor: "white",
         "float": "left",
-        marginLeft: 15,
+        paddingLeft: 15,
         width: 55,
     } as React.CSSProperties,
     appsdiv: {
@@ -130,7 +131,7 @@ export default class Header extends React.Component<any, any> {
                             <img style={styles.img} src="https://bi.scrbg.com/images/logo.png" />
                         </div>
                         <div style={{ height: 48, display: "inline-block", marginLeft: 10 }}>
-                            <span style={{ fontSize: 28, fontWeight: 700, lineHeight: "47px" }}>四川路桥邮件系统</span>
+                            <span style={{ fontSize: 21, fontWeight: 700, color: "white", lineHeight: "47px" }}>四川路桥邮件系统</span>
                         </div>
                         <div style={{ float: "right" }}>
                             <div>
@@ -138,7 +139,7 @@ export default class Header extends React.Component<any, any> {
                                     iconProps={{
                                         iconName: 'Contact', styles: {
                                             root: {
-                                                //color: "white !important",
+                                                color: "white !important",
                                             }
                                         }
                                     }}
@@ -146,6 +147,7 @@ export default class Header extends React.Component<any, any> {
                                     styles={{
                                         root: {
                                             height: 40,
+                                            color: "white"
                                         },
                                     }}
                                     menuProps={{ items: [] }}

@@ -70,7 +70,9 @@ namespace ExchangeSync
             });
             //services.AddNofiyTask(serverConfig.GetValue<int>("Index"));
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc()
+                .AddJsonOptions(json => { json.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss"; })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server.js"));
             services.AddScoped<IMailService, MailService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
@@ -83,6 +85,7 @@ namespace ExchangeSync
             {
                 DiscoverServer = "http://lyncdiscoverinternal.scrbg.com/"
             }));
+            
             services.AddScoped<IEnterpriseContactService, EnterpriseContactService>();
             var builder = new DbContextOptionsBuilder<ServiceDbContext>()
                 //.UseLazyLoadingProxies()

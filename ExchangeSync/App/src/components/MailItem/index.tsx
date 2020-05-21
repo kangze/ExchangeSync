@@ -339,21 +339,25 @@ export default class MailItem extends React.PureComponent<any, any> {
                                                 key: "recived",
                                                 name: "收件箱",
                                                 url: "/",
+                                                icon: "MailSolid"
                                             },
                                             {
                                                 key: "sended",
                                                 name: "已经发送",
                                                 url: "/sended",
+                                                icon: "MailForward"
                                             },
                                             {
                                                 key: "draft",
                                                 name: "草稿",
                                                 url: "/draft",
+                                                icon: "EditMail"
                                             },
                                             {
                                                 key: "calendar",
                                                 name: "日历",
                                                 url: "/calendar",
+                                                icon: "Calendar"
                                             },
                                         ]
                                     }

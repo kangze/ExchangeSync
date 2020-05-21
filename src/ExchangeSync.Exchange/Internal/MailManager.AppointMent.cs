@@ -57,7 +57,8 @@ namespace ExchangeSync.Exchange.Internal
                 ItemSchema.Id,
                 ItemSchema.Subject,
                 AppointmentSchema.Start,
-                AppointmentSchema.End);
+                AppointmentSchema.End
+                );
             FindItemsResults<Appointment> appointments = await calendarFolder.FindAppointments(cView);
             var list = new List<AppointMentDto>();
             foreach (var appointment in appointments)
@@ -66,12 +67,17 @@ namespace ExchangeSync.Exchange.Internal
                 await appointment.Load(new PropertySet(AppointmentSchema.TextBody, ItemSchema.Subject,
                 AppointmentSchema.Start,
                 ItemSchema.Id,
-                AppointmentSchema.End));
+                AppointmentSchema.End,
+                AppointmentSchema.RequiredAttendees,
+                AppointmentSchema.OptionalAttendees));
                 listItem.Id = appointment.Id.UniqueId;
                 listItem.Subject = appointment.Subject;
                 listItem.Start = appointment.Start;
                 listItem.End = appointment.End;
                 listItem.Body = appointment.TextBody;
+                listItem.Attendees = new List<string>();
+                listItem.Attendees.AddRange(appointment.OptionalAttendees.Select(u => u.Name).ToList());
+                listItem.Attendees.AddRange(appointment.RequiredAttendees.Select(u => u.Name).ToList());
                 list.Add(listItem);
             }
 

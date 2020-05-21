@@ -183,7 +183,33 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
     public render(): JSX.Element {
         //let id=(this.props as any).match.params.mailId; 获取到的I
         if (this.props.mailId == "un") {
-            return <div></div>
+            return (
+                <Stack tokens={stackTokens}>
+                    <div className="ms-hiddenSm">
+                        <CommandBar
+                            styles={{
+                                root: {
+                                    backgroundColor: "#c9d7e6",
+                                    padding: 0
+                                }
+                            }}
+                            items={[
+                                {
+                                    key: 'up',
+                                    text: '新建',
+                                    iconProps: { iconName: 'Add' },
+                                    onClick: this.handleCreate.bind(this),
+                                    buttonStyles: {
+                                        root: {
+                                            backgroundColor: "#c9d7e6"
+                                        }
+                                    }
+                                }
+                            ]}
+                        />
+                    </div>
+                </Stack>
+            );
         }
         if (this.state.loading)
             return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />

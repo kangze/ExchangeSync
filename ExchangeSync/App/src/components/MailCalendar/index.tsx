@@ -8,10 +8,12 @@ import { Spinner } from 'office-ui-fabric-react/lib/Spinner';
 import { ActivityItem, IActivityItemProps, Link, mergeStyleSets, PersonaSize } from 'office-ui-fabric-react';
 
 import { Link as ALink } from 'react-router-dom';
+import { Nav, INavStyles, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 
 import { Calendar, DateRangeType } from 'office-ui-fabric-react/lib/Calendar';
 import Empty from "../_shared/Empty";
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react';
+import { CommandBar, ICommandBarItemProps } from 'office-ui-fabric-react/lib/CommandBar';
 
 
 
@@ -218,6 +220,7 @@ export default class CalendarItem extends React.Component<any, any>{
     }
 
     public handleToDetail(id: any) {
+        alert("剋")
         if (!id || id == "null") {
             alert("Exchange服务器异常,没有查询到对应的邮件！");
             return;
@@ -225,11 +228,10 @@ export default class CalendarItem extends React.Component<any, any>{
         this.props.history.push("/detail/" + id);
     }
 
-    public render() {
+    public render_content() {
         let self = this;
         const { firstDayOfWeek } = this.state;
         var groups = (this.state.groups as any).map((data: any) => self.createItem(data));
-
         return (
             <div>
                 <Calendar
@@ -289,6 +291,152 @@ export default class CalendarItem extends React.Component<any, any>{
                         ariaLabel="Add"
                         onClick={this._handleCreateCalendar.bind(this)}
                     />
+                </div>
+            </div>
+        );
+    }
+
+    public render_pc_item(items: any) {
+        console.log(items);
+        var title = this.state.date ? this.state.date.getFullYear() + "-" + (this.state.date.getMonth() + 1) + "-" + this.state.date.getDate() + " 日程安排" : "";
+        return (
+            <div>
+                <div>{title}</div>
+                <div>
+                    {items.map((item: any) => {
+                        return (
+                            <div style={{ marginLeft: 32, marginTop: 20, cursor: "pointer" }} onClick={this.handleToDetail.bind(this, encodeURIComponent(item.mailId))}>
+                                <div style={{ color: "#3687cc", fontSize: 23 }}>{"[会议时间]" + item.start}</div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <div style={{color: "#3687cc", fontSize: 23 }}>{"[会议主题]" + item.title}</div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <div style={{ color: "#3687cc", fontSize: 23 }}>{"[会议发起人]杨芳芳"}</div>
+                                <div>
+                                    {"内容: " + item.body}
+                                </div>
+                                <div>
+                                    {"与会人员:" + item.attendees.join()}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
+
+    public render() {
+        let self = this;
+        let name = this.state.user.name;
+        const { firstDayOfWeek } = this.state;
+        var groups = (this.state.groups as any).map((data: any) => self.createItem(data));
+        return (
+            <div>
+                {/* 展示移动端的页面 */}
+                <div className="ms-hiddenMdUp">
+                    {this.render_content()}
+                </div>
+                {/* 展示pc端的页面 */}
+                <div className="ms-hiddenSm">
+                    <div>
+                        <div style={{ position: "absolute", left: 0, top: 48, bottom: 0, width: "10%" }}>
+                            <Nav
+                                styles={{
+                                    root: {
+                                        //backgroundColor: "red"
+                                    }
+                                }}
+                                groups={[
+                                    {
+                                        name: name,
+                                        links: [
+                                            {
+                                                key: "recived",
+                                                name: "收件箱",
+                                                url: "/",
+                                                icon: "MailSolid"
+                                            },
+                                            {
+                                                key: "sended",
+                                                name: "已经发送",
+                                                url: "/sended",
+                                                icon: "MailForward"
+                                            },
+                                            {
+                                                key: "draft",
+                                                name: "草稿",
+                                                url: "/draft",
+                                                icon: "EditMail"
+                                            },
+                                            {
+                                                key: "calendar",
+                                                name: "日历",
+                                                url: "/calendar",
+                                                icon: "Calendar"
+                                            },
+                                        ]
+                                    }
+                                ]}
+                            />
+                        </div>
+
+                        <div style={{ position: "absolute", left: "10%", top: 48, bottom: 0, width: "15%", borderLeftStyle: "solid", borderLeftWidth: 1, overflowY: "auto", borderLeftColor: "#dce1de" }}>
+                            <Calendar
+                                onSelectDate={this._onSelectDate.bind(this)}
+                                // onDismiss={this._onDismiss}
+                                className={"kz"}
+                                isMonthPickerVisible={this.props.isMonthPickerVisible}
+                                dateRangeType={this.props.dateRangeType}
+                                autoNavigateOnSelection={this.props.autoNavigateOnSelection}
+                                showGoToToday={true}
+                                value={this.state.selectedDate!}
+                                firstDayOfWeek={DayOfWeek.Monday}
+                                strings={DayPickerStrings}
+                                highlightCurrentMonth={true}
+                                highlightSelectedMonth={true}
+                                isDayPickerVisible={this.props.isDayPickerVisible}
+                                showMonthPickerAsOverlay={true}
+                                showWeekNumbers={this.props.showWeekNumbers}
+                                minDate={this.props.minDate}
+                                maxDate={this.props.maxDate}
+                                restrictedDates={this.state.forbiddenDate}
+                                showSixWeeksByDefault={this.props.showSixWeeksByDefault}
+                                workWeekDays={this.props.workWeekDays}
+                            />
+                        </div>
+
+                        <div style={{ position: "absolute", left: "25%", top: 48, bottom: 0, width: "75%", borderLeftStyle: "solid", borderLeftWidth: 1, borderLeftColor: "#dce1de" }}>
+                            <CommandBar
+                                styles={{
+                                    root: {
+                                        backgroundColor: "#c9d7e6",
+                                        padding: 0
+                                    }
+                                }}
+                                items={[
+                                    {
+                                        key: 'up',
+                                        text: '新建会议',
+                                        iconProps: { iconName: 'Add' },
+                                        onClick: this._handleCreateCalendar.bind(this),
+                                        buttonStyles: {
+                                            root: {
+                                                backgroundColor: "#c9d7e6"
+                                            }
+                                        }
+                                    }
+                                ]}
+                            />
+                            {this.state.loading ?
+                                <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
+                                :
+                                groups.length == 0 ?
+                                    <Empty calendar={true} />
+                                    :
+                                    this.render_pc_item(this.state.groups)
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
         );
