@@ -68,7 +68,7 @@ namespace ExchangeSync
             {
                 option.UseSqlServer(databseSection.GetValue<string>("ConnectString"));
             });
-            services.AddNofiyTask(serverConfig.GetValue<int>("Index"));
+            //services.AddNofiyTask(serverConfig.GetValue<int>("Index"));
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddScoped<IServerRenderService, ServerRenderService>(u => new ServerRenderService("./server.js"));
@@ -106,20 +106,20 @@ namespace ExchangeSync
                 options.MultipartBodyLengthLimit = int.MaxValue;
                 options.MultipartBoundaryLengthLimit = int.MaxValue;
             });
-            var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
-             {
-                 var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>
-                 {
-                     h.Username(mdmBusSection.GetValue<string>("UserName"));
-                     h.Password(mdmBusSection.GetValue<string>("Password"));
-                 });
-                 cfg.ReceiveEndpoint(host, "ITSCRBG_Contact_Contact_2", c =>
-                 {
-                     c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
-                     c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
-                 });
-             });
-            bus.Start();
+            //var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
+            // {
+            //     var host = cfg.Host(new Uri(mdmBusSection.GetValue<string>("Host")), h =>
+            //     {
+            //         h.Username(mdmBusSection.GetValue<string>("UserName"));
+            //         h.Password(mdmBusSection.GetValue<string>("Password"));
+            //     });
+            //     cfg.ReceiveEndpoint(host, "ITSCRBG_Contact_Contact_2", c =>
+            //     {
+            //         c.Consumer(() => new MdmDataConsumer(dbOptions, mapper));
+            //         c.Consumer(() => new OrgEventDataConsumer(dbOptions, mapper));
+            //     });
+            // });
+            //bus.Start();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

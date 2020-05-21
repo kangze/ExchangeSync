@@ -106,6 +106,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
             mailId = nextProps.mailId;
         else
             mailId = nextProps.match.params.mailId;
+        this.setState({ loading: true });
         this.getDetail(mailId);
     }
 

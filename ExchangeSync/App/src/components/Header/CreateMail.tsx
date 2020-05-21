@@ -129,13 +129,12 @@ export default class CreateMail extends React.Component<any, any>{
     private _handleMailCreateSend() {
         let state = (window as any).content;
         state["content"] = (window as any).zxEditor.getHtml();
-        console.log(state);
         var s = (window as any).zxEditor.getHtml(false);
         if (!s) {
             alert("请输入邮件内容");
             return;
         }
-        if (!state["reciver"] || state["reciver"].length == 0) {
+        if (!state["reciver"] || state["reciver"].length == 0 || !state["reciver"][0]) {
             alert("请选择收件人!");
             return;
         }
@@ -165,27 +164,35 @@ export default class CreateMail extends React.Component<any, any>{
 
         if (data.copyTo) {
             for (let i = 0; i < data.copyTo.length; i++) {
-                formData.append("copyTo", data.copyTo[i]);
+                if (data.copyTo[i])
+                    formData.append("copyTo", data.copyTo[i]);
             }
         }
 
         var files = (window as any).document.getElementById("attachmentMail").files;
+        var size = 0;
         if (files.length > 0)
             for (let i = 0; i < files.length; i++) {
                 formData.append("attachment", files[i]);
+                size += files[i].size;
             }
+        var mb = (size / 1024) / 1024;
+        if (mb > 10) {
+            alert("附件大小不能超过10MB");
+            return;
+        }
         var self = this;
-        this.setState({sendding:true})
+        this.setState({ sendding: true })
         axios.post("/mail/reply", formData).then(reponse => {
             if (reponse.data.success) {
                 alert(self.props.message);
-                self.setState({sendding:false})
+                self.setState({ sendding: false })
                 delete (window as any).content;
                 (self.props as any).history.push("/sended");
             }
         }).catch(error => {
             alert("请稍后重新尝试!");
-            self.setState({sendding:false})
+            self.setState({ sendding: false })
         })
     }
 

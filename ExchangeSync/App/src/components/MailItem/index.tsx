@@ -137,18 +137,24 @@ export default class MailItem extends React.PureComponent<any, any> {
             axios.get("/mail/getasync?type=sended").then(response => {
                 var data = response.data;
                 self.setState({ groups: data, loading: false });
+            }).catch(error => {
+                alert('邮件服务器错误,请刷新页面再次尝试!');
             })
         } else if (this.props.type === "index" && this.state.loading) {
             self.props.changeTitle("收件箱");
             axios.get("/mail/getasync?type=index").then(response => {
                 var data = response.data;
                 self.setState({ groups: data, loading: false });
+            }).catch(error => {
+                alert('邮件服务器错误,请刷新页面再次尝试!');
             })
         } else if (this.props.type === "draft" && this.state.loading) {
             self.props.changeTitle("草稿箱");
             axios.get("/mail/getasync?type=draft").then(response => {
                 var data = response.data;
                 self.setState({ groups: data, loading: false });
+            }).catch(error => {
+                alert('邮件服务器错误,请刷新页面再次尝试!');
             })
         }
     }
