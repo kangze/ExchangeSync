@@ -129,7 +129,7 @@ export default class Header extends React.Component<any, any> {
         return (
             <div>
 
-                <div className="ms-hiddenSm">
+                <div className="hiddenSm2">
                     <div style={styles.root_pc}>
                         <div style={styles.pc_logodiv} >
                             <img style={styles.img} src="https://bi.scrbg.com/images/logo.png" />
@@ -161,7 +161,7 @@ export default class Header extends React.Component<any, any> {
 
                     </div>
                 </div>
-                <div className="ms-hiddenMdUp">
+                <div className="hiddenMdUp2">
                     <div style={styles.root}>
                         <div style={styles.appsdiv}>
                             <IconButton

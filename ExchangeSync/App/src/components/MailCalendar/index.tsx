@@ -234,6 +234,7 @@ export default class CalendarItem extends React.Component<any, any>{
 
     public render_content() {
         let self = this;
+        let wechat = this.state.user.wechat;
         const { firstDayOfWeek } = this.state;
         var groups = (this.state.groups as any).map((data: any) => self.createItem(data));
         return (
@@ -280,22 +281,24 @@ export default class CalendarItem extends React.Component<any, any>{
 
 
 
-                <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 47, width: 57, right: 20, bottom: 20, paddingLeft: 9, paddingTop: 17, boxShadow: Depths.depth64 }}>
-                    <IconButton
-                        iconProps={{
-                            iconName: 'CalendarSettings', styles: {
-                                root: {
-                                    color: "white",
-                                    fontSize: 32,
-                                }
-                            }
-                        }}
 
-                        title="Add"
-                        ariaLabel="Add"
-                        onClick={this._handleCreateCalendar.bind(this)}
-                    />
-                </div>
+                {!wechat ?
+                    <div style={{ position: "fixed", borderRadius: 42, backgroundColor: "#005bac", height: 47, width: 57, right: 20, bottom: 20, paddingLeft: 9, paddingTop: 17, boxShadow: Depths.depth64 }}>
+                        <IconButton
+                            iconProps={{
+                                iconName: 'CalendarSettings', styles: {
+                                    root: {
+                                        color: "white",
+                                        fontSize: 32,
+                                    }
+                                }
+                            }}
+
+                            title="Add"
+                            ariaLabel="Add"
+                            onClick={this._handleCreateCalendar.bind(this)}
+                        />
+                    </div> : null}
             </div>
         );
     }
@@ -352,6 +355,27 @@ export default class CalendarItem extends React.Component<any, any>{
         var groups = (this.state.groups as any).map((data: any) => this.createItem(data));
         var ele =
             <div>
+                <CommandBar
+                    styles={{
+                        root: {
+                            backgroundColor: "#c9d7e6",
+                            padding: 0
+                        }
+                    }}
+                    items={[
+                        {
+                            key: 'up',
+                            text: '新建会议',
+                            iconProps: { iconName: 'Add' },
+                            onClick: this._handleCreateCalendar.bind(this),
+                            buttonStyles: {
+                                root: {
+                                    backgroundColor: "#c9d7e6"
+                                }
+                            }
+                        }
+                    ]}
+                />
                 {
                     this.state.loading ?
                         <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
@@ -375,11 +399,11 @@ export default class CalendarItem extends React.Component<any, any>{
         return (
             <div>
                 {/* 展示移动端的页面 */}
-                <div className="ms-hiddenMdUp">
+                <div className="hiddenMdUp2">
                     {this.render_content()}
                 </div>
                 {/* 展示pc端的页面 */}
-                <div className="ms-hiddenSm">
+                <div className="hiddenSm2">
                     <div>
                         <div style={{ position: "absolute", left: 0, top: 48, bottom: 0, width: "10%" }}>
                             <Nav
@@ -448,27 +472,7 @@ export default class CalendarItem extends React.Component<any, any>{
                         </div>
 
                         <div style={{ position: "absolute", left: "25%", top: 48, bottom: 0, width: "75%", borderLeftStyle: "solid", borderLeftWidth: 1, borderLeftColor: "#dce1de" }}>
-                            <CommandBar
-                                styles={{
-                                    root: {
-                                        backgroundColor: "#c9d7e6",
-                                        padding: 0
-                                    }
-                                }}
-                                items={[
-                                    {
-                                        key: 'up',
-                                        text: '新建会议',
-                                        iconProps: { iconName: 'Add' },
-                                        onClick: this._handleCreateCalendar.bind(this),
-                                        buttonStyles: {
-                                            root: {
-                                                backgroundColor: "#c9d7e6"
-                                            }
-                                        }
-                                    }
-                                ]}
-                            />
+
                             {!this.state.mailId ? this.render_pc_item_container() :
 
                                 <MailDetail mailId={this.state.mailId} {...this.props} calendar={true} />}

@@ -185,7 +185,7 @@ export default class MailItem extends React.PureComponent<any, any> {
             //没有读取的邮件，所有字体设置为粗体
             if (!item.readed) style = { fontWeight: "bold" } as React.CSSProperties;
             return (
-                <Stack style={{ marginTop: 5, marginBottom: 10, backgroundColor: selectedColor }}>
+                <Stack style={{ cursor: "pointer", marginTop: 5, marginBottom: 10, backgroundColor: selectedColor }}>
                     <Persona
                         onClick={this.handleClick.bind(this, item, pc)}
                         imageInitials={item.sender.name[0]}
@@ -200,7 +200,20 @@ export default class MailItem extends React.PureComponent<any, any> {
                             <div>
                                 <Text key={item.title} style={style} variant="medium" nowrap block>
                                     {item.title}
-                                    {item.hasAttachments ? <Icon styles={{ root: { position: "absolute", right: 50, top: 20, fontSize: 15, color: "#005bac" } }} iconName="Attach" className="ms-IconExample" /> : null}
+                                    {item.hasAttachments ?
+                                        <Icon
+                                            styles={{
+                                                root: {
+                                                    position: "absolute",
+                                                    right: 10,
+                                                    top: -3,
+                                                    fontSize: 15,
+                                                    color: "#005bac"
+                                                }
+                                            }}
+                                            iconName="Attach"
+                                            className="ms-IconExample"
+                                        /> : null}
 
                                 </Text>
 
@@ -323,7 +336,7 @@ export default class MailItem extends React.PureComponent<any, any> {
                 {/* 展示pc端的页面 */}
                 <div className="hiddenSm2">
                     <div>
-                        <div style={{ position: "absolute", left: 0, top: 48, bottom: 0, width: "10%" }}>
+                        <div style={{ position: "absolute", left: 0, top: 48, bottom: 0, width: 200 }}>
                             <Nav
                                 styles={{
                                     root: {
@@ -365,7 +378,10 @@ export default class MailItem extends React.PureComponent<any, any> {
                             />
                         </div>
                         {empty ? <Empty /> :
-                            <div style={{ position: "absolute", left: "10%", top: 48, bottom: 0, width: "20%", borderLeftStyle: "solid", borderLeftWidth: 1, overflowY: "auto", borderLeftColor: "#dce1de" }}>
+                            <div style={{
+                                position: "absolute", left: 200, top: 48, bottom: 0, width: 350,
+                                borderLeftStyle: "solid", borderLeftWidth: 1, overflowY: "auto", borderLeftColor: "#dce1de"
+                            }}>
                                 <Stack tokens={{ childrenGap: 10 }}>
                                     {this.render_itemList(true)}
                                     {!wechat ?
@@ -374,7 +390,7 @@ export default class MailItem extends React.PureComponent<any, any> {
                                 </Stack>
                             </div>
                         }
-                        <div style={{ position: "absolute", left: "30%", top: 48, bottom: 0, width: "70%", borderLeftStyle: "solid", borderLeftWidth: 1, borderLeftColor: "#dce1de" }}>
+                        <div style={{ position: "absolute", left: 550, right: 0, top: 48, bottom: 0, borderLeftStyle: "solid", borderLeftWidth: 1, borderLeftColor: "#dce1de" }}>
                             <MailDetail mailId={this.state.mailId} {...this.props} />
                         </div>
                     </div>

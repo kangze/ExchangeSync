@@ -146,7 +146,7 @@ body,html,p,h1,h2,h3,h4,h5,h6,div,span,ul,li,img{
     }
 }
 
-@media (min-width: 620px) and (max-width: 1919.99999px) {
+@media screen and (min-width: 619.99999px) {
     .hiddenMdUp2{
         display: none !important;
     }

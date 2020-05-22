@@ -268,7 +268,7 @@ namespace ExchangeSync.Exchange.Internal
             if (sets.Contains(MeetingMessageSchema.AssociatedAppointmentId))
             {
                 var request = message as MeetingRequest;
-                if (request != null && mail.IsOnlineMeeting)
+                if (request != null && mail.IsOnlineMeeting && request.AssociatedAppointmentId != null)
                     mail.AppointMeetingId = request.AssociatedAppointmentId.UniqueId;
             }
 

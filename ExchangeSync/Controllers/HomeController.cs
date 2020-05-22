@@ -143,7 +143,7 @@ namespace ExchangeSync.Controllers
             var claims22 = await this._identityService.GetUserInfoAsync(accessToken22);
             var claimsIdentity22 = new ClaimsIdentity(claims22, CookieAuthenticationDefaults.AuthenticationScheme);
             claimsIdentity22.AddClaim(new Claim("access_token", accessToken22));
-            claimsIdentity22.AddClaim(new Claim("tt", "true"));
+            claimsIdentity22.AddClaim(new Claim("wechat", "false"));
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity22));
             return Redirect("/");
         }
@@ -152,26 +152,13 @@ namespace ExchangeSync.Controllers
         public async Task<IActionResult> Index(string number)
         {
             var wechat = false;
-            try
-            {
-                var userAgent = ((Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpRequestHeaders)this.Request.Headers).HeaderUserAgent;
-                if (userAgent.ToString().ToLower().Contains("micromessenger"))
-                    wechat = true;
-            }
-            catch (Exception e)
-            {
-
-            }
-
-
-
-
             if (this.User.Identity.IsAuthenticated)
             {
                 var willNumber = this.GetNumber();
                 if (!string.IsNullOrWhiteSpace(number))
                 {
                     var s_number = this.OpenS(number);
+                    wechat = true;
                     if (!string.IsNullOrWhiteSpace(s_number) && s_number != willNumber)
                     {
                         willNumber = s_number;
@@ -180,6 +167,7 @@ namespace ExchangeSync.Controllers
                         var claims22 = await this._identityService.GetUserInfoAsync(accessToken22);
                         var claimsIdentity22 = new ClaimsIdentity(claims22, CookieAuthenticationDefaults.AuthenticationScheme);
                         claimsIdentity22.AddClaim(new Claim("access_token", accessToken22));
+                        claimsIdentity22.AddClaim(new Claim("wechat", "true"));
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity22));
                     }
                 }
@@ -193,12 +181,21 @@ namespace ExchangeSync.Controllers
                 var ttClaim = User.Claims.FirstOrDefault(u => u.Type == "tt");
                 if (ttClaim != null)
                     tt = true;
+                if (!wechat)
+                {
+                    var wechatClaim = User.Claims.FirstOrDefault(u => u.Type == "wechat");
+                    if (wechatClaim != null && wechatClaim.Value == "true")
+                    {
+                        wechat = true;
+                    }
+                }
                 var user1 = new { userName = employee_logined.UserName, number = employee_logined.Number, name = employee_logined.Name, wechat = wechat, tt = tt };
                 //var html1 = this._serverRenderService.Render(Request.Path, mailData1, user1);
                 return View(user1);
             }
             if (string.IsNullOrWhiteSpace(number)) return Content("加密内容不能为空!");
             var user_number = this.OpenS(number);
+            wechat = true;
             if (string.IsNullOrWhiteSpace(user_number)) return Content("解密后内容不合法!");
 
             var employee = await this._employeeService.FindByUserNumberAsync(user_number);
@@ -208,8 +205,17 @@ namespace ExchangeSync.Controllers
             var claims = await this._identityService.GetUserInfoAsync(accessToken);
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             claimsIdentity.AddClaim(new Claim("access_token", accessToken));
+            claimsIdentity.AddClaim(new Claim("wechat", "true"));
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
             //var mailData = await this.GetMailDataAsync(employee.UserName, employee);
+            if (!wechat)
+            {
+                var wechatClaim = User.Claims.FirstOrDefault(u => u.Type == "wechat");
+                if (wechatClaim != null && wechatClaim.Value == "true")
+                {
+                    wechat = true;
+                }
+            }
             var user = new { userName = employee.UserName, number = employee.Number, name = employee.Name, wechat = wechat };
             //var html = this._serverRenderService.Render(Request.Path, mailData, user);
             return View(user);

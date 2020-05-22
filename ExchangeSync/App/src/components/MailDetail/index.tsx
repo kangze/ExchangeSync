@@ -242,8 +242,13 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
             return <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
         let mailid = this.state.mailId;
         let userName = "";
+        let wechat = null;
         if (window)
+        {
             userName = (window as any).user.userName;
+            wechat= (window as any).user.wechat;
+        }
+            
         return (
             <Stack tokens={stackTokens}>
                 <div className="ms-hiddenSm">
@@ -363,7 +368,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                     </div>
                 </div>
                 {
-                    this.state.folderName === "inbox" ?
+                    this.state.folderName === "inbox" && !wechat ?
                         <div className="ms-hiddenMdUp" style={{ position: "fixed", width: "100%", bottom: 0, backgroundColor: "#eaeaea" }}>
                             <PrimaryButton
                                 text="回复"
