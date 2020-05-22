@@ -9,11 +9,12 @@ import { ActivityItem, IActivityItemProps, Link, mergeStyleSets, PersonaSize } f
 
 import { Link as ALink } from 'react-router-dom';
 import { Nav, INavStyles, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
-
+import { Persona } from "office-ui-fabric-react";
 import { Calendar, DateRangeType } from 'office-ui-fabric-react/lib/Calendar';
 import Empty from "../_shared/Empty";
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react';
 import { CommandBar, ICommandBarItemProps } from 'office-ui-fabric-react/lib/CommandBar';
+import MailDetail from "../MailDetail";
 
 
 
@@ -165,9 +166,10 @@ export default class CalendarItem extends React.Component<any, any>{
 
     public _onSelectDate(date: Date, selectedDateRangeArray?: Date[]) {
         let self = this;
-        self.setState({ date: date });
         self.setState({
             loading: true,
+            date: date,
+            mailId: null
         })
         axios.get("/Calendar/GetForbidden?year=" + date.getFullYear() + "&month=" + (date.getMonth() + 1) + "&day=" + (date.getDate())).then(response => {
             var forbidenDates = response.data;
@@ -219,13 +221,15 @@ export default class CalendarItem extends React.Component<any, any>{
         );
     }
 
-    public handleToDetail(id: any) {
-        alert("剋")
+    public handleToDetail(id: any, pc: boolean) {
         if (!id || id == "null") {
             alert("Exchange服务器异常,没有查询到对应的邮件！");
             return;
         }
-        this.props.history.push("/detail/" + id);
+        if (!pc)
+            this.props.history.push("/detail/" + id);
+        else
+            this.setState({ mailId: id });
     }
 
     public render_content() {
@@ -271,7 +275,7 @@ export default class CalendarItem extends React.Component<any, any>{
                     groups.length == 0 ?
                         <Empty calendar={true} />
                         :
-                        groups.map((item: any) => <div onClick={this.handleToDetail.bind(this, item.mailId)}><ActivityItem {...item} className={classNames.exampleRoot} /></div>)
+                        groups.map((item: any) => <div onClick={this.handleToDetail.bind(this, item.mailId, false)}><ActivityItem {...item} className={classNames.exampleRoot} /></div>)
                 }
 
 
@@ -297,32 +301,70 @@ export default class CalendarItem extends React.Component<any, any>{
     }
 
     public render_pc_item(items: any) {
-        console.log(items);
         var title = this.state.date ? this.state.date.getFullYear() + "-" + (this.state.date.getMonth() + 1) + "-" + this.state.date.getDate() + " 日程安排" : "";
+        console.log(items);
         return (
             <div>
                 <div>{title}</div>
                 <div>
                     {items.map((item: any) => {
+                        let time = item.start.split(" ")[1];
+                        time = item.fullDay ? "[全天]" + time : time;
+                        var attends = item.attendees;
+                        var eleAttends = attends.map((att: any) =>
+                            <div style={{ display: "inline-block" }}>
+                                <Persona
+                                    text={att}
+                                    size={PersonaSize.size24}
+                                    hidePersonaDetails={false}
+                                />
+                            </div>
+                        );
+
                         return (
-                            <div style={{ marginLeft: 32, marginTop: 20, cursor: "pointer" }} onClick={this.handleToDetail.bind(this, encodeURIComponent(item.mailId))}>
-                                <div style={{ color: "#3687cc", fontSize: 23 }}>{"[会议时间]" + item.start}</div>
+                            <div style={{ marginLeft: 32, marginTop: 20, cursor: "pointer", borderBottomWidth: 1, borderBottomStyle: "solid", paddingBottom: 8 }} onClick={this.handleToDetail.bind(this, encodeURIComponent(item.mailId), true)}>
+                                <div style={{ display: "inline-block", color: "#3687cc", fontSize: 18 }}>{time}</div>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <div style={{color: "#3687cc", fontSize: 23 }}>{"[会议主题]" + item.title}</div>
+                                <div style={{ display: "inline-block", color: "#3687cc", fontSize: 18 }}>{item.title}</div>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <div style={{ color: "#3687cc", fontSize: 23 }}>{"[会议发起人]杨芳芳"}</div>
-                                <div>
-                                    {"内容: " + item.body}
+                                <div style={{ display: "inline-block", color: "#3687cc", fontSize: 18 }}>
+                                    <Persona
+                                        text={item.organizer}
+                                        size={PersonaSize.size24}
+
+                                        hidePersonaDetails={false}
+                                        imageAlt="Annie Lindqvist, status is online"
+                                    />
                                 </div>
-                                <div>
-                                    {"与会人员:" + item.attendees.join()}
+                                <div style={{ marginLeft: 90 }}>
+                                    {eleAttends}
                                 </div>
+
                             </div>
                         );
                     })}
                 </div>
             </div>
         );
+    }
+
+    public render_pc_item_container() {
+        var groups = (this.state.groups as any).map((data: any) => this.createItem(data));
+        var ele =
+            <div>
+                {
+                    this.state.loading ?
+                        <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
+                        :
+                        groups.length == 0 ?
+                            <Empty calendar={true} />
+                            :
+                            this.render_pc_item(this.state.groups)
+                }
+            </div>
+
+        return ele;
+
     }
 
     public render() {
@@ -427,14 +469,10 @@ export default class CalendarItem extends React.Component<any, any>{
                                     }
                                 ]}
                             />
-                            {this.state.loading ?
-                                <Spinner styles={{ root: { marginTop: 40 } }} label="正在加载数据..." />
-                                :
-                                groups.length == 0 ?
-                                    <Empty calendar={true} />
-                                    :
-                                    this.render_pc_item(this.state.groups)
-                            }
+                            {!this.state.mailId ? this.render_pc_item_container() :
+
+                                <MailDetail mailId={this.state.mailId} {...this.props} calendar={true} />}
+
                         </div>
                     </div>
                 </div>

@@ -52,6 +52,14 @@ namespace ExchangeSync.Controllers
                 return BadRequest();
             var list = await this._calendarService.GetMyAppointmentsAsync(employee.Account, employee.Password);
             var result = list.Where(u => u.Start.Year == year && u.Start.Month == month && u.Start.Day == day).ToList();
+            foreach (var item in result)
+            {
+                if (item.Attendees != null && item.Attendees.Count == 1)
+                {
+                    var attends = item.Attendees[0].Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+                    item.Attendees = attends;
+                }
+            }
             return Json(result);
         }
 
@@ -108,7 +116,7 @@ namespace ExchangeSync.Controllers
             if (employee == null)
                 return Json(new
                 {
-                    id="",
+                    id = "",
                     success = false,
                     error = "没有找到会议发起人",
                     onlinelink = "",
@@ -231,6 +239,11 @@ namespace ExchangeSync.Controllers
         public async Task<IActionResult> CreateAppointMent([FromForm]AppointMenInput input)
         {
             var userName = this.GetUserName();
+            if (input.Attendees != null && input.Attendees.Count == 1)
+            {
+                var attends = input.Attendees[0].Split(",", StringSplitOptions.RemoveEmptyEntries).ToList();
+                input.Attendees = attends;
+            }
             var employee = await this._employeeService.FindByUserNameAsync(userName);
             if (employee == null)
                 return BadRequest();

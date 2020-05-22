@@ -103,8 +103,9 @@ export default class CreateMail extends React.Component<any, any>{
             formData.append("end", data.end);
         if (data.endTime)
             formData.append("endTime", data.endTime);
-        if (data.attendees)
+        if (data.attendees) {
             formData.append("attendees", data.attendees);
+        }
         if (data.AddToSkype)
             formData.append("AddToSkype", data.AddToSkype);
         if (data.FullDay)

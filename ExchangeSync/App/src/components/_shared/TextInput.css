@@ -138,3 +138,16 @@
 body,html,p,h1,h2,h3,h4,h5,h6,div,span,ul,li,img{
     font-family: "Microsoft YaHei UI","Microsoft YaHei","微软雅黑",SimSun,"宋体", sans-serif !important;
 }
+
+@media screen and (max-width: 620px)
+{
+    .hiddenSm2{
+        display: none !important;
+    }
+}
+
+@media (min-width: 620px) and (max-width: 1919.99999px) {
+    .hiddenMdUp2{
+        display: none !important;
+    }
+}

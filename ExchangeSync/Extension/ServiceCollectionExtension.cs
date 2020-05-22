@@ -63,7 +63,7 @@ namespace ExchangeSync.Extension
             {
                 var subScriptions = new List<MessageService>();
                 var errors = new Dictionary<string, string>();
-                Parallel.ForEach(temp, async u =>
+                Parallel.ForEach(userProfile, async u =>
                 {
                     try
                     {

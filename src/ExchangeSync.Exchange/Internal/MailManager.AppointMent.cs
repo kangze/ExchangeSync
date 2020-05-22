@@ -68,9 +68,12 @@ namespace ExchangeSync.Exchange.Internal
                 AppointmentSchema.Start,
                 ItemSchema.Id,
                 AppointmentSchema.End,
+                AppointmentSchema.Organizer,
                 AppointmentSchema.RequiredAttendees,
                 AppointmentSchema.OptionalAttendees));
+
                 listItem.Id = appointment.Id.UniqueId;
+                listItem.Organizer = appointment.Organizer.Name;
                 listItem.Subject = appointment.Subject;
                 listItem.Start = appointment.Start;
                 listItem.End = appointment.End;

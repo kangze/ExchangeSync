@@ -64,6 +64,11 @@ namespace ExchangeSync.Exchange.Model
         /// 附件
         /// </summary>
         public List<AttachmentMailModel> Attachments { get; set; }
+
+        /// <summary>
+        /// 会议的发起人
+        /// </summary>
+        public string Organizer { get; set; }
     }
 
     public enum AppointMentType

@@ -180,33 +180,60 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
         })
     }
 
+    private _handleCreateCalendar(e: any) {
+        (this.props as any).history.push("/createCalendar");
+    }
+
     public render(): JSX.Element {
-        //let id=(this.props as any).match.params.mailId; 获取到的I
         if (this.props.mailId == "un") {
             return (
                 <Stack tokens={stackTokens}>
                     <div className="ms-hiddenSm">
-                        <CommandBar
-                            styles={{
-                                root: {
-                                    backgroundColor: "#c9d7e6",
-                                    padding: 0
-                                }
-                            }}
-                            items={[
-                                {
-                                    key: 'up',
-                                    text: '新建',
-                                    iconProps: { iconName: 'Add' },
-                                    onClick: this.handleCreate.bind(this),
-                                    buttonStyles: {
-                                        root: {
-                                            backgroundColor: "#c9d7e6"
+                        {this.props.calendar ?
+                            <CommandBar
+                                styles={{
+                                    root: {
+                                        backgroundColor: "#c9d7e6",
+                                        padding: 0
+                                    }
+                                }}
+                                items={[
+                                    {
+                                        key: 'up',
+                                        text: '新建会议',
+                                        iconProps: { iconName: 'Add' },
+                                        onClick: this._handleCreateCalendar.bind(this),
+                                        buttonStyles: {
+                                            root: {
+                                                backgroundColor: "#c9d7e6"
+                                            }
                                         }
                                     }
-                                }
-                            ]}
-                        />
+                                ]}
+                            />
+                            :
+                            <CommandBar
+                                styles={{
+                                    root: {
+                                        backgroundColor: "#c9d7e6",
+                                        padding: 0
+                                    }
+                                }}
+                                items={[
+                                    {
+                                        key: 'up',
+                                        text: '新建邮件',
+                                        iconProps: { iconName: 'Add' },
+                                        onClick: this.handleCreate.bind(this),
+                                        buttonStyles: {
+                                            root: {
+                                                backgroundColor: "#c9d7e6"
+                                            }
+                                        }
+                                    }
+                                ]}
+                            />}
+
                     </div>
                 </Stack>
             );
@@ -220,7 +247,7 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
         return (
             <Stack tokens={stackTokens}>
                 <div className="ms-hiddenSm">
-                    <CommandBar
+                    {this.props.calendar ? <CommandBar
                         styles={{
                             root: {
                                 backgroundColor: "#c9d7e6",
@@ -230,51 +257,72 @@ export default class SeparatorThemingExample extends React.Component<any, any> {
                         items={[
                             {
                                 key: 'up',
-                                text: '新建',
+                                text: '新建会议',
                                 iconProps: { iconName: 'Add' },
-                                onClick: this.handleCreate.bind(this),
+                                onClick: this._handleCreateCalendar.bind(this),
                                 buttonStyles: {
                                     root: {
                                         backgroundColor: "#c9d7e6"
                                     }
                                 }
-                            },
-                            {
-                                key: 'share',
-                                text: '删除',
-                                iconProps: { iconName: 'Delete' },
-                                buttonStyles: {
-                                    root: {
-                                        backgroundColor: "#c9d7e6"
-                                    }
-                                },
-                                onClick: this.handle_delete.bind(this),
-                            },
-                            {
-                                key: 'share1',
-                                text: '设置为未读',
-                                iconProps: { iconName: 'Read' },
-                                buttonStyles: {
-                                    root: {
-                                        backgroundColor: "#c9d7e6"
-                                    }
-                                },
-                                onClick: this.handle_setRead.bind(this),
-                            },
-                            {
-                                key: 'reply',
-                                text: '回复',
-                                iconProps: { iconName: 'Reply' },
-                                buttonStyles: {
-                                    root: {
-                                        backgroundColor: "#c9d7e6"
-                                    }
-                                },
-                                onClick: this.handle_Reply.bind(this),
-                            },
+                            }
                         ]}
-                    />
-
+                    /> :
+                        <CommandBar
+                            styles={{
+                                root: {
+                                    backgroundColor: "#c9d7e6",
+                                    padding: 0
+                                }
+                            }}
+                            items={[
+                                {
+                                    key: 'up',
+                                    text: '新建邮件',
+                                    iconProps: { iconName: 'Add' },
+                                    onClick: this.handleCreate.bind(this),
+                                    buttonStyles: {
+                                        root: {
+                                            backgroundColor: "#c9d7e6"
+                                        }
+                                    }
+                                },
+                                {
+                                    key: 'share',
+                                    text: '删除',
+                                    iconProps: { iconName: 'Delete' },
+                                    buttonStyles: {
+                                        root: {
+                                            backgroundColor: "#c9d7e6"
+                                        }
+                                    },
+                                    onClick: this.handle_delete.bind(this),
+                                },
+                                {
+                                    key: 'share1',
+                                    text: '设置为未读',
+                                    iconProps: { iconName: 'Read' },
+                                    buttonStyles: {
+                                        root: {
+                                            backgroundColor: "#c9d7e6"
+                                        }
+                                    },
+                                    onClick: this.handle_setRead.bind(this),
+                                },
+                                {
+                                    key: 'reply',
+                                    text: '回复',
+                                    iconProps: { iconName: 'Reply' },
+                                    buttonStyles: {
+                                        root: {
+                                            backgroundColor: "#c9d7e6"
+                                        }
+                                    },
+                                    onClick: this.handle_Reply.bind(this),
+                                },
+                            ]}
+                        />
+                    }
                 </div>
                 <div style={{ padding: 10, backgroundColor: "#eaeaea" }}>
                     <Text variant="large" >{this.state.title}</Text>

@@ -308,7 +308,7 @@ export default class MailItem extends React.PureComponent<any, any> {
         return (
             <div>
                 {/* 展示移动端的页面 */}
-                <div className="ms-hiddenMdUp">
+                <div className="hiddenMdUp2">
                     {empty ? <Empty /> :
                         <Stack tokens={{ childrenGap: 10 }}>
                             {this.render_itemList(false)}
@@ -321,7 +321,7 @@ export default class MailItem extends React.PureComponent<any, any> {
                 </div>
 
                 {/* 展示pc端的页面 */}
-                <div className="ms-hiddenSm">
+                <div className="hiddenSm2">
                     <div>
                         <div style={{ position: "absolute", left: 0, top: 48, bottom: 0, width: "10%" }}>
                             <Nav

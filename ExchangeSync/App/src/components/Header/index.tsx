@@ -14,8 +14,12 @@ declare var window: any;
 const styles = {
     root: {
         height: 48,
-        backgroundColor: "#004b8b",
+        //backgroundColor: "#004b8b",
     } as React.CSSProperties,
+    root_pc: {
+        height: 48,
+        backgroundColor: "#004b8b",
+    },
     logodiv: {
         paddingTop: 6,
         textAlign: "left",
@@ -126,7 +130,7 @@ export default class Header extends React.Component<any, any> {
             <div>
 
                 <div className="ms-hiddenSm">
-                    <div style={styles.root}>
+                    <div style={styles.root_pc}>
                         <div style={styles.pc_logodiv} >
                             <img style={styles.img} src="https://bi.scrbg.com/images/logo.png" />
                         </div>
