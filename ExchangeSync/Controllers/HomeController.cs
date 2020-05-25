@@ -133,6 +133,7 @@ namespace ExchangeSync.Controllers
             }
             catch (Exception ex)
             {
+                throw new Exception("请提供正确的验证信息!");
                 return str;
             }
         }
