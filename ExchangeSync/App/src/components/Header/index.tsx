@@ -21,20 +21,20 @@ const styles = {
         backgroundColor: "#004b8b",
     },
     logodiv: {
-        paddingTop: 6,
+        paddingTop: 0,
         textAlign: "left",
         fontSize: 15,
         "float": "right",
-        width: "15%",
+        width: "28%",
     } as React.CSSProperties,
     pc_logodiv: {
-        paddingTop: 8,
+        paddingTop: 0,
         textAlign: "left",
         fontSize: 15,
         backgroundColor: "white",
         "float": "left",
-        paddingLeft: 15,
-        width: 55,
+        paddingLeft: 0,
+        width: 110,
     } as React.CSSProperties,
     appsdiv: {
         width: "15%",
@@ -47,14 +47,14 @@ const styles = {
         height: 48
     },
     img: {
-        height: 36
+        height: 44
     } as React.CSSProperties,
     text: {
         textAlign: "center",
         fontSize: 22,
         height: 48,
         float: "left",
-        width: "70%",
+        width: "55%",
 
     } as React.CSSProperties,
     textp: {
